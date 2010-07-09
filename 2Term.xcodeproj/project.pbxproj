@@ -13,6 +13,9 @@
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		B669798511E6A786002ED475 /* Lock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B669798411E6A786002ED475 /* Lock.cpp */; };
+		B66979D111E6BCAE002ED475 /* sl25.png in Resources */ = {isa = PBXBuildFile; fileRef = B66979CF11E6BCAE002ED475 /* sl25.png */; };
+		B66979FA11E6BEB5002ED475 /* sl75.png in Resources */ = {isa = PBXBuildFile; fileRef = B66979F811E6BEB5002ED475 /* sl75.png */; };
+		B66979FB11E6BEB5002ED475 /* sl50.png in Resources */ = {isa = PBXBuildFile; fileRef = B66979F911E6BEB5002ED475 /* sl50.png */; };
 		B676063B11DEAD3500D6B66C /* TermWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = B676063A11DEAD3500D6B66C /* TermWindowController.m */; };
 		B676065111DEBAE900D6B66C /* TermWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B676065011DEBAE900D6B66C /* TermWindow.xib */; };
 		B67606DA11DF6DAB00D6B66C /* EmulatorView.mm in Sources */ = {isa = PBXBuildFile; fileRef = B67606D911DF6DAB00D6B66C /* EmulatorView.mm */; };
@@ -38,6 +41,9 @@
 		8D1107320486CEB800E47090 /* 2Term.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 2Term.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B669798311E6A786002ED475 /* Lock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lock.h; sourceTree = "<group>"; };
 		B669798411E6A786002ED475 /* Lock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Lock.cpp; sourceTree = "<group>"; };
+		B66979CF11E6BCAE002ED475 /* sl25.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sl25.png; sourceTree = "<group>"; };
+		B66979F811E6BEB5002ED475 /* sl75.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sl75.png; sourceTree = "<group>"; };
+		B66979F911E6BEB5002ED475 /* sl50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sl50.png; sourceTree = "<group>"; };
 		B676063911DEAD3500D6B66C /* TermWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TermWindowController.h; sourceTree = "<group>"; };
 		B676063A11DEAD3500D6B66C /* TermWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TermWindowController.m; sourceTree = "<group>"; };
 		B676064D11DEBAE300D6B66C /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/TermWindow.xib; sourceTree = "<group>"; };
@@ -146,6 +152,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				B66979CE11E6BCAE002ED475 /* images */,
 				8D1107310486CEB800E47090 /* TwoTerm-Info.plist */,
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
 				1DDD58140DA1D0A300B32029 /* MainMenu.xib */,
@@ -161,6 +168,16 @@
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B66979CE11E6BCAE002ED475 /* images */ = {
+			isa = PBXGroup;
+			children = (
+				B66979F811E6BEB5002ED475 /* sl75.png */,
+				B66979F911E6BEB5002ED475 /* sl50.png */,
+				B66979CF11E6BCAE002ED475 /* sl25.png */,
+			);
+			path = images;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -209,6 +226,9 @@
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */,
 				B676065111DEBAE900D6B66C /* TermWindow.xib in Resources */,
+				B66979D111E6BCAE002ED475 /* sl25.png in Resources */,
+				B66979FA11E6BEB5002ED475 /* sl75.png in Resources */,
+				B66979FB11E6BEB5002ED475 /* sl50.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

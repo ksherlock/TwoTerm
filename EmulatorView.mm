@@ -21,16 +21,21 @@
 
 -(void)awakeFromNib
 {
+    NSImage *image;
+    
     _charWidth = 7;
     _charHeight = 16;
     
+    
+    image = [NSImage imageNamed: @"sl25.png"];
+    
+    _scanLine = [[NSColor colorWithPatternImage: image] retain];
     
     _foregroundColor = [[NSColor greenColor] retain];
     _backgroundColor = [[NSColor blackColor] retain];
 
     _charGen = [[CharacterGenerator generator] retain];
     
-
     _emulator = [VT52 new];
 }
 
@@ -124,8 +129,13 @@
             }
         }
     }
-    
     _screen.unlock();
+
+    
+    [_scanLine setFill];
+    NSRectFillUsingOperation(screenRect, NSCompositeSourceOver);
+    //NSRectFill(screenRect);
+    
     
 }
 
@@ -133,6 +143,10 @@
 -(void)dealloc
 {
     close(_fd);
+    
+    [_scanLine release];
+    [_foregroundColor release];
+    [_backgroundColor release];
     
     [_readerThread release];
     

@@ -44,6 +44,8 @@
     CGFloat _paddingRight;
     
     
+    NSColor *_scanLine;
+    
 #ifdef __cplusplus
     
     Screen _screen;
