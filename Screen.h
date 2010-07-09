@@ -31,6 +31,14 @@ class Screen {
     
 public:
 
+    static const unsigned FlagNormal = 0x00;
+    static const unsigned FlagInverse = 0x01;
+    static const unsigned FlagMouseText = 0x02;
+    static const unsigned FlagBold = 0x04;
+    static const unsigned FlagUnderscore = 0x08;
+    static const unsigned FlagBlink = 0x10;
+    
+    
     Screen(unsigned height = 24, unsigned width = 80);
     
     int x() const;

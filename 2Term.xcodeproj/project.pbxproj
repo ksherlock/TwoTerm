@@ -17,6 +17,7 @@
 		B66979FA11E6BEB5002ED475 /* sl75.png in Resources */ = {isa = PBXBuildFile; fileRef = B66979F811E6BEB5002ED475 /* sl75.png */; };
 		B66979FB11E6BEB5002ED475 /* sl50.png in Resources */ = {isa = PBXBuildFile; fileRef = B66979F911E6BEB5002ED475 /* sl50.png */; };
 		B6697A0F11E6BF95002ED475 /* CurveView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6697A0E11E6BF95002ED475 /* CurveView.m */; };
+		B6697A3D11E7CCA0002ED475 /* PTSE.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6697A3C11E7CCA0002ED475 /* PTSE.mm */; };
 		B676063B11DEAD3500D6B66C /* TermWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = B676063A11DEAD3500D6B66C /* TermWindowController.m */; };
 		B676065111DEBAE900D6B66C /* TermWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B676065011DEBAE900D6B66C /* TermWindow.xib */; };
 		B67606DA11DF6DAB00D6B66C /* EmulatorView.mm in Sources */ = {isa = PBXBuildFile; fileRef = B67606D911DF6DAB00D6B66C /* EmulatorView.mm */; };
@@ -47,6 +48,8 @@
 		B66979F911E6BEB5002ED475 /* sl50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sl50.png; sourceTree = "<group>"; };
 		B6697A0D11E6BF95002ED475 /* CurveView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurveView.h; sourceTree = "<group>"; };
 		B6697A0E11E6BF95002ED475 /* CurveView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurveView.m; sourceTree = "<group>"; };
+		B6697A3B11E7CCA0002ED475 /* PTSE.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTSE.h; sourceTree = "<group>"; };
+		B6697A3C11E7CCA0002ED475 /* PTSE.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PTSE.mm; sourceTree = "<group>"; };
 		B676063911DEAD3500D6B66C /* TermWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TermWindowController.h; sourceTree = "<group>"; };
 		B676063A11DEAD3500D6B66C /* TermWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TermWindowController.m; sourceTree = "<group>"; };
 		B676064D11DEBAE300D6B66C /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/TermWindow.xib; sourceTree = "<group>"; };
@@ -81,8 +84,6 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				B669798311E6A786002ED475 /* Lock.h */,
-				B669798411E6A786002ED475 /* Lock.cpp */,
 				256AC3D80F4B6AC300CF3369 /* TwoTermAppDelegate.h */,
 				256AC3D90F4B6AC300CF3369 /* TwoTermAppDelegate.m */,
 				B676063911DEAD3500D6B66C /* TermWindowController.h */,
@@ -91,16 +92,7 @@
 				B67606D911DF6DAB00D6B66C /* EmulatorView.mm */,
 				B6EBE2B311E0EA9100EA0458 /* CharacterGenerator.h */,
 				B6EBE2B411E0EA9100EA0458 /* CharacterGenerator.m */,
-				B6F444C611E41AC000C3A836 /* VT05.h */,
-				B699A08B11E5720F00F54CC8 /* Emulator.h */,
-				B699A08F11E572A300F54CC8 /* VT52.h */,
-				B699A09011E572A300F54CC8 /* VT52.mm */,
-				B6F444C711E41AC000C3A836 /* VT05.mm */,
-				B699A02E11E528BC00F54CC8 /* Screen.h */,
-				B699A02F11E528BC00F54CC8 /* Screen.cpp */,
 				B699A03211E528DE00F54CC8 /* iGeometry.h */,
-				B699A05B11E54D4500F54CC8 /* OutputChannel.h */,
-				B699A05C11E54D4500F54CC8 /* OutputChannel.cpp */,
 				B6697A0D11E6BF95002ED475 /* CurveView.h */,
 				B6697A0E11E6BF95002ED475 /* CurveView.m */,
 			);
@@ -136,6 +128,8 @@
 		29B97314FDCFA39411CA2CEA /* 2Term */ = {
 			isa = PBXGroup;
 			children = (
+				B6697A3911E7CC66002ED475 /* cpp */,
+				B6697A3A11E7CC80002ED475 /* Emulators */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -183,6 +177,33 @@
 				B66979CF11E6BCAE002ED475 /* sl25.png */,
 			);
 			path = images;
+			sourceTree = "<group>";
+		};
+		B6697A3911E7CC66002ED475 /* cpp */ = {
+			isa = PBXGroup;
+			children = (
+				B669798311E6A786002ED475 /* Lock.h */,
+				B669798411E6A786002ED475 /* Lock.cpp */,
+				B699A02E11E528BC00F54CC8 /* Screen.h */,
+				B699A02F11E528BC00F54CC8 /* Screen.cpp */,
+				B699A05B11E54D4500F54CC8 /* OutputChannel.h */,
+				B699A05C11E54D4500F54CC8 /* OutputChannel.cpp */,
+			);
+			name = cpp;
+			sourceTree = "<group>";
+		};
+		B6697A3A11E7CC80002ED475 /* Emulators */ = {
+			isa = PBXGroup;
+			children = (
+				B699A08B11E5720F00F54CC8 /* Emulator.h */,
+				B6697A3B11E7CCA0002ED475 /* PTSE.h */,
+				B6697A3C11E7CCA0002ED475 /* PTSE.mm */,
+				B6F444C611E41AC000C3A836 /* VT05.h */,
+				B6F444C711E41AC000C3A836 /* VT05.mm */,
+				B699A08F11E572A300F54CC8 /* VT52.h */,
+				B699A09011E572A300F54CC8 /* VT52.mm */,
+			);
+			name = Emulators;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -255,6 +276,7 @@
 				B699A09111E572A300F54CC8 /* VT52.mm in Sources */,
 				B669798511E6A786002ED475 /* Lock.cpp in Sources */,
 				B6697A0F11E6BF95002ED475 /* CurveView.m in Sources */,
+				B6697A3D11E7CCA0002ED475 /* PTSE.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
