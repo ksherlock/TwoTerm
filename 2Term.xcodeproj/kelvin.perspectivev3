@@ -282,15 +282,9 @@
 							<key>PBXSmartGroupTreeModuleOutlineStateSelectionKey</key>
 							<array>
 								<array>
+									<integer>37</integer>
+									<integer>36</integer>
 									<integer>27</integer>
-									<integer>26</integer>
-									<integer>25</integer>
-									<integer>0</integer>
-								</array>
-								<array>
-									<integer>28</integer>
-									<integer>26</integer>
-									<integer>25</integer>
 									<integer>0</integer>
 								</array>
 							</array>
@@ -328,7 +322,7 @@
 								<key>PBXProjectModuleGUID</key>
 								<string>B676054211DADB9000D6B66C</string>
 								<key>PBXProjectModuleLabel</key>
-								<string>sl25.png</string>
+								<string>CurveView.m</string>
 								<key>PBXSplitModuleInNavigatorKey</key>
 								<dict>
 									<key>Split0</key>
@@ -336,11 +330,11 @@
 										<key>PBXProjectModuleGUID</key>
 										<string>B676054311DADB9000D6B66C</string>
 										<key>PBXProjectModuleLabel</key>
-										<string>sl25.png</string>
+										<string>CurveView.m</string>
 										<key>_historyCapacity</key>
 										<integer>0</integer>
 										<key>bookmark</key>
-										<string>B6697A0911E6BEFD002ED475</string>
+										<string>B6697A3211E6C439002ED475</string>
 										<key>history</key>
 										<array>
 											<string>B676058811DAE21100D6B66C</string>
@@ -368,7 +362,9 @@
 											<string>B66979BD11E6ACB9002ED475</string>
 											<string>B66979D811E6BD4B002ED475</string>
 											<string>B66979FE11E6BEC3002ED475</string>
-											<string>B66979FF11E6BEC3002ED475</string>
+											<string>B6697A1A11E6C28A002ED475</string>
+											<string>B6697A1B11E6C28A002ED475</string>
+											<string>B6697A1C11E6C28A002ED475</string>
 										</array>
 									</dict>
 									<key>SplitCount</key>
@@ -706,11 +702,12 @@
 	<integer>5</integer>
 	<key>WindowOrderList</key>
 	<array>
-		<string>B6697A0A11E6BEFD002ED475</string>
+		<string>B6697A3311E6C439002ED475</string>
 		<string>B669796711E6A606002ED475</string>
 		<string>B669796811E6A606002ED475</string>
-		<string>/Users/kelvin/Projects/2Term/2Term.xcodeproj</string>
 		<string>B66979DC11E6BD4B002ED475</string>
+		<string>/Users/kelvin/Projects/2Term/2Term.xcodeproj</string>
+		<string>B6697A1F11E6C28A002ED475</string>
 	</array>
 	<key>WindowString</key>
 	<string>203 218 1060 902 0 0 1920 1178 </string>

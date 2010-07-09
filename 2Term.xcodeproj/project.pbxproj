@@ -16,6 +16,7 @@
 		B66979D111E6BCAE002ED475 /* sl25.png in Resources */ = {isa = PBXBuildFile; fileRef = B66979CF11E6BCAE002ED475 /* sl25.png */; };
 		B66979FA11E6BEB5002ED475 /* sl75.png in Resources */ = {isa = PBXBuildFile; fileRef = B66979F811E6BEB5002ED475 /* sl75.png */; };
 		B66979FB11E6BEB5002ED475 /* sl50.png in Resources */ = {isa = PBXBuildFile; fileRef = B66979F911E6BEB5002ED475 /* sl50.png */; };
+		B6697A0F11E6BF95002ED475 /* CurveView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6697A0E11E6BF95002ED475 /* CurveView.m */; };
 		B676063B11DEAD3500D6B66C /* TermWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = B676063A11DEAD3500D6B66C /* TermWindowController.m */; };
 		B676065111DEBAE900D6B66C /* TermWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B676065011DEBAE900D6B66C /* TermWindow.xib */; };
 		B67606DA11DF6DAB00D6B66C /* EmulatorView.mm in Sources */ = {isa = PBXBuildFile; fileRef = B67606D911DF6DAB00D6B66C /* EmulatorView.mm */; };
@@ -44,6 +45,8 @@
 		B66979CF11E6BCAE002ED475 /* sl25.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sl25.png; sourceTree = "<group>"; };
 		B66979F811E6BEB5002ED475 /* sl75.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sl75.png; sourceTree = "<group>"; };
 		B66979F911E6BEB5002ED475 /* sl50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sl50.png; sourceTree = "<group>"; };
+		B6697A0D11E6BF95002ED475 /* CurveView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurveView.h; sourceTree = "<group>"; };
+		B6697A0E11E6BF95002ED475 /* CurveView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurveView.m; sourceTree = "<group>"; };
 		B676063911DEAD3500D6B66C /* TermWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TermWindowController.h; sourceTree = "<group>"; };
 		B676063A11DEAD3500D6B66C /* TermWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TermWindowController.m; sourceTree = "<group>"; };
 		B676064D11DEBAE300D6B66C /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/TermWindow.xib; sourceTree = "<group>"; };
@@ -98,6 +101,8 @@
 				B699A03211E528DE00F54CC8 /* iGeometry.h */,
 				B699A05B11E54D4500F54CC8 /* OutputChannel.h */,
 				B699A05C11E54D4500F54CC8 /* OutputChannel.cpp */,
+				B6697A0D11E6BF95002ED475 /* CurveView.h */,
+				B6697A0E11E6BF95002ED475 /* CurveView.m */,
 			);
 			name = Classes;
 			sourceTree = "<group>";
@@ -249,6 +254,7 @@
 				B699A05D11E54D4500F54CC8 /* OutputChannel.cpp in Sources */,
 				B699A09111E572A300F54CC8 /* VT52.mm in Sources */,
 				B669798511E6A786002ED475 /* Lock.cpp in Sources */,
+				B6697A0F11E6BF95002ED475 /* CurveView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
