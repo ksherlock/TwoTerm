@@ -14,7 +14,7 @@ class Screen;
 class OutputChannel;
 #else
 #define Screen void
-#define OutputChannel void;
+#define OutputChannel void
 #endif
 
 @protocol Emulator
@@ -22,5 +22,9 @@ class OutputChannel;
 -(void)processCharacter: (uint8_t)c screen: (Screen *)screen output: (OutputChannel *)output;
 -(void)keyDown: (NSEvent *)event screen: (Screen *)screen output: (OutputChannel *)output;
 -(void)reset;
+
+-(NSString *)name;
+
+-(const char *)termName;
 
 @end

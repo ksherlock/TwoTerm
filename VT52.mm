@@ -36,6 +36,39 @@ enum {
 
 @implementation VT52
 
+-(NSString *)name
+{
+    switch (_model)
+    {
+        case ModelVT50:
+            return @"VT50";
+        case ModelVT50H:
+            return @"VT50H";
+        case ModelVT55:
+            return @"VT55";
+        case ModelVT52:
+        default:
+            return @"VT52";
+    }    
+}
+
+-(const char *)termName
+{
+    switch (_model)
+    {
+        case ModelVT50:
+            return "vt50";
+        case ModelVT50H:
+            return "vt50h";
+        case ModelVT55:
+            return "vt55";
+        case ModelVT52:
+        default:
+            return "vt52";
+    } 
+}
+        
+
 -(void)keyDown: (NSEvent *)event screen: (Screen *)screen output: (OutputChannel *)output
 {
     unsigned flags = [event modifierFlags];
@@ -179,6 +212,7 @@ enum {
                     screen->decrementY();
                     _state = StateText;
                     break;
+                    
                 case 'C':
                     /* cursor right */
                     screen->incrementX();
@@ -205,6 +239,7 @@ enum {
                     /* home */
                     screen->setCursor(0, 0);
                     _state = StateText;
+                    break;
                     
                 case 'Y':
                     /* direct cursor addressing (not on the VT50) */
@@ -381,6 +416,7 @@ enum {
                     
                 case 0x09:
                     [self tab: screen];
+                    break;
                     
                 case 0x0a:
                     screen->lineFeed();
@@ -404,8 +440,9 @@ enum {
                         if (c >= 0140 && (_model == ModelVT50 || _model == ModelVT50H))
                             c -= 040;
     
-                        output->write(c);
+                        screen->putc(c);
                     }
+                    break;
             }
             
             break;

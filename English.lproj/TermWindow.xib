@@ -12,7 +12,7 @@
 		</object>
 		<object class="NSMutableArray" key="IBDocument.EditedObjectIDs">
 			<bool key="EncodedWithXMLCoder">YES</bool>
-			<integer value="1"/>
+			<integer value="2"/>
 		</object>
 		<object class="NSArray" key="IBDocument.PluginDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -52,22 +52,12 @@
 					<int key="NSvFlags">256</int>
 					<object class="NSMutableArray" key="NSSubviews">
 						<bool key="EncodedWithXMLCoder">YES</bool>
-						<object class="NSCustomView" id="296370061">
+						<object class="NSCustomView" id="59249513">
 							<reference key="NSNextResponder" ref="1006"/>
 							<int key="NSvFlags">268</int>
-							<object class="NSMutableArray" key="NSSubviews">
-								<bool key="EncodedWithXMLCoder">YES</bool>
-								<object class="NSCustomView" id="59249513">
-									<reference key="NSNextResponder" ref="296370061"/>
-									<int key="NSvFlags">268</int>
-									<string key="NSFrame">{{10, 10}, {560, 384}}</string>
-									<reference key="NSSuperview" ref="296370061"/>
-									<string key="NSClassName">VT52View</string>
-								</object>
-							</object>
-							<string key="NSFrame">{{20, 20}, {580, 404}}</string>
+							<string key="NSFrame">{{30, 30}, {560, 384}}</string>
 							<reference key="NSSuperview" ref="1006"/>
-							<string key="NSClassName">NSView</string>
+							<string key="NSClassName">EmulatorView</string>
 						</object>
 					</object>
 					<string key="NSFrameSize">{620, 444}</string>
@@ -146,24 +136,14 @@
 						<reference key="object" ref="1006"/>
 						<object class="NSMutableArray" key="children">
 							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="296370061"/>
+							<reference ref="59249513"/>
 						</object>
 						<reference key="parent" ref="1005"/>
 					</object>
 					<object class="IBObjectRecord">
-						<int key="objectID">7</int>
-						<reference key="object" ref="296370061"/>
-						<object class="NSMutableArray" key="children">
-							<bool key="EncodedWithXMLCoder">YES</bool>
-							<reference ref="59249513"/>
-						</object>
-						<reference key="parent" ref="1006"/>
-						<string key="objectName">Back View</string>
-					</object>
-					<object class="IBObjectRecord">
 						<int key="objectID">5</int>
 						<reference key="object" ref="59249513"/>
-						<reference key="parent" ref="296370061"/>
+						<reference key="parent" ref="1006"/>
 						<string key="objectName">Emulator View</string>
 					</object>
 				</object>
@@ -180,8 +160,6 @@
 					<string>1.editorWindowContentRectSynchronizationRect</string>
 					<string>2.IBPluginDependency</string>
 					<string>5.IBPluginDependency</string>
-					<string>7.IBPluginDependency</string>
-					<string>7.IBViewIntegration.shadowColor</string>
 				</object>
 				<object class="NSMutableArray" key="dict.values">
 					<bool key="EncodedWithXMLCoder">YES</bool>
@@ -193,11 +171,6 @@
 					<string>{{202, 428}, {480, 270}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<object class="NSColor">
-						<int key="NSColorSpace">3</int>
-						<bytes key="NSWhite">MAA</bytes>
-					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="unlocalizedProperties">
@@ -246,14 +219,6 @@
 					<object class="IBClassDescriptionSource" key="sourceIdentifier">
 						<string key="majorKey">IBProjectSource</string>
 						<string key="minorKey">TermWindowController.h</string>
-					</object>
-				</object>
-				<object class="IBPartialClassDescription">
-					<string key="className">VT52View</string>
-					<string key="superclassName">EmulatorView</string>
-					<object class="IBClassDescriptionSource" key="sourceIdentifier">
-						<string key="majorKey">IBProjectSource</string>
-						<string key="minorKey">VT52View.h</string>
 					</object>
 				</object>
 			</object>

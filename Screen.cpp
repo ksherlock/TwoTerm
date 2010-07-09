@@ -32,6 +32,7 @@ Screen::Screen(unsigned height, unsigned width)
 
 void Screen::beginUpdate()
 {
+    _lock.lock();
     _updates.clear();
 }
 
@@ -41,6 +42,8 @@ iRect Screen::endUpdate()
     int maxY = -1;
     int minX = _width;
     int minY = _height;
+    
+    
 
     for (UpdateIterator iter = _updates.begin(); iter != _updates.end(); ++iter)
     {
@@ -50,6 +53,8 @@ iRect Screen::endUpdate()
         minX = std::min(minX, iter->x);
         minY = std::min(minY, iter->y);
     }
+    
+    _lock.unlock();
     
     return iRect(iPoint(minX, minY), iSize(maxX + 1 - minX, maxY + 1 - minY)); 
 }

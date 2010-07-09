@@ -40,6 +40,17 @@ enum {
     
 };
 
+
+-(NSString *)name
+{
+    return @"vt05";
+}
+
+-(const char *)termName
+{
+    return "vt05";
+}
+
 -(void)reset
 {
     _state = StateText;

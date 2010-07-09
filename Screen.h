@@ -11,8 +11,11 @@
 #define __SCREEN_H__
 
 #include "iGeometry.h"
+#include "Lock.h"
 
 #include <vector>
+
+
 
 typedef struct CharInfo {
     
@@ -28,7 +31,7 @@ class Screen {
     
 public:
 
-    Screen(unsigned height, unsigned width);
+    Screen(unsigned height = 24, unsigned width = 80);
     
     int x() const;
     int y() const;
@@ -55,6 +58,8 @@ public:
     
     void putc(uint8_t c, bool incrementX = true);
     
+    CharInfo getc(int x, int y) const;
+    
     void eraseLine();
     void eraseScreen();
     
@@ -65,6 +70,10 @@ public:
     void beginUpdate();
     iRect endUpdate();
     
+    
+    void lock();
+    void unlock();
+    
 private:
     
     iPoint _cursor;
@@ -72,6 +81,9 @@ private:
     unsigned _width;
     
     uint8_t _flag;
+    
+    
+    Lock _lock;
     
     std::vector< std::vector< CharInfo > > _screen; 
     
@@ -87,47 +99,66 @@ private:
 };
 
 
-int Screen::x() const
+inline int Screen::x() const
 {
     return _cursor.x;
 }
 
-int Screen::y() const 
+inline int Screen::y() const 
 {
     return _cursor.y;
 }
 
-iPoint Screen::cursor() const
+inline iPoint Screen::cursor() const
 {
     return _cursor;
 }
 
-uint8_t Screen::flag() const
+inline uint8_t Screen::flag() const
 {
     return _flag;
 }
 
-unsigned Screen::height() const
+inline unsigned Screen::height() const
 {
     return _height;
 }
 
-unsigned Screen::width() const
+inline unsigned Screen::width() const
 {
     return _width;
 }
 
-void Screen::setCursor(iPoint point, bool clampX, bool clampY)
+inline void Screen::setCursor(iPoint point, bool clampX, bool clampY)
 {
     setX(point.x, clampX);
     setY(point.y, clampY);
 }
 
-void Screen::setCursor(int x, int y, bool clampX, bool clampY)
+inline void Screen::setCursor(int x, int y, bool clampX, bool clampY)
 {
     setX(x, clampX);
     setY(y, clampY);
 }
 
+
+inline void Screen::lock()
+{
+    _lock.lock();
+}
+
+inline void Screen::unlock()
+{
+    _lock.unlock();
+}
+
+
+inline CharInfo Screen::getc(int x, int y) const
+{
+    if (x < 0 || y < 0) return CharInfo(0,0);
+    if (x >= _width || y >= _height) return CharInfo(0,0);
+    
+    return _screen[y][x];
+}
 
 #endif

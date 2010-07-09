@@ -8,47 +8,27 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "Emulator.h"
+
+#include "iGeometry.h"
+
 #ifdef __cplusplus
-#include <vector>
+
+#include "Screen.h"
+
+
 #endif
-
-struct CursorPosition {
-#ifdef __cplusplus
-    CursorPosition(int _x, int _y) throw() : x(_x), y(_y) {}
-    CursorPosition() throw() : x(0), y(0) {}
-    
-    bool operator == (const CursorPosition& rhs) throw()
-    { return rhs.x == x && rhs.y == y; }
-
-    bool operator != (const CursorPosition& rhs) throw()
-    { return ! (*this == rhs); }
-    
-#endif
-    int x;
-    int y;
-};
-
-struct CharInfo {
-    char c;
-    uint8_t flags;
-};
-
 
 
 @class CharacterGenerator;
 
 @interface EmulatorView : NSView {
-    int _fd;
-
-    /* these should not be modified without locking */
-    struct CursorPosition _cursor;
-    struct CharInfo _screen[24][80];
     
-    /* end locking */
-
+    int _fd;
+    
+    NSObject<Emulator> *_emulator;
     
     NSThread *_readerThread;
-    NSLock *_lock;
     
     CharacterGenerator *_charGen;
     
@@ -57,15 +37,16 @@ struct CharInfo {
     
     CGFloat _charHeight;
     CGFloat _charWidth;
-        
-    unsigned _height;
-    unsigned _width;
-    
+
+    CGFloat _paddingTop;
+    CGFloat _paddingBottom;
+    CGFloat _paddingLeft;
+    CGFloat _paddingRight;
     
     
 #ifdef __cplusplus
     
-    //std::vector< std::vector<CharInfo> > _screen;
+    Screen _screen;
     
 #endif
 }
@@ -74,6 +55,6 @@ struct CharInfo {
 -(void)dataAvailable;
 
 @property (nonatomic, assign) int fd;
-@property (nonatomic, assign) struct CursorPosition cursorPosition;
+//@property (nonatomic, assign) iPoint cursor;
 
 @end

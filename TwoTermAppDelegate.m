@@ -8,7 +8,6 @@
 
 #import "TwoTermAppDelegate.h"
 
-#include "chars.h"
 #import "TermWindowController.h"
 
 

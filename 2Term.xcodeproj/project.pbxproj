@@ -12,9 +12,9 @@
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		B669798511E6A786002ED475 /* Lock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B669798411E6A786002ED475 /* Lock.cpp */; };
 		B676063B11DEAD3500D6B66C /* TermWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = B676063A11DEAD3500D6B66C /* TermWindowController.m */; };
 		B676065111DEBAE900D6B66C /* TermWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B676065011DEBAE900D6B66C /* TermWindow.xib */; };
-		B67606D411DEDB4100D6B66C /* VT52View.mm in Sources */ = {isa = PBXBuildFile; fileRef = B67606D311DEDB4100D6B66C /* VT52View.mm */; };
 		B67606DA11DF6DAB00D6B66C /* EmulatorView.mm in Sources */ = {isa = PBXBuildFile; fileRef = B67606D911DF6DAB00D6B66C /* EmulatorView.mm */; };
 		B699A03011E528BC00F54CC8 /* Screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B699A02F11E528BC00F54CC8 /* Screen.cpp */; };
 		B699A05D11E54D4500F54CC8 /* OutputChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B699A05C11E54D4500F54CC8 /* OutputChannel.cpp */; };
@@ -36,11 +36,11 @@
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		8D1107310486CEB800E47090 /* TwoTerm-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "TwoTerm-Info.plist"; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* 2Term.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 2Term.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B669798311E6A786002ED475 /* Lock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lock.h; sourceTree = "<group>"; };
+		B669798411E6A786002ED475 /* Lock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Lock.cpp; sourceTree = "<group>"; };
 		B676063911DEAD3500D6B66C /* TermWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TermWindowController.h; sourceTree = "<group>"; };
 		B676063A11DEAD3500D6B66C /* TermWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TermWindowController.m; sourceTree = "<group>"; };
 		B676064D11DEBAE300D6B66C /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/TermWindow.xib; sourceTree = "<group>"; };
-		B67606D211DEDB4100D6B66C /* VT52View.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VT52View.h; sourceTree = "<group>"; };
-		B67606D311DEDB4100D6B66C /* VT52View.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VT52View.mm; sourceTree = "<group>"; };
 		B67606D811DF6DAB00D6B66C /* EmulatorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmulatorView.h; sourceTree = "<group>"; };
 		B67606D911DF6DAB00D6B66C /* EmulatorView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EmulatorView.mm; sourceTree = "<group>"; };
 		B699A02E11E528BC00F54CC8 /* Screen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Screen.h; sourceTree = "<group>"; };
@@ -72,12 +72,12 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				B669798311E6A786002ED475 /* Lock.h */,
+				B669798411E6A786002ED475 /* Lock.cpp */,
 				256AC3D80F4B6AC300CF3369 /* TwoTermAppDelegate.h */,
 				256AC3D90F4B6AC300CF3369 /* TwoTermAppDelegate.m */,
 				B676063911DEAD3500D6B66C /* TermWindowController.h */,
 				B676063A11DEAD3500D6B66C /* TermWindowController.m */,
-				B67606D211DEDB4100D6B66C /* VT52View.h */,
-				B67606D311DEDB4100D6B66C /* VT52View.mm */,
 				B67606D811DF6DAB00D6B66C /* EmulatorView.h */,
 				B67606D911DF6DAB00D6B66C /* EmulatorView.mm */,
 				B6EBE2B311E0EA9100EA0458 /* CharacterGenerator.h */,
@@ -222,13 +222,13 @@
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
 				256AC3DA0F4B6AC300CF3369 /* TwoTermAppDelegate.m in Sources */,
 				B676063B11DEAD3500D6B66C /* TermWindowController.m in Sources */,
-				B67606D411DEDB4100D6B66C /* VT52View.mm in Sources */,
 				B67606DA11DF6DAB00D6B66C /* EmulatorView.mm in Sources */,
 				B6EBE2B511E0EA9100EA0458 /* CharacterGenerator.m in Sources */,
 				B6F444C811E41AC000C3A836 /* VT05.mm in Sources */,
 				B699A03011E528BC00F54CC8 /* Screen.cpp in Sources */,
 				B699A05D11E54D4500F54CC8 /* OutputChannel.cpp in Sources */,
 				B699A09111E572A300F54CC8 /* VT52.mm in Sources */,
+				B669798511E6A786002ED475 /* Lock.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
