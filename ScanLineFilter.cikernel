@@ -1,0 +1,19 @@
+/*
+ * simulate scanlines by darkening every other line.
+ *
+ */
+
+kernel vec4 scanline(sampler image, float opacity)
+{
+	vec2 coord = samplerCoord(image);
+	vec4 pixel = sample(image, coord);
+	
+	float isOdd = mod(floor(coord.y), 2.0);
+
+	// isOdd == 0 --> return pixel
+	// isOdd == 1 --> return pixel * opacity
+	
+	float multiplier = compare(isOdd - 1.0, 1.0, opacity);
+	
+	return pixel * multiplier;
+}

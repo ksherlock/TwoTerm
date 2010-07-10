@@ -6,6 +6,8 @@
 //  Copyright 2010 __MyCompanyName__. All rights reserved.
 //
 
+#include <QuartzCore/QuartzCore.h>
+
 #import "EmulatorView.h"
 
 #import "CharacterGenerator.h"
@@ -13,6 +15,8 @@
 #import "VT52.h"
 
 #include "OutputChannel.h"
+
+#import "ScanLineFilter.h"
 
 @implementation EmulatorView
 
@@ -22,6 +26,8 @@
 -(void)awakeFromNib
 {
     NSImage *image;
+    CIFilter *filter;
+    NSMutableArray *filters;
     
     _charWidth = 7;
     _charHeight = 16;
@@ -34,6 +40,30 @@
     _foregroundColor = [[NSColor greenColor] retain];
     _backgroundColor = [[NSColor blackColor] retain];
     _boldColor = [[NSColor redColor] retain];
+    
+    
+    [self setWantsLayer: YES];
+    
+    filters = [NSMutableArray arrayWithCapacity: 3];
+    
+    
+    
+    //add the scanlines (which are vertical and must therfore be rotated
+    
+    filter = [[ScanLineFilter new] autorelease];
+    [filter setValue: [NSNumber numberWithFloat: 0.75] forKey: @"inputOpacity"];
+    [filters addObject: filter];
+    
+    //blur it a bit...
+    
+    filter = [CIFilter filterWithName: @"CIGaussianBlur"];
+    [filter setDefaults];
+    [filter setValue: [NSNumber numberWithFloat: 0.33] forKey: @"inputRadius"];
+    
+    [filters addObject: filter];
+    
+    [self setContentFilters: filters];
+    
     
     _charGen = [[CharacterGenerator generator] retain];
     
@@ -168,8 +198,8 @@
     _screen.unlock();
 
     
-    [_scanLine setFill];
-    NSRectFillUsingOperation(screenRect, NSCompositeSourceOver);
+    //[_scanLine setFill];
+    //NSRectFillUsingOperation(screenRect, NSCompositeSourceOver);
     //NSRectFill(screenRect);
     
     
