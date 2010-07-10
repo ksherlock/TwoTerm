@@ -34,7 +34,7 @@
 			B676069511DEC97D00D6B66C /* TermWindowController.m:97 */,
 			B67606B011DECD4E00D6B66C /* TermWindowController.m:97 */,
 			B676070811DF8F4100D6B66C /* TermWindowController.m:97 */,
-			B65FA27911E29E8D00EB447E /* EmulatorView.mm:66 */,
+			B65FA27911E29E8D00EB447E /* EmulatorView.mm:67 */,
 			B649E13D11E2BC7A0061921F /* VT52View.mm:460 */,
 			B649E15211E2BF130061921F /* VT52View.mm:107 */,
 			B649E17111E2C3C50061921F /* VT52View.mm:598 */,
@@ -125,6 +125,11 @@
 			PBXWorkspaceStateSaveDate = 300409198;
 		};
 		perUserProjectItems = {
+			B60EBCED11E7F6BE00C1974F /* PBXTextBookmark */ = B60EBCED11E7F6BE00C1974F /* PBXTextBookmark */;
+			B60EBCEE11E7F6BE00C1974F /* PBXTextBookmark */ = B60EBCEE11E7F6BE00C1974F /* PBXTextBookmark */;
+			B60EBCEF11E7F6BE00C1974F /* PBXTextBookmark */ = B60EBCEF11E7F6BE00C1974F /* PBXTextBookmark */;
+			B60EBCF011E7F6BE00C1974F /* PBXTextBookmark */ = B60EBCF011E7F6BE00C1974F /* PBXTextBookmark */;
+			B60EBCFF11E7F73B00C1974F /* PBXTextBookmark */ = B60EBCFF11E7F73B00C1974F /* PBXTextBookmark */;
 			B649E0B511E2A88D0061921F = B649E0B511E2A88D0061921F /* PBXTextBookmark */;
 			B65FA28111E29EDE00EB447E = B65FA28111E29EDE00EB447E /* PBXTextBookmark */;
 			B65FA2FE11E2A5D200EB447E = B65FA2FE11E2A5D200EB447E /* PBXTextBookmark */;
@@ -173,6 +178,56 @@
 		executables = (
 			B676053511DADB8100D6B66C /* 2Term */,
 		);
+	};
+	B60EBCED11E7F6BE00C1974F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B699A02E11E528BC00F54CC8 /* Screen.h */;
+		name = "Screen.h: 22";
+		rLen = 0;
+		rLoc = 304;
+		rType = 0;
+		vrLen = 946;
+		vrLoc = 454;
+	};
+	B60EBCEE11E7F6BE00C1974F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B67606D911DF6DAB00D6B66C /* EmulatorView.mm */;
+		name = "EmulatorView.mm: 30";
+		rLen = 0;
+		rLoc = 399;
+		rType = 0;
+		vrLen = 542;
+		vrLoc = 217;
+	};
+	B60EBCEF11E7F6BE00C1974F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B67606D811DF6DAB00D6B66C /* EmulatorView.h */;
+		name = "EmulatorView.h: 47";
+		rLen = 0;
+		rLoc = 745;
+		rType = 0;
+		vrLen = 538;
+		vrLoc = 391;
+	};
+	B60EBCF011E7F6BE00C1974F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B67606D811DF6DAB00D6B66C /* EmulatorView.h */;
+		name = "EmulatorView.h: 48";
+		rLen = 0;
+		rLoc = 745;
+		rType = 0;
+		vrLen = 558;
+		vrLoc = 391;
+	};
+	B60EBCFF11E7F73B00C1974F /* PBXTextBookmark */ = {
+		isa = PBXTextBookmark;
+		fRef = B67606D811DF6DAB00D6B66C /* EmulatorView.h */;
+		name = "EmulatorView.h: 48";
+		rLen = 0;
+		rLoc = 745;
+		rType = 0;
+		vrLen = 558;
+		vrLoc = 391;
 	};
 	B649E0B511E2A88D0061921F /* PBXTextBookmark */ = {
 		isa = PBXTextBookmark;
@@ -292,7 +347,7 @@
 		originalNumberOfMultipleMatches = 1;
 		state = 2;
 	};
-	B65FA27911E29E8D00EB447E /* EmulatorView.mm:66 */ = {
+	B65FA27911E29E8D00EB447E /* EmulatorView.mm:67 */ = {
 		isa = PBXFileBreakpoint;
 		actions = (
 		);
@@ -304,7 +359,7 @@
 		functionName = "-drawRect:";
 		hitCount = 0;
 		ignoreCount = 0;
-		lineNumber = 66;
+		lineNumber = 67;
 		location = 2Term;
 		modificationTime = 300336184.692614;
 		originalNumberOfMultipleMatches = 1;
@@ -895,16 +950,16 @@
 	};
 	B67606D811DF6DAB00D6B66C /* EmulatorView.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1249, 955}}";
-			sepNavSelRange = "{720, 0}";
-			sepNavVisRange = "{0, 929}";
+			sepNavIntBoundsRect = "{{0, 0}, {653, 832}}";
+			sepNavSelRange = "{745, 0}";
+			sepNavVisRange = "{391, 558}";
 		};
 	};
 	B67606D911DF6DAB00D6B66C /* EmulatorView.mm */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {1249, 3666}}";
-			sepNavSelRange = "{438, 0}";
-			sepNavVisRange = "{0, 1201}";
+			sepNavIntBoundsRect = "{{0, 0}, {653, 3744}}";
+			sepNavSelRange = "{399, 0}";
+			sepNavVisRange = "{217, 542}";
 		};
 	};
 	B676070811DF8F4100D6B66C /* TermWindowController.m:97 */ = {
@@ -927,9 +982,9 @@
 	};
 	B699A02E11E528BC00F54CC8 /* Screen.h */ = {
 		uiCtxt = {
-			sepNavIntBoundsRect = "{{0, 0}, {653, 2197}}";
+			sepNavIntBoundsRect = "{{0, 0}, {653, 2119}}";
 			sepNavSelRange = "{304, 0}";
-			sepNavVisRange = "{454, 952}";
+			sepNavVisRange = "{454, 946}";
 		};
 	};
 	B699A02F11E528BC00F54CC8 /* Screen.cpp */ = {

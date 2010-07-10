@@ -34,6 +34,7 @@
     
     NSColor *_backgroundColor;
     NSColor *_foregroundColor;
+    NSColor *_boldColor;
     
     CGFloat _charHeight;
     CGFloat _charWidth;
