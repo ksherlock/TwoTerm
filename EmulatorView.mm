@@ -25,7 +25,6 @@
 
 -(void)awakeFromNib
 {
-    NSImage *image;
     CIFilter *filter;
     NSMutableArray *filters;
     
@@ -33,9 +32,6 @@
     _charHeight = 16;
     
     
-    image = [NSImage imageNamed: @"sl25.png"];
-    
-    _scanLine = [[NSColor colorWithPatternImage: image] retain];
     
     _foregroundColor = [[NSColor greenColor] retain];
     _backgroundColor = [[NSColor blackColor] retain];
@@ -210,7 +206,6 @@
 {
     close(_fd);
     
-    [_scanLine release];
     [_foregroundColor release];
     [_backgroundColor release];
     
@@ -224,8 +219,16 @@
 -(void)keyDown:(NSEvent *)theEvent
 {
     OutputChannel channel(_fd);
+    iRect updateRect; // should be nil but whatever...
+    
+    
+    _screen.beginUpdate();
     
     [_emulator keyDown: theEvent screen: &_screen output: &channel];
+    
+    updateRect = _screen.endUpdate();
+    
+    [self invalidateIRect: updateRect];
 }
 
 -(void)startBackgroundReader
@@ -283,7 +286,6 @@
     {
         NSAutoreleasePool *pool;
         iRect updateRect;
-        CGRect rect;
         uint8_t buffer[512];
         ssize_t size;
         
@@ -310,23 +312,34 @@
         
         updateRect = _screen.endUpdate();    
         
-        rect.origin.x = updateRect.origin.x;
-        rect.origin.y = updateRect.origin.y;
-        rect.size.width = updateRect.size.width;
-        rect.size.height = updateRect.size.height;
-        
-        rect.origin.x *= _charWidth;
-        rect.origin.y *= _charHeight;
-        rect.size.width *= _charWidth;
-        rect.size.height *= _charHeight;
-
-        rect.origin.x += _paddingLeft;
-        rect.origin.y += _paddingTop;
-        
-        [self setNeedsDisplayInRect: rect];
+        [self invalidateIRect: updateRect];
         
         [pool release];
     }
+}
+
+
+-(void)invalidateIRect: (iRect)updateRect
+{
+    NSRect rect;
+    
+    if (updateRect.size.width <= 0 || updateRect.size.height <= 0) return;
+    
+    rect.origin.x = updateRect.origin.x;
+    rect.origin.y = updateRect.origin.y;
+    rect.size.width = updateRect.size.width;
+    rect.size.height = updateRect.size.height;
+    
+    rect.origin.x *= _charWidth;
+    rect.origin.y *= _charHeight;
+    rect.size.width *= _charWidth;
+    rect.size.height *= _charHeight;
+    
+    rect.origin.x += _paddingLeft;
+    rect.origin.y += _paddingTop;
+    
+    [self setNeedsDisplayInRect: rect];    
+    
 }
 
 

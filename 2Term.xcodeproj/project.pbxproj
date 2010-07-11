@@ -12,14 +12,12 @@
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		B602376211E94D9800C0B73E /* iGeometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B602376111E94D9800C0B73E /* iGeometry.cpp */; };
 		B60EBD1211E8DEEF00C1974F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60EBD1111E8DEEF00C1974F /* QuartzCore.framework */; };
 		B60EBDE311E90FC300C1974F /* ScanLineFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = B60EBDE211E90FC300C1974F /* ScanLineFilter.m */; };
 		B60EBDE811E9143F00C1974F /* ScanLineFilter.cikernel in Sources */ = {isa = PBXBuildFile; fileRef = B60EBDE711E9143F00C1974F /* ScanLineFilter.cikernel */; };
 		B60EBE2B11E918D500C1974F /* ScanLineFilter.cikernel in Resources */ = {isa = PBXBuildFile; fileRef = B60EBDE711E9143F00C1974F /* ScanLineFilter.cikernel */; };
 		B669798511E6A786002ED475 /* Lock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B669798411E6A786002ED475 /* Lock.cpp */; };
-		B66979D111E6BCAE002ED475 /* sl25.png in Resources */ = {isa = PBXBuildFile; fileRef = B66979CF11E6BCAE002ED475 /* sl25.png */; };
-		B66979FA11E6BEB5002ED475 /* sl75.png in Resources */ = {isa = PBXBuildFile; fileRef = B66979F811E6BEB5002ED475 /* sl75.png */; };
-		B66979FB11E6BEB5002ED475 /* sl50.png in Resources */ = {isa = PBXBuildFile; fileRef = B66979F911E6BEB5002ED475 /* sl50.png */; };
 		B6697A0F11E6BF95002ED475 /* CurveView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6697A0E11E6BF95002ED475 /* CurveView.m */; };
 		B6697A3D11E7CCA0002ED475 /* PTSE.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6697A3C11E7CCA0002ED475 /* PTSE.mm */; };
 		B676063B11DEAD3500D6B66C /* TermWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = B676063A11DEAD3500D6B66C /* TermWindowController.m */; };
@@ -56,15 +54,13 @@
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		8D1107310486CEB800E47090 /* TwoTerm-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "TwoTerm-Info.plist"; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* 2Term.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 2Term.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B602376111E94D9800C0B73E /* iGeometry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = iGeometry.cpp; sourceTree = "<group>"; };
 		B60EBD1111E8DEEF00C1974F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = /System/Library/Frameworks/QuartzCore.framework; sourceTree = "<absolute>"; };
 		B60EBDE111E90FC300C1974F /* ScanLineFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScanLineFilter.h; sourceTree = "<group>"; };
 		B60EBDE211E90FC300C1974F /* ScanLineFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScanLineFilter.m; sourceTree = "<group>"; };
 		B60EBDE711E9143F00C1974F /* ScanLineFilter.cikernel */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; path = ScanLineFilter.cikernel; sourceTree = "<group>"; };
 		B669798311E6A786002ED475 /* Lock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lock.h; sourceTree = "<group>"; };
 		B669798411E6A786002ED475 /* Lock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Lock.cpp; sourceTree = "<group>"; };
-		B66979CF11E6BCAE002ED475 /* sl25.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sl25.png; sourceTree = "<group>"; };
-		B66979F811E6BEB5002ED475 /* sl75.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sl75.png; sourceTree = "<group>"; };
-		B66979F911E6BEB5002ED475 /* sl50.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sl50.png; sourceTree = "<group>"; };
 		B6697A0D11E6BF95002ED475 /* CurveView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurveView.h; sourceTree = "<group>"; };
 		B6697A0E11E6BF95002ED475 /* CurveView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurveView.m; sourceTree = "<group>"; };
 		B6697A3B11E7CCA0002ED475 /* PTSE.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTSE.h; sourceTree = "<group>"; };
@@ -113,6 +109,7 @@
 				B6EBE2B311E0EA9100EA0458 /* CharacterGenerator.h */,
 				B6EBE2B411E0EA9100EA0458 /* CharacterGenerator.m */,
 				B699A03211E528DE00F54CC8 /* iGeometry.h */,
+				B602376111E94D9800C0B73E /* iGeometry.cpp */,
 				B6697A0D11E6BF95002ED475 /* CurveView.h */,
 				B6697A0E11E6BF95002ED475 /* CurveView.m */,
 				B60EBDE111E90FC300C1974F /* ScanLineFilter.h */,
@@ -196,9 +193,6 @@
 		B66979CE11E6BCAE002ED475 /* images */ = {
 			isa = PBXGroup;
 			children = (
-				B66979F811E6BEB5002ED475 /* sl75.png */,
-				B66979F911E6BEB5002ED475 /* sl50.png */,
-				B66979CF11E6BCAE002ED475 /* sl25.png */,
 			);
 			path = images;
 			sourceTree = "<group>";
@@ -278,9 +272,6 @@
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */,
 				B676065111DEBAE900D6B66C /* TermWindow.xib in Resources */,
-				B66979D111E6BCAE002ED475 /* sl25.png in Resources */,
-				B66979FA11E6BEB5002ED475 /* sl75.png in Resources */,
-				B66979FB11E6BEB5002ED475 /* sl50.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -305,6 +296,7 @@
 				B6697A3D11E7CCA0002ED475 /* PTSE.mm in Sources */,
 				B60EBDE311E90FC300C1974F /* ScanLineFilter.m in Sources */,
 				B60EBDE811E9143F00C1974F /* ScanLineFilter.cikernel in Sources */,
+				B602376211E94D9800C0B73E /* iGeometry.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

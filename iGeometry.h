@@ -47,6 +47,11 @@ typedef struct iRect {
     iRect() {}
     iRect(const iRect &aRect) : origin(aRect.origin), size(aRect.size) {}
     iRect(const iPoint &aPoint, const iSize &aSize) : origin(aPoint), size(aSize) {}
+    
+    bool contains(iPoint aPoint) const;
+    bool contains(iRect aRect) const;
+    
+    bool intersects(iRect aRect) const;
 #endif
     
 } iRect;

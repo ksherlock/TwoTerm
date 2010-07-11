@@ -44,9 +44,7 @@
     CGFloat _paddingLeft;
     CGFloat _paddingRight;
     
-    
-    NSColor *_scanLine;
-    
+        
 #ifdef __cplusplus
     
     Screen _screen;
@@ -56,6 +54,7 @@
 
 -(void)startBackgroundReader;
 -(void)dataAvailable;
+-(void)invalidateIRect: (iRect)rect;
 
 @property (nonatomic, assign) int fd;
 //@property (nonatomic, assign) iPoint cursor;

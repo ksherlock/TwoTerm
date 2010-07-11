@@ -235,4 +235,39 @@ enum  {
 }
 
 
+-(void)keyDown:(NSEvent *)event screen:(Screen *)screen output:(OutputChannel *)output
+{
+    unsigned flags = [event modifierFlags];
+    NSString *chars = [event charactersIgnoringModifiers];
+    
+    unsigned length = [chars length];
+    
+    for (unsigned i = 0; i < length; ++i)
+    {
+        unichar uc = [chars characterAtIndex: i];
+        
+        switch (uc)
+        {
+            case NSLeftArrowFunctionKey:
+            case NSRightArrowFunctionKey:
+            case NSUpArrowFunctionKey:
+            case NSDownArrowFunctionKey:
+                
+            default:
+                if (uc <= 0x7f)
+                {
+                    char c = uc;
+                    if (flags & NSControlKeyMask)
+                        c = CTRL(c);
+                    
+                    output->write(c);
+                }
+                break;
+        }
+        
+        
+        
+    }
+}
+
 @end
