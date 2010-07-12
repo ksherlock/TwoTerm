@@ -11,18 +11,6 @@
 #define __IGEOMETRY_H__
 
 
-typedef struct iPoint {
-    
-    int x;
-    int y;
-    
-#ifdef __cplusplus
-    iPoint() : x(0), y(0) {}
-    iPoint(const iPoint &aPoint) : x(aPoint.x), y(aPoint.y) {}
-    iPoint(int xx, int yy) : x(xx), y(yy) {} 
-#endif
-    
-} iPoint;
 
 
 typedef struct iSize {
@@ -34,9 +22,44 @@ typedef struct iSize {
     iSize() : width(0), height(0) {}
     iSize(const iSize &aSize) : width(aSize.width), height(aSize.width) {}
     iSize(int w, int h) : width(w), height(h) {} 
+    
+
+    bool operator==(const iSize &aSize)
+    { return width == aSize.width && height == aSize.height; }
+    
+    bool operator!=(const iSize& aSize)
+    { return !(*this == aSize); }
 #endif
     
 } iSize;
+
+
+typedef struct iPoint {
+    
+    int x;
+    int y;
+    
+#ifdef __cplusplus
+    iPoint() : x(0), y(0) {}
+    iPoint(const iPoint &aPoint) : x(aPoint.x), y(aPoint.y) {}
+    iPoint(int xx, int yy) : x(xx), y(yy) {} 
+    
+    bool operator==(const iPoint &aPoint)
+    { return x == aPoint.x && y == aPoint.y; }
+    
+    bool operator!=(const iPoint &aPoint)
+    { return !(*this == aPoint); }
+    
+    iPoint offset(int dx, int dy) const
+    { return iPoint(x + dx, y + dy); }
+    
+    iPoint offset(iSize aSize) const
+    { return iPoint(x + aSize.width, y + aSize.height); }
+        
+#endif
+    
+} iPoint;
+
 
 
 typedef struct iRect {
@@ -47,11 +70,12 @@ typedef struct iRect {
     iRect() {}
     iRect(const iRect &aRect) : origin(aRect.origin), size(aRect.size) {}
     iRect(const iPoint &aPoint, const iSize &aSize) : origin(aPoint), size(aSize) {}
+    iRect(int x, int y, int width, int height) : origin(iPoint(x, y)), size(iSize(width, height)) {}
     
-    bool contains(iPoint aPoint) const;
-    bool contains(iRect aRect) const;
+    bool contains(const iPoint aPoint) const;
+    bool contains(const iRect aRect) const;
     
-    bool intersects(iRect aRect) const;
+    bool intersects(const iRect aRect) const;
 #endif
     
 } iRect;

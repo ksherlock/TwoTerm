@@ -6,7 +6,9 @@
 //  Copyright 2010 __MyCompanyName__. All rights reserved.
 //
 
-#include <QuartzCore/QuartzCore.h>
+#import <QuartzCore/QuartzCore.h>
+#include <termios.h>
+#include <sys/ioctl.h>
 
 #import "EmulatorView.h"
 
@@ -22,6 +24,17 @@
 
 @synthesize fd = _fd;
 
+
+#pragma mark -
+#pragma mark properties
+
+-(void)setFd: (int)fd
+{
+    _fd = fd;
+    _screen.setFD(fd);
+}
+
+#pragma mark -
 
 -(void)awakeFromNib
 {
@@ -60,10 +73,15 @@
     
     [self setContentFilters: filters];
     
+    _screen.setFD(_fd);
+    _screen.setView(self);
     
     _charGen = [[CharacterGenerator generator] retain];
     
+    _cursorImg = [[_charGen imageForCharacter: '_'] retain];
+    
     _emulator = [VT52 new];
+        
 }
 
 -(BOOL)isFlipped
@@ -75,6 +93,16 @@
 -(void)viewDidMoveToWindow
 {
     [self becomeFirstResponder];
+
+    
+    
+    _cursorTimer = [[NSTimer scheduledTimerWithTimeInterval: .5 
+                                                     target: self 
+                                                   selector: @selector(cursorTimer:) 
+                                                   userInfo: nil 
+                                                    repeats: YES] retain];
+
+
 }
 
 -(void)viewDidMoveToSuperview
@@ -191,6 +219,24 @@
             }
         }
     }
+    
+    // cursor.
+    iPoint cursor = _screen.cursor();
+    if (_cursorOn && iRect(minX, minY, maxX - minX, maxY - minY).contains(cursor))
+    {
+        NSRect charRect = NSMakeRect(_paddingLeft + cursor.x * _charWidth, _paddingTop + cursor.y *_charHeight, _charWidth, _charHeight);
+
+        [_foregroundColor setFill];
+
+        [_cursorImg drawInRect: charRect 
+                      fromRect: NSZeroRect operation: NSCompositeCopy 
+                      fraction: 1.0 
+                respectFlipped: YES 
+                         hints: nil];
+        
+    }
+    
+    
     _screen.unlock();
 
     
@@ -212,6 +258,7 @@
     [_readerThread release];
     
     [_emulator release];
+    [_cursorImg release];
     
     [super dealloc];
 }
@@ -342,5 +389,104 @@
     
 }
 
+-(void)resizeTo: (iSize)size
+{
+    NSWindow *window = [self window];
+    NSRect bounds = [self bounds];
+    NSSize newSize;
+    NSRect wframe = [window frame];
+    
+    
+    // TODO -- left/right padding...
+    newSize.width = size.width * _charWidth + _paddingLeft * 2;
+    newSize.height = size.height * _charHeight + _paddingTop * 2;
+    
+    // best case -- no change.
+    if (NSEqualSizes(newSize,  bounds.size)) return;
+        
+    
+    // ok, change needed.
+    
+    wframe.origin.y -= (newSize.height - bounds.size.height);
+    
+    wframe.size.height += newSize.height - bounds.size.height;
+    wframe.size.width += newSize.width - bounds.size.width;
+    
+    [window setFrame: wframe display: YES animate: YES];
+}
+
+
+
+-(void)cursorTimer: (NSTimer *)timer
+{
+    
+    _screen.lock();
+    
+    _cursorOn = !_cursorOn;
+
+    iRect r(_screen.cursor(), iSize(1,1));
+    
+    [self invalidateIRect: r];
+    
+    _screen.unlock();
+}
+
+
+#if 0
+-(void)viewWillStartLiveResize
+{
+    NSLog(@"%s", sel_getName(_cmd)); 
+}
+
+-(void)viewDidEndLiveResize
+{
+    NSLog(@"%s", sel_getName(_cmd)); 
+}
+#endif
+
+-(void)setFrame:(NSRect)frameRect
+{
+    //NSLog(@"%s", sel_getName(_cmd)); 
+
+    if ([self inLiveResize])
+    {
+        unsigned width = floor((frameRect.size.width - _paddingLeft) / _charWidth);
+        unsigned height = floor((frameRect.size.height - _paddingTop) / _charHeight);
+        
+        _screen.lock();
+        _screen.setSize(width, height, false);
+        _screen.unlock();
+    }
+    [super setFrame: frameRect];
+}
 
 @end
+
+
+
+void ViewScreen::setSize(unsigned width, unsigned height)
+{
+    setSize(width, height, true);
+}
+
+void ViewScreen::setSize(unsigned width, unsigned height, bool resizeView)
+{    
+    // 
+    struct winsize ws;
+    ws.ws_row = height;
+    ws.ws_col = width;
+    
+    ws.ws_xpixel = 0;
+    ws.ws_ypixel = 0;
+
+    Screen::setSize(width, height);
+
+    ioctl(_fd, TIOCSWINSZ, &ws);
+    
+    if (resizeView)
+    {
+        [_view resizeTo: iSize(width, height)];
+    }
+}
+
+

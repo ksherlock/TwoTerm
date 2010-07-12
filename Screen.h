@@ -41,6 +41,9 @@ public:
     
     Screen(unsigned height = 24, unsigned width = 80);
     
+    virtual ~Screen();
+    
+    
     int x() const;
     int y() const;
     
@@ -61,6 +64,7 @@ public:
     
     void setCursor(iPoint point, bool clampX = true, bool clampY = true);
     void setCursor(int x, int y, bool clampX = true, bool clampY = true);
+
     
     void setFlag(uint8_t flag);
     
@@ -82,9 +86,14 @@ public:
     void lock();
     void unlock();
     
+    
+    virtual void setSize(unsigned width, unsigned height);
+
+    
 private:
     
     iPoint _cursor;
+    
     unsigned _height;
     unsigned _width;
     
@@ -96,6 +105,7 @@ private:
     std::vector< std::vector< CharInfo > > _screen; 
     
     std::vector<iPoint> _updates;
+    iPoint _updateCursor;
     
     
     typedef std::vector< std::vector< CharInfo > >::iterator ScreenIterator;

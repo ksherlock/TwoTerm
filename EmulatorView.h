@@ -16,6 +16,23 @@
 
 #include "Screen.h"
 
+@class EmulatorView;
+class ViewScreen: public Screen
+{
+public:
+    
+    virtual void setSize(unsigned width, unsigned height);
+    
+    void setSize(unsigned width, unsigned height, bool resizeView);
+    
+    void setView(EmulatorView *view) { _view = view; }
+    void setFD(int fd) { _fd = fd; }
+    
+private:
+    EmulatorView *_view;
+    int _fd;
+};
+
 
 #endif
 
@@ -44,10 +61,13 @@
     CGFloat _paddingLeft;
     CGFloat _paddingRight;
     
+    NSImage *_cursorImg;
+    NSTimer *_cursorTimer;
+    BOOL _cursorOn;
         
 #ifdef __cplusplus
     
-    Screen _screen;
+    ViewScreen _screen;
     
 #endif
 }
@@ -55,6 +75,10 @@
 -(void)startBackgroundReader;
 -(void)dataAvailable;
 -(void)invalidateIRect: (iRect)rect;
+
+-(void)resizeTo: (iSize)size;
+
+-(void)cursorTimer: (NSTimer *)timer;
 
 @property (nonatomic, assign) int fd;
 //@property (nonatomic, assign) iPoint cursor;

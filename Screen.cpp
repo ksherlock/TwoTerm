@@ -29,11 +29,16 @@ Screen::Screen(unsigned height, unsigned width)
     
 }
 
+Screen::~Screen()
+{
+}
+
 
 void Screen::beginUpdate()
 {
     _lock.lock();
     _updates.clear();
+    _updateCursor = _cursor;
 }
 
 iRect Screen::endUpdate()
@@ -44,6 +49,11 @@ iRect Screen::endUpdate()
     int minY = _height;
     
     
+    if (_cursor != _updateCursor)
+    {
+        _updates.push_back(_cursor);
+        _updates.push_back(_updateCursor);
+    }
 
     for (UpdateIterator iter = _updates.begin(); iter != _updates.end(); ++iter)
     {
@@ -231,4 +241,43 @@ void Screen::reverseLineFeed()
         _cursor.y--;
     }
 
+}
+
+
+void Screen::setSize(unsigned width, unsigned height)
+{
+
+    if ((_height == height) && (_width == width)) return;
+    
+    if (_height < height)
+    {
+        _screen.resize(height);        
+    }
+    else if (_height > height)
+    {
+        unsigned count = _height - height;
+        // erase lines from the top.
+        _screen.erase(_screen.begin(), _screen.begin() + count);
+    }
+
+    
+    //if (_width != _width || _height != height)
+    {
+        ScreenIterator iter;
+        for (iter = _screen.begin(); iter != _screen.end(); ++iter)
+        {
+            iter->resize(width);
+        }
+
+    }
+
+    _height = height;
+    _width = width;
+
+
+    if (_cursor.y >= height) _cursor.y = height - 1;
+    if (_cursor.x >= width) _cursor.x = width - 1;
+    
+    //fprintf(stderr, "setSize(%u, %u)\n", width, height);
+        
 }
