@@ -76,6 +76,27 @@ typedef struct iRect {
     bool contains(const iRect aRect) const;
     
     bool intersects(const iRect aRect) const;
+    
+    
+    int height() const
+    { return size.height; }
+    
+    int width() const
+    { return size.width; }
+    
+    int minX() const
+    { return origin.x; }
+    
+    int minY() const
+    { return origin.y; }
+    
+    int maxX() const
+    { return minX() + width(); }
+    
+    int maxY() const
+    { return minY() + height(); }
+        
+    
 #endif
     
 } iRect;

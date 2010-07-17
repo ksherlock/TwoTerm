@@ -87,6 +87,23 @@ void Screen::putc(uint8_t c, bool incrementX)
     }    
 }
 
+
+void Screen::tabTo(unsigned xPos)
+{
+    CharInfo clear(' ', _flag);
+    CharInfoIterator iter;
+    
+    xPos = std::min(xPos, _width - 1);
+    
+    
+    for (unsigned x = _cursor.x; x < xPos; ++x)
+    {
+        _screen[_cursor.y][x] = clear;
+    }
+    _cursor.x = xPos;
+}
+
+
 void Screen::setX(int x, bool clamp)
 {
     if (x < 0)
@@ -181,13 +198,35 @@ void Screen::eraseScreen()
 }
 
 
+void Screen::eraseRect(iRect rect)
+{
+
+    unsigned maxX = std::min(_width, (unsigned)rect.maxX());
+    unsigned maxY = std::min(_height, (unsigned)rect.maxY());
+    
+    CharInfo clear;
+    
+    for (unsigned y = rect.minY(); y < maxY; ++y)
+    {
+        for (unsigned x = rect.minX(); x < maxX; ++x)
+        {
+            _screen[y][x] = clear;
+        }
+    }
+    
+    _updates.push_back(rect.origin);
+    _updates.push_back(iPoint(maxX - 1, maxY - 1));
+}
+
+
+
 void Screen::lineFeed()
 {
     // moves the screen up one row, inserting a blank line at the bottom.
 
     if (_cursor.y == _height - 1)
     {
-        
+        /*
         // move lines 1..end up 1 line.
         for (ScreenIterator iter = _screen.begin() + 1; iter < _screen.end(); ++iter)
         {
@@ -205,6 +244,9 @@ void Screen::lineFeed()
 
         _updates.push_back(iPoint(0, 0));
         _updates.push_back(iPoint(_width - 1, _height - 1));
+        */
+        
+        removeLine(0);
     }
     else
     {
@@ -212,13 +254,14 @@ void Screen::lineFeed()
     }
 }
 
+
 void Screen::reverseLineFeed()
 {  
     // moves the cursor down one row, inserting a blank line at the top.
     
     if (_cursor.y == 0)
     {
-
+        /*
         for (ReverseScreenIterator iter = _screen.rbegin() + 1; iter < _screen.rend(); ++iter)
         {
             iter[-1] = *iter;
@@ -235,13 +278,72 @@ void Screen::reverseLineFeed()
         
         _updates.push_back(iPoint(0, 0));
         _updates.push_back(iPoint(_width - 1, _height - 1));
+        */
+        
+        addLine(0);
     }
     else
     {
         _cursor.y--;
     }
-
+    
 }
+
+
+
+void Screen::addLine(unsigned line)
+{
+
+    if (line >= _height) return;
+    
+    if (line == _height - 1)
+    {
+        _screen.back().clear();
+        _screen.back().resize(_width);
+    }
+    else
+    {
+        std::vector<CharInfo> newLine;
+        ScreenIterator iter;
+        
+        _screen.pop_back();
+        iter = _screen.insert(_screen.begin() + line, newLine);
+        iter->resize(_width);
+    }
+
+    _updates.push_back(iPoint(0, line));
+    _updates.push_back(iPoint(_width - 1, _height - 1));
+}
+
+void Screen::removeLine(unsigned line)
+{
+
+    if (line >= _height) return;
+    
+    if (line == _height - 1)
+    {
+        _screen.back().clear();
+
+    }
+    else
+    {
+        std::vector<CharInfo> newLine;
+        
+        _screen.erase(_screen.begin() + line);
+
+        _screen.push_back(newLine);
+    }
+    
+    _screen.back().resize(_width);
+    
+    
+    _updates.push_back(iPoint(0, line));
+    _updates.push_back(iPoint(_width - 1, _height - 1));    
+}
+
+
+
+
 
 
 void Screen::setSize(unsigned width, unsigned height)

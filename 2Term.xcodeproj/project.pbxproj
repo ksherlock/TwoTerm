@@ -17,6 +17,7 @@
 		B60EBDE311E90FC300C1974F /* ScanLineFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = B60EBDE211E90FC300C1974F /* ScanLineFilter.m */; };
 		B60EBDE811E9143F00C1974F /* ScanLineFilter.cikernel in Sources */ = {isa = PBXBuildFile; fileRef = B60EBDE711E9143F00C1974F /* ScanLineFilter.cikernel */; };
 		B60EBE2B11E918D500C1974F /* ScanLineFilter.cikernel in Resources */ = {isa = PBXBuildFile; fileRef = B60EBDE711E9143F00C1974F /* ScanLineFilter.cikernel */; };
+		B64925DA11EE6C350065E73A /* VT100.mm in Sources */ = {isa = PBXBuildFile; fileRef = B64925D911EE6C350065E73A /* VT100.mm */; };
 		B669798511E6A786002ED475 /* Lock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B669798411E6A786002ED475 /* Lock.cpp */; };
 		B6697A0F11E6BF95002ED475 /* CurveView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6697A0E11E6BF95002ED475 /* CurveView.m */; };
 		B6697A3D11E7CCA0002ED475 /* PTSE.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6697A3C11E7CCA0002ED475 /* PTSE.mm */; };
@@ -59,6 +60,8 @@
 		B60EBDE111E90FC300C1974F /* ScanLineFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScanLineFilter.h; sourceTree = "<group>"; };
 		B60EBDE211E90FC300C1974F /* ScanLineFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScanLineFilter.m; sourceTree = "<group>"; };
 		B60EBDE711E9143F00C1974F /* ScanLineFilter.cikernel */ = {isa = PBXFileReference; explicitFileType = sourcecode.glsl; fileEncoding = 4; path = ScanLineFilter.cikernel; sourceTree = "<group>"; };
+		B64925D811EE6C350065E73A /* VT100.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VT100.h; sourceTree = "<group>"; };
+		B64925D911EE6C350065E73A /* VT100.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VT100.mm; sourceTree = "<group>"; };
 		B669798311E6A786002ED475 /* Lock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lock.h; sourceTree = "<group>"; };
 		B669798411E6A786002ED475 /* Lock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Lock.cpp; sourceTree = "<group>"; };
 		B6697A0D11E6BF95002ED475 /* CurveView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurveView.h; sourceTree = "<group>"; };
@@ -220,6 +223,8 @@
 				B6F444C711E41AC000C3A836 /* VT05.mm */,
 				B699A08F11E572A300F54CC8 /* VT52.h */,
 				B699A09011E572A300F54CC8 /* VT52.mm */,
+				B64925D811EE6C350065E73A /* VT100.h */,
+				B64925D911EE6C350065E73A /* VT100.mm */,
 			);
 			name = Emulators;
 			sourceTree = "<group>";
@@ -297,6 +302,7 @@
 				B60EBDE311E90FC300C1974F /* ScanLineFilter.m in Sources */,
 				B60EBDE811E9143F00C1974F /* ScanLineFilter.cikernel in Sources */,
 				B602376211E94D9800C0B73E /* iGeometry.cpp in Sources */,
+				B64925DA11EE6C350065E73A /* VT100.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

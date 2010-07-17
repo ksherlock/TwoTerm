@@ -20,6 +20,11 @@ enum {
     StateDCAX
 };
 
+/*
+ * TODO -- the VT50x are 12 rows but double spaced.
+ *
+ *
+ */
 
 // VT52 is 24 x 80 upper/lowercase.
 // 50/50H is 12 * 80, uppercase only.  H has a keypad.
@@ -74,8 +79,7 @@ enum {
     unsigned flags = [event modifierFlags];
     NSString *chars = [event charactersIgnoringModifiers];
     unsigned length = [chars length];
-    
-    
+        
     for (unsigned i = 0; i < length; ++i)
     {
         unichar uc = [chars characterAtIndex: i];
@@ -157,6 +161,20 @@ enum {
             case NSLeftArrowFunctionKey:
                 output->write(ESC "D");
                 break;
+                
+            // 3 function keys. (VT50H / VT52)
+            case NSF1FunctionKey:
+                output->write(ESC "P");
+                break;
+            
+            case NSF2FunctionKey:
+                output->write(ESC "Q");
+                break;
+
+            case NSF3FunctionKey:
+                output->write(ESC "R");
+                break;                
+                
                 
             default:
                 if (uc > 0x7f) break;
@@ -485,6 +503,43 @@ enum {
     {
         screen->setX((x + 8) & ~7);
     }
+}
+
+
+-(BOOL)resizable
+{
+    switch (_model)
+    {
+        case ModelVT52:
+        case ModelVT55:
+            return YES;
+        default:
+        return NO;
+    }
+}
+
+-(struct winsize)defaultSize
+{
+    struct winsize ws = { 0, 0, 0, 0};
+    
+    // TODO -- although VT50x have 12 rows, they are double spaced.
+    
+    switch (_model)
+    {
+        case ModelVT52:
+        case ModelVT55:
+            ws.ws_row = 24;
+            ws.ws_col = 80;
+            break;
+            
+        default:
+            ws.ws_row = 12;
+            ws.ws_col = 80;
+            break;
+    }
+    
+    return ws;
+    
 }
 
 

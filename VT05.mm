@@ -239,4 +239,16 @@ enum {
     }
 }
 
+-(BOOL)resizable
+{
+    return NO;
+}
+
+-(struct winsize)defaultSize
+{
+    struct winsize ws = { 20, 72, 0, 0 };
+    
+    return ws;
+}
+
 @end

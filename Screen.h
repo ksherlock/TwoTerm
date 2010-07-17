@@ -37,6 +37,7 @@ public:
     static const unsigned FlagBold = 0x04;
     static const unsigned FlagUnderscore = 0x08;
     static const unsigned FlagBlink = 0x10;
+    static const unsigned FlagSelected = 0x20;
     
     
     Screen(unsigned height = 24, unsigned width = 80);
@@ -70,13 +71,22 @@ public:
     
     void putc(uint8_t c, bool incrementX = true);
     
+    void tabTo(unsigned x);
+    
     CharInfo getc(int x, int y) const;
     
     void eraseLine();
     void eraseScreen();
     
+    void eraseRect(iRect rect);
+    
+    
     void lineFeed();
     void reverseLineFeed();
+    
+    
+    void addLine(unsigned line);
+    void removeLine(unsigned line);
     
     
     void beginUpdate();

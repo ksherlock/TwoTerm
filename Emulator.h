@@ -6,6 +6,7 @@
 //  Copyright 2010 __MyCompanyName__. All rights reserved.
 //
 
+#include <sys/ttycom.h>
 
 @class NSEvent;
 
@@ -17,6 +18,8 @@ class OutputChannel;
 #define OutputChannel void
 #endif
 
+#import "iGeometry.h"
+
 @protocol Emulator
 
 -(void)processCharacter: (uint8_t)c screen: (Screen *)screen output: (OutputChannel *)output;
@@ -26,5 +29,9 @@ class OutputChannel;
 -(NSString *)name;
 
 -(const char *)termName;
+
+-(BOOL)resizable;
+
+-(struct winsize)defaultSize;
 
 @end
