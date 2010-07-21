@@ -15,6 +15,8 @@
 #import "CharacterGenerator.h"
 
 #import "VT52.h"
+#import "VT100.h"
+
 
 #include "OutputChannel.h"
 
@@ -80,7 +82,7 @@
     
     _cursorImg = [[_charGen imageForCharacter: '_'] retain];
     
-    _emulator = [VT52 new];
+    _emulator = [VT100 new];
         
 }
 

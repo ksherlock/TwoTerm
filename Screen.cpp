@@ -164,6 +164,91 @@ int Screen::decrementY(bool clamp)
 }
 
 
+
+
+void Screen::erase(EraseRegion region)
+{
+
+    CharInfoIterator ciIter;
+    ScreenIterator screenIter;
+    
+    if (region == EraseAll)
+    {
+        ScreenIterator end = _screen.end();
+        for (screenIter = _screen.begin(); screenIter < end; ++screenIter)
+        {
+            std::fill(screenIter->begin(), screenIter->end(), CharInfo(0,0));
+        }
+        _updates.push_back(iPoint(0,0));
+        _updates.push_back(iPoint(_width - 1, _height - 1));
+        
+        return;
+    }
+    
+    
+    // TODO -- be smart and check if cursor is at x = 0 (or x = _width - 1)
+    if (region == EraseBeforeCursor)
+    {
+        ScreenIterator end = _screen.begin() + _cursor.y - 1;
+        for (screenIter = _screen.begin(); screenIter < end; ++screenIter)
+        {
+            std::fill(screenIter->begin(), screenIter->end(), CharInfo(0,0));
+        }
+        _updates.push_back(iPoint(0,0));
+        _updates.push_back(iPoint(_width - 1, _cursor.y));
+        
+        region = EraseLineBeforeCursor;
+    }
+    
+    if (region == EraseAfterCursor)
+    {
+        ScreenIterator end = _screen.end();
+        for (screenIter = _screen.begin() + _cursor.y + 1; screenIter < end; ++screenIter)
+        {
+            std::fill(screenIter->begin(), screenIter->end(), CharInfo(0,0));
+        }
+        _updates.push_back(iPoint(0,_cursor.y + 1));
+        _updates.push_back(iPoint(_width - 1, _height - 1));
+        
+        region = EraseLineAfterCursor;
+    }
+    
+    if (region == EraseLineAll)
+    {
+    
+        int y = _cursor.y;
+        std::fill(_screen[y].begin(), _screen[y].end(), CharInfo(0,0));
+        
+        _updates.push_back(iPoint(0, _cursor.y));
+        _updates.push_back(iPoint(_width - 1, _cursor.y));
+        
+        return;
+    }
+    
+    if (region == EraseLineBeforeCursor)
+    {
+        int y = _cursor.y;
+        std::fill(_screen[y].begin(), _screen[y].begin() + _cursor.x + 1, CharInfo(0,0));
+        
+        _updates.push_back(iPoint(0, _cursor.y));
+        _updates.push_back(_cursor);
+        
+        return;        
+    }
+    
+    if (region == EraseLineAfterCursor)
+    {
+        int y = _cursor.y;
+        std::fill(_screen[y].begin() + _cursor.x, _screen[y].end(), CharInfo(0,0));
+        
+        _updates.push_back(_cursor);     
+        _updates.push_back(iPoint(_width - 1, _cursor.y));
+        
+    }
+    
+    
+}
+
 void Screen::eraseLine()
 {
     // erases everything to the right of, and including, the cursor

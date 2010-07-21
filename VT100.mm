@@ -131,11 +131,11 @@ enum {
                 
             case '=':
                 // alt key pad
-                _keyMode = YES;
+                _altKeyPad = YES;
                 _state = StateText;
                 break;
             case '>':
-                _keyMode = NO;
+                _altKeyPad = NO;
                 _state = StateText;
                 break;
                 
@@ -284,6 +284,66 @@ enum {
                 else screen->setCursor(0, 0);
                 _state = StateText;
                 break;
+             
+                
+            case 'J':
+                /* 
+                 * erase
+                 * 0 J -> erase from cursor to end of screen
+                 * 1 J -> erase from beginning of screen to cursor
+                 * 2 J -> erase entire screen
+                 */
+            {
+             
+                switch (_parms[0])
+                {
+                    default:
+                        screen->erase(Screen::EraseAfterCursor);
+                        break;
+                    case 1:
+                        screen->erase(Screen::EraseBeforeCursor);
+                        break;
+                    case 2:
+                        screen->erase(Screen::EraseAll);
+                        break;
+
+                }
+                _state = StateText;
+                break;
+            }
+                
+            case 'K':
+                /*
+                 * erase
+                 * 0 K -> erase from cursor to end of line
+                 * 1 K -> erase from beginning of line to cursor
+                 * 2 K -> erase entire line contaning the cursor.
+                 */
+            {   
+                switch(_parms[0])
+                {
+                    default:
+                        screen->erase(Screen::EraseLineAfterCursor);
+                        break;
+                        
+                    case 1:
+                        screen->erase(Screen::EraseLineBeforeCursor);
+                        break;
+                    case 2:
+                        screen->erase(Screen::EraseLineAll);;
+                        break;
+
+                }
+                _state = StateText;
+                break;
+            }
+                
+                
+            default:
+                NSLog(@"[%s %s]: unrecognized escape character: `ESC [ %c' (%02x)", object_getClassName(self), sel_getName(_cmd), c, (int)c);
+                _state = StateText;
+                break;
+
                 
         }
                 
@@ -327,52 +387,68 @@ enum {
                 _state = StateText;
                 break;
          
-                
-                
+            default:
+                NSLog(@"[%s %s]: unrecognized escape character: `ESC %c' (%02x)", object_getClassName(self), sel_getName(_cmd), c, (int)c);
+                _state = StateText;
+                break;
         }
-        
-        
-        
+   
     }
     
-
-    
-}
-
-static void commonKey(unichar uc, unsigned flags, Screen * screen, OutputChannel *output)
-{
-
-    switch (uc)
+    if (_state == StateText)
     {
-        case NSDeleteCharacter:
-            output->write(0x7f);
-            break;
-            
-        
-            
-        default:
-            
-            if (uc <= 0x7f)
-            {
-                char c = uc;
-                if (flags & NSControlKeyMask)
-                    c = CTRL(c);
-                
-                output->write(c);
-            }
-            
-    }
-
-}
-
-static void keyModeKey(unichar uc, unsigned flags, Screen * screen, OutputChannel *output)
-{
-    
-    if (flags & NSNumericPadKeyMask)
-    {
-        const char *str = NULL;
-        switch(uc)
+        switch (c)
         {
+            case 0x00:
+            case 0x7f:
+                break;
+            case 0x1b:
+                _state = StateEsc;
+                break;
+            case CTRL('G'):
+                NSBeep();
+                break;
+                
+            case 0x08:
+                screen->decrementX();
+                break;
+                
+            case '\t':
+                [self tab: screen];
+                break;
+                
+            case '\n':
+                screen->lineFeed();
+                break;
+                
+            case '\r':
+                screen->setX(0);
+                break;                
+                
+            default:
+                if (c >= 0x20 && c < 0x7f)
+                {
+                    screen->putc(c);
+                }
+                break;
+        }
+    }
+   
+}
+
+
+
+
+static void vt100ModeKey(unichar uc, unsigned flags, Screen *screen, OutputChannel *output, BOOL altKeyPad)
+{
+    const char *str = NULL;
+
+    
+    if (altKeyPad && (flags & NSFunctionKeyMask))
+    {        
+        switch (uc)
+        {
+
             case '0':
                 str = ESC "Op";
                 break;
@@ -419,54 +495,76 @@ static void keyModeKey(unichar uc, unsigned flags, Screen * screen, OutputChanne
                 str = ESC "?M";
                 break;
         }
+        
         if (str)
         {
             output->write(str);
             return;
-        }
+        } 
     }
+    
     
     switch(uc)
     {
         case NSUpArrowFunctionKey:
-            output->write(ESC "OA");
+            str =  altKeyPad ?  ESC "OA" : ESC "[A";
             break;
         case NSDownArrowFunctionKey:
-            output->write(ESC "OB");
+            str =  altKeyPad ?  ESC "OB" : ESC "[B";
             break;
         case NSRightArrowFunctionKey:
-            output->write(ESC "OC");
+            str =  altKeyPad ?  ESC "OC" : ESC "[C";
             break;            
         case NSLeftArrowFunctionKey:
-            output->write(ESC "OD");
+            str =  altKeyPad ?  ESC "OD" : ESC "[D";
             break;
             
-            // these are located at numlock/*-
         case NSF1FunctionKey:
-            output->write(ESC "OP");
+            str = ESC "OP";
             break;
         case NSF2FunctionKey:
-            output->write(ESC "OQ");
+            str = ESC "OQ";
             break;
         case NSF3FunctionKey:
-            output->write(ESC "OR");
+            str = ESC "OR";
             break;
         case NSF4FunctionKey:
-            output->write(ESC "OS");
-            break;             
+            str = ESC "OS";
+            break;   
+            
+        case NSDeleteCharacter:
+            uc = 0x7f;
+            // fallthrough.
             
         default:
-            commonKey(uc, flags, screen, output);
+            
+            if (uc <= 0x7f)
+            {
+                uint8_t c = uc;
+                if (flags & NSControlKeyMask)
+                {
+                    c = CTRL(c);
+                }
+                output->write(c);
+            }
             break;
     }
+    
+    if (str)
+    {
+        output->write(str);
+    } 
+    
+    
 }
 
 
-static void vt52ModeKey(unichar uc, unsigned flags, Screen * screen, OutputChannel *output)
+static void vt52ModeKey(unichar uc, unsigned flags, Screen * screen, OutputChannel *output, BOOL altKeyPad)
 {
-    if (flags & NSNumericPadKeyMask)
+    const char *str = NULL;
+    
+    if (altKeyPad && (flags & NSNumericPadKeyMask))
     {
-        const char *str = NULL;
         switch(uc)
         {
             case '0':
@@ -525,34 +623,51 @@ static void vt52ModeKey(unichar uc, unsigned flags, Screen * screen, OutputChann
     switch(uc)
     {
         case NSUpArrowFunctionKey:
-            output->write(ESC "A");
+            str = ESC "A";
             break;
         case NSDownArrowFunctionKey:
-            output->write(ESC "B");
+            str = ESC "B";
             break;
         case NSRightArrowFunctionKey:
-            output->write(ESC "C");
+            str = ESC "C";
             break;            
         case NSLeftArrowFunctionKey:
-            output->write(ESC "D");
+            str = ESC "D";
             break;
             
         case NSF1FunctionKey:
-            output->write(ESC "P");
+            str = ESC "P";
             break;
         case NSF2FunctionKey:
-            output->write(ESC "Q");
+            str = ESC "Q";
             break;
         case NSF3FunctionKey:
-            output->write(ESC "R");
+            str = ESC "R";
             break;
         case NSF4FunctionKey:
-            output->write(ESC "S");
+            str = ESC "S";
             break;   
+        
+        case NSDeleteCharacter:
+            uc = 0x7f;
+            // fallthrough..
             
         default:
-            commonKey(uc, flags, screen, output);
+        
+            if (uc <= 0x7f)
+            {
+                uint8_t c = uc;
+                if (flags & NSControlKeyMask)
+                {
+                    c = CTRL(c);
+                }
+                output->write(c);
+            }
             break;
+    }
+    if (str)
+    {
+        output->write(str);
     }
     
 }
@@ -568,13 +683,36 @@ static void vt52ModeKey(unichar uc, unsigned flags, Screen * screen, OutputChann
         unichar uc = [chars characterAtIndex: i];
         
         if (_vt52Mode)
-            vt52ModeKey(uc, flags, screen, output);
-        else if (_keyMode)
-            keyModeKey(uc, flags, screen, output);
+            vt52ModeKey(uc, flags, screen, output, _altKeyPad);
         else
-            commonKey(uc, flags, screen, output);
+            vt100ModeKey(uc, flags, screen, output, _altKeyPad);
+
     }
 
 }
+
+
+-(void)tab: (Screen *)screen
+{
+    /*
+     * TAB (011_8) causes the cursor to move right to the next TAB stop each time the TAB code is received.
+     * TAB stops are preset eight character spaces apart.  TAB stop locations are at characters positions 1, 9,
+     * 17, 25, 33, 41, 49, 57, and 65. Once the cursor reaches character position 65, all TAB commands 
+     * received thereafter will cause the cursor to move only one character position.  Once the cursor reaches 
+     * character position 72, receipt of the the TAB code has no effect.
+     */
+    
+    int x = screen->x();
+    
+    if (x >= screen->width() - 8)
+    {
+        screen->tabTo(x + 1);
+    }
+    else
+    {
+        screen->tabTo((x + 8) & ~7);
+    }
+}
+
 
 @end

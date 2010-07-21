@@ -65,7 +65,7 @@
     if (pid == 0)
     {
         const char *environ[] = {
-            "TERM=vt52",
+            "TERM=vt100",
             "LANG=C",
             "TERM_PROGRAM=2Term",
             NULL

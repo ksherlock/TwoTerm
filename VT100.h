@@ -21,6 +21,9 @@
 
     unsigned _state;
     
+    BOOL _altKeyPad;
+
+    
     BOOL _keyMode;
     BOOL _vt52Mode;
     BOOL _graphics;
@@ -32,6 +35,9 @@
 #endif
     
 }
+
+
+-(void)tab: (Screen *)screen;
 
 
 @end

@@ -40,7 +40,20 @@ public:
     static const unsigned FlagSelected = 0x20;
     
     
+
+    enum EraseRegion {
+        EraseAll,
+        EraseBeforeCursor,
+        EraseAfterCursor,
+        
+        EraseLineAll,
+        EraseLineBeforeCursor,
+        EraseLineAfterCursor
+    };
+    
     Screen(unsigned height = 24, unsigned width = 80);
+
+
     
     virtual ~Screen();
     
@@ -74,6 +87,9 @@ public:
     void tabTo(unsigned x);
     
     CharInfo getc(int x, int y) const;
+    
+    
+    void erase(EraseRegion);
     
     void eraseLine();
     void eraseScreen();
