@@ -23,10 +23,18 @@ enum {
     StateDCAY,
     StateDCAX,
     StateBracket,
+    StateBracketQuestion,
     StatePound
 };
 
 
+-(id)init
+{
+    self = [super init];
+    [self reset];
+    
+    return self;
+}
 -(NSString *)name
 {
     return @"VT100";
@@ -53,6 +61,22 @@ enum {
 {
     _state = StateText;
     _vt52Mode = NO;
+    
+    _flags.DECANM = 1; // ansi/vt100 mode
+    _flags.DECARM = 0;
+    _flags.DECAWM = 0;
+    _flags.DECCKM = 0;
+    _flags.DECKPAM = 0;
+    _flags.DECKPNM = 1;
+    _flags.DECCOLM = 0;
+    
+    _flags.DECSCLM = 0;
+    _flags.DECSCNM = 0;
+    _flags.DECOM = 0;
+    _flags.DECINLM = 0;
+    _flags.LNM = 0;
+    
+    
 }
 
 
@@ -200,6 +224,154 @@ enum {
         return;
     }
     
+    
+    if (_state == StateBracketQuestion)
+    {
+        // ESC [? \d+ h|l 
+        switch(c)
+        {
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                _parms.back() = _parms.back() * 10 + (c - '0');
+                break;
+                
+            case ';':
+                _parms.push_back(0);
+                break;
+            
+            case 'h':
+            {
+                // h = set
+                std::vector<int>::iterator iter;
+                
+                for (iter = _parms.begin(); iter != _parms.end(); ++iter)
+                {
+                    switch (*iter)
+                    {
+                            /*
+                        case 20:
+                            _flags.LNM = 1;
+                            break;
+                             */
+                            
+                        case 1:
+                            _flags.DECCKM = 1;
+                            break;
+  
+                        case 3:
+                            _flags.DECCOLM = 1;
+                            screen->setSize(132, 24);
+                            break;
+                            
+                        case 4:
+                            _flags.DECSCLM = 1;
+                            break;
+                        
+                        case 5:
+                            _flags.DECSCNM = 1;
+                            break;
+                            
+                        case 6:
+                            _flags.DECOM = 1;
+                            break;
+                        
+                        case 7:
+                            _flags.DECAWM = 1;
+                            break;
+                            
+                        case 8:
+                            _flags.DECARM = 1;
+                            break;
+                            
+                        case 9:
+                            _flags.DECINLM = 1;
+                            break;
+                            
+                    }
+                }
+                _state = StateText;
+                break;
+            }
+                
+            case 'l':
+            {
+                
+                // l = reset
+                std::vector<int>::iterator iter;
+                
+                for (iter = _parms.begin(); iter != _parms.end(); ++iter)
+                {
+                    switch (*iter)
+                    {
+                            /*
+                        case 20:
+                            _flags.LNM = 0;
+                            break;
+                             */
+                            
+                        case 1:
+                            _flags.DECCKM = 0;
+                            break;
+                            
+                        case 2:
+                            _vt52Mode = YES;
+                            _flags.DECANM = 0;
+                            break;
+                            
+                        case 3:
+                            _flags.DECCOLM = 0;
+                            screen->setSize(80, 24);
+                            break;
+                            
+                        case 4:
+                            _flags.DECSCLM = 0;
+                            break;
+                            
+                        case 5:
+                            _flags.DECSCNM = 0;
+                            break;
+                            
+                        case 6:
+                            _flags.DECOM = 0;
+                            break;
+                            
+                        case 7:
+                            _flags.DECAWM = 0;
+                            break;
+                            
+                        case 8:
+                            _flags.DECARM = 0;
+                            break;
+                            
+                        case 9:
+                            _flags.DECINLM = 0;
+                            break;
+                            
+                    }
+                }
+                _state = StateText;
+                break;                
+                
+            }
+            default:
+                NSLog(@"[%s %s]: unrecognized escape character: `ESC [? %d %c' (%02x)", 
+                      object_getClassName(self), sel_getName(_cmd), _parms[0], c, (int)c);
+
+                _state = StateText;
+                break;
+        }
+        
+        return;
+    }
+    
     if (_state == StateBracket)
     {
         // '[' [0-9]* CODE
@@ -224,6 +396,11 @@ enum {
                 _parms.push_back(0);
                 break;
 
+            case '?':
+                _parms.clear();
+                _parms.push_back(0);
+                _state = StateBracketQuestion;
+                break;
                 
             case 'A':
                 // cursor up.  default 1.
@@ -339,6 +516,132 @@ enum {
             }
                 
                 
+            case 'c':
+            {
+                // who are you?
+                
+                output->write(ESC "[?1;0c");
+             
+                _state = StateText;
+                break;
+            }
+                
+                
+            case 'n':
+                // status reports.
+            {
+                char *str = NULL;
+             
+                switch (_parms[0])
+                {
+                    case 5:
+                        // terminal status report
+                        // ESC [ 0 n == terminal ok
+                        // ESC [ 3 n == terminal not ok.
+                        output->write(ESC "0n");
+                        break;
+                        
+                    case 6:
+                        // cursor position
+                        // ESC [ line ; column R
+                        asprintf(&str, ESC "[%u;%uR", screen->y() + 1, screen->x() + 1);
+                        if (str)
+                        {
+                            output->write(str);
+                            free(str);
+                        }
+                        break;
+                    
+                    default:
+                        NSLog(@"[%s %s]: unrecognized escape character: `ESC [ %d %c'", 
+                              object_getClassName(self), sel_getName(_cmd), _parms[0], c);
+                        break;
+                     
+                                      
+                }
+                
+                _state = StateText;
+                break;
+            }
+                
+            case 'l':
+            {
+                // l = reset
+                std::vector<int>::iterator iter;
+                
+                for (iter = _parms.begin(); iter != _parms.end(); ++iter)
+                {
+                    switch (*iter)
+                    {
+                             case 20:
+                             _flags.LNM = 0;
+                             break;
+                    }
+                }
+                _state = StateText;
+                break;
+            }
+                
+            case 'h':
+            {
+                // h = set
+                std::vector<int>::iterator iter;
+                
+                for (iter = _parms.begin(); iter != _parms.end(); ++iter)
+                {
+                    switch (*iter)
+                    {
+                        case 20:
+                            _flags.LNM = 1;
+                            break;
+                    }
+                }
+                _state = StateText;
+                break;
+                
+            }
+                
+                
+                
+            case 'm':
+            {
+                std::vector<int>::iterator iter;
+                unsigned flag = screen->flag();
+                
+                for (iter = _parms.begin(); iter != _parms.end(); ++iter)
+                {
+                    switch (*iter)
+                    {
+                        case 0:
+                            // attributes off
+                            flag = Screen::FlagNormal;
+                            break;
+                        case 1:
+                            // bold/increased intensity.
+                            flag |=  Screen::FlagBold;
+                            break;
+                        case 4:
+                            // underscore.
+                            flag |= Screen::FlagInverse;
+                            break;
+                        case 5:
+                            //blink
+                            flag |= Screen::FlagBlink;
+                            break;
+                            
+                        case 7:
+                            // inverse
+                            flag |= Screen::FlagInverse;
+                            break;
+                    }
+                }
+                
+                screen->setFlag(flag);
+                _state = StateText;
+                
+                break;
+            }
+                
             default:
                 NSLog(@"[%s %s]: unrecognized escape character: `ESC [ %c' (%02x)", object_getClassName(self), sel_getName(_cmd), c, (int)c);
                 _state = StateText;
@@ -369,6 +672,20 @@ enum {
                 _state = StatePound;
                 break;
             
+            case '=':
+                _flags.DECKPAM = 1;
+                _flags.DECKPNM = 0;
+                _altKeyPad = YES;
+                _state = StateText;
+                break;
+                
+            case '>':
+                _flags.DECKPAM = 0;
+                _flags.DECKPNM = 1;
+                _altKeyPad = NO;                
+                _state = StateText;
+                break;
+                
             case 'D':
                 // Index
                 screen->lineFeed();
@@ -377,6 +694,11 @@ enum {
             case 'M':
                 // Reverse Index
                 screen->reverseLineFeed();
+                _state = StateText;
+                break;
+                
+            case 'Z':
+                output->write(ESC "[?1;0c");
                 _state = StateText;
                 break;
                 
@@ -393,6 +715,7 @@ enum {
                 break;
         }
    
+        return;
     }
     
     if (_state == StateText)
@@ -419,6 +742,8 @@ enum {
                 
             case '\n':
                 screen->lineFeed();
+                if (_flags.LNM)
+                    screen->setX(0);
                 break;
                 
             case '\r':
@@ -439,12 +764,12 @@ enum {
 
 
 
-static void vt100ModeKey(unichar uc, unsigned flags, Screen *screen, OutputChannel *output, BOOL altKeyPad)
+static void vt100ModeKey(unichar uc, unsigned flags, Screen *screen, OutputChannel *output, struct __vt100flags vt100flags)
 {
     const char *str = NULL;
 
     
-    if (altKeyPad && (flags & NSFunctionKeyMask))
+    if (vt100flags.DECKPAM && (flags & NSFunctionKeyMask))
     {        
         switch (uc)
         {
@@ -507,16 +832,16 @@ static void vt100ModeKey(unichar uc, unsigned flags, Screen *screen, OutputChann
     switch(uc)
     {
         case NSUpArrowFunctionKey:
-            str =  altKeyPad ?  ESC "OA" : ESC "[A";
+            str =  vt100flags.DECKPAM ?  ESC "OA" : ESC "[A";
             break;
         case NSDownArrowFunctionKey:
-            str =  altKeyPad ?  ESC "OB" : ESC "[B";
+            str =  vt100flags.DECKPAM ?  ESC "OB" : ESC "[B";
             break;
         case NSRightArrowFunctionKey:
-            str =  altKeyPad ?  ESC "OC" : ESC "[C";
+            str =  vt100flags.DECKPAM ?  ESC "OC" : ESC "[C";
             break;            
         case NSLeftArrowFunctionKey:
-            str =  altKeyPad ?  ESC "OD" : ESC "[D";
+            str =  vt100flags.DECKPAM ?  ESC "OD" : ESC "[D";
             break;
             
         case NSF1FunctionKey:
@@ -531,6 +856,13 @@ static void vt100ModeKey(unichar uc, unsigned flags, Screen *screen, OutputChann
         case NSF4FunctionKey:
             str = ESC "OS";
             break;   
+            
+
+        case '\n':
+            if (vt100flags.LNM)
+                output->write("\r\n");
+            else output->write('\n');
+            break;            
             
         case NSDeleteCharacter:
             uc = 0x7f;
@@ -559,11 +891,11 @@ static void vt100ModeKey(unichar uc, unsigned flags, Screen *screen, OutputChann
 }
 
 
-static void vt52ModeKey(unichar uc, unsigned flags, Screen * screen, OutputChannel *output, BOOL altKeyPad)
+static void vt52ModeKey(unichar uc, unsigned flags, Screen * screen, OutputChannel *output, struct __vt100flags vt100flags)
 {
     const char *str = NULL;
     
-    if (altKeyPad && (flags & NSNumericPadKeyMask))
+    if (vt100flags.DECKPAM && (flags & NSNumericPadKeyMask))
     {
         switch(uc)
         {
@@ -648,6 +980,8 @@ static void vt52ModeKey(unichar uc, unsigned flags, Screen * screen, OutputChann
             str = ESC "S";
             break;   
         
+
+            
         case NSDeleteCharacter:
             uc = 0x7f;
             // fallthrough..
@@ -683,9 +1017,9 @@ static void vt52ModeKey(unichar uc, unsigned flags, Screen * screen, OutputChann
         unichar uc = [chars characterAtIndex: i];
         
         if (_vt52Mode)
-            vt52ModeKey(uc, flags, screen, output, _altKeyPad);
+            vt52ModeKey(uc, flags, screen, output, _flags);
         else
-            vt100ModeKey(uc, flags, screen, output, _altKeyPad);
+            vt100ModeKey(uc, flags, screen, output, _flags);
 
     }
 

@@ -124,12 +124,12 @@
     NSRect screenRect = dirtyRect;
 
     unsigned x, y;
-    unsigned lastFlag = 0;
     
+
     
     NSColor *currentFront;
     NSColor *currentBack;
-    unsigned currentFlag;
+    BOOL setFront = YES;
     
     screenRect.origin.x -= _paddingLeft;
     screenRect.origin.y -= _paddingTop;
@@ -163,7 +163,6 @@
 
     currentFront = _foregroundColor;
     currentBack = _backgroundColor;
-    currentFlag = Screen::FlagNormal;
     
     _screen.lock();
     
@@ -175,35 +174,36 @@
             NSRect charRect = NSMakeRect(_paddingLeft + x * _charWidth, _paddingTop + y *_charHeight, _charWidth, _charHeight);
             NSImage *img;
             CharInfo ci = _screen.getc(x, y);
+            unsigned flag = ci.flag;
             
             // todo -- check flags to determine fg/bg color, etc.
             // need to draw background individually....
-            if (currentFlag != ci.flag)
-            {
-                currentFlag = ci.flag;
 
-                currentBack = _backgroundColor;
-                currentFront = _foregroundColor;
-                if (lastFlag & Screen::FlagBold)
-                    currentFront = _boldColor;
-                
-                if (lastFlag & Screen::FlagInverse)
-                {
-                    std::swap(currentFront, currentBack);
-                }
-                
-                if (currentFront != _foregroundColor)
-                    [currentFront setFill];
-            }
+
+            currentBack = _backgroundColor;
+            currentFront = _foregroundColor;
+            
+            if (flag & Screen::FlagBold)
+                currentFront = _boldColor;
+            
             
             img = [_charGen imageForCharacter: ci.c];
             
+            if (flag & Screen::FlagInverse)
+            {
+                std::swap(currentBack, currentFront);
+            }
+                        
             if (currentBack != _backgroundColor)
             {
                 [currentBack setFill];
                 NSRectFill(charRect);
-                [currentFront setFill];
+                setFront = YES;
             }
+            
+            if (_foregroundColor != currentFront) setFront = YES;
+            
+            
 
             /*
             [img drawAtPoint: NSMakePoint(x * _charWidth, y * _charHeight) 
@@ -213,6 +213,8 @@
             */
             if (img)
             {
+                if (setFront) [currentFront setFill];
+                
                 [img drawInRect: charRect 
                        fromRect: NSZeroRect operation: NSCompositeCopy 
                        fraction: 1.0 
