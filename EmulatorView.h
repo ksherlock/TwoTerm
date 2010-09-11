@@ -17,6 +17,7 @@
 #include "Screen.h"
 
 @class EmulatorView;
+
 class ViewScreen: public Screen
 {
 public:
@@ -72,6 +73,10 @@ private:
 #endif
 }
 
+@property (nonatomic, assign) int fd;
+//@property (nonatomic, assign) iPoint cursor;
+
+
 -(void)startBackgroundReader;
 -(void)dataAvailable;
 -(void)invalidateIRect: (iRect)rect;
@@ -80,7 +85,11 @@ private:
 
 -(void)cursorTimer: (NSTimer *)timer;
 
-@property (nonatomic, assign) int fd;
-//@property (nonatomic, assign) iPoint cursor;
+
+-(void)autoTypeText: (NSString *)text;
+
+-(IBAction)paste: (id)sender;
+-(IBAction)copy: (id)sender;
+
 
 @end

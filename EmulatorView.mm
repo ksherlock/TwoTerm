@@ -82,7 +82,7 @@
     
     _cursorImg = [[_charGen imageForCharacter: '_'] retain];
     
-    _emulator = [VT100 new];
+    _emulator = [VT52 new];
         
 }
 
@@ -282,6 +282,52 @@
     [self invalidateIRect: updateRect];
 }
 
+
+-(void)autoTypeText:(NSString *)text
+{
+
+    
+    typedef void (*ProcessCharFX)(id, SEL, uint8_t, Screen *, OutputChannel *);
+
+
+    std::vector<unichar> chars;
+    std::vector<unichar>::iterator iter;
+    iRect updateRect; // should be nil but whatever...
+    
+    OutputChannel channel(_fd);
+    
+    SEL cmd  =  @selector(processCharacter: screen: output:);
+    ProcessCharFX fx = (ProcessCharFX)[_emulator methodForSelector: cmd];
+    
+    
+    unsigned length = [text length];
+    
+
+    if (!length) return;
+    
+    chars.resize(length);
+    
+    [text getCharacters: &chars[0] range: NSMakeRange(0, length)];
+    
+    _screen.beginUpdate();
+    
+
+    // this posts as if it was output, need to post as if it was input
+    for (iter = chars.begin(); iter != chars.end(); ++iter)
+    {
+        fx(_emulator,cmd, *iter, &_screen, &channel);
+    }
+    
+    
+    updateRect = _screen.endUpdate();
+    
+    [self invalidateIRect: updateRect];
+
+}
+
+
+
+
 -(void)startBackgroundReader
 {
     if (_readerThread) return;
@@ -463,6 +509,39 @@
     }
     [super setFrame: frameRect];
 }
+
+
+
+#pragma mark -
+#pragma mark IBActions
+
+
+-(IBAction)paste: (id)sender
+{
+    NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
+    NSArray *classArray = [NSArray arrayWithObject:[NSString class]];
+    NSDictionary *options = [NSDictionary dictionary];
+
+    
+    BOOL ok = [pasteboard canReadObjectForClasses:classArray options:options];
+
+    if (ok)
+    {
+        NSArray *objectsToPaste = [pasteboard readObjectsForClasses:classArray options:options];
+        NSString *string = [objectsToPaste objectAtIndex: 0];
+        NSLog(@"%@", objectsToPaste);
+        
+        [self autoTypeText: string];
+        
+    }
+    
+}
+
+-(IBAction)copy: (id)sender
+{
+}
+
+
 
 @end
 
