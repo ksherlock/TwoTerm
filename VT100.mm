@@ -24,7 +24,9 @@ enum {
     StateDCAX,
     StateBracket,
     StateBracketQuestion,
-    StatePound
+    StatePound,
+    StateRParen,
+    StateLParen
 };
 
 
@@ -654,6 +656,14 @@ enum {
         return;
     }
     
+    if (_state == StateRParen || _state == StateLParen)
+    {
+        NSLog(@"[%s %s]: unrecognized escape character: `ESC %c %c' (%02x)", object_getClassName(self), sel_getName(_cmd), _state == StateRParen ? ')' : '(', c, (int)c);
+        
+        _state = StateText;
+        return;
+    }
+    
     if (_state == StateEsc)
     {
         switch(c)
@@ -661,6 +671,19 @@ enum {
             case 0x00:
             case 0x07f:
                 break;
+            
+                
+            case '(':
+                _state = StateLParen;
+                _parms.clear();
+                _parms.push_back(0);
+                break;
+            
+            case ')':
+                _state = StateLParen;
+                _parms.clear();
+                _parms.push_back(0);
+                break;                
                 
             case '[':
                 _state = StateBracket;
