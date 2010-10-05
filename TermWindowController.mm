@@ -8,6 +8,8 @@
 
 #import "TermWindowController.h"
 #import "EmulatorView.h"
+#import "VT52.h"
+
 
 #define TTYDEFCHARS
 
@@ -140,12 +142,10 @@
 
 - (void)windowDidLoad
 {
-    NSWindow *window = [self window];
-
     [super windowDidLoad];
     
+    if (!_emulator) [self setEmulator: [[VT52 new] autorelease]];
     
-    [window setTitle: [_emulator name]];
     [_emulatorView setEmulator: _emulator];
     
     [self initPTY];
