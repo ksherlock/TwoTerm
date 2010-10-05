@@ -41,6 +41,11 @@ enum {
 
 @implementation VT52
 
++(NSString *)name
+{
+    return @"VT52";
+}
+
 -(NSString *)name
 {
     switch (_model)

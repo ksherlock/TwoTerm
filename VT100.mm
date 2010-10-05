@@ -37,6 +37,13 @@ enum {
     
     return self;
 }
+
+
++(NSString *)name
+{
+    return @"VT100";
+}
+
 -(NSString *)name
 {
     return @"VT100";
@@ -193,7 +200,7 @@ enum {
         
         _state = StateDCAX;
     }
-    else if (_state = StateDCAX)
+    else if (_state == StateDCAX)
     {
         if (c == 0x00) return;
         

@@ -74,6 +74,8 @@ private:
 }
 
 @property (nonatomic, assign) int fd;
+@property (nonatomic, retain) NSObject<Emulator> *emulator;
+
 //@property (nonatomic, assign) iPoint cursor;
 
 

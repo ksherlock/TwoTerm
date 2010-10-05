@@ -10,14 +10,19 @@
 
 
 @class EmulatorView;
-
-@interface TermWindowController : NSWindowController {
+@protocol  Emulator;
+    
+@interface TermWindowController : NSWindowController <NSWindowDelegate> {
 
     IBOutlet EmulatorView *_emulatorView;
 
+    NSObject <Emulator> *_emulator;
+    
     int _child;
     
 }
+
+@property (nonatomic, retain) NSObject<Emulator> *emulator;
 
 -(void)initPTY;
 

@@ -9,7 +9,8 @@
 #import "TwoTermAppDelegate.h"
 
 #import "TermWindowController.h"
-
+#import "Defaults.h"
+#import "VT52.h"
 
 @implementation TwoTermAppDelegate
 
@@ -18,20 +19,48 @@
 
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-	// Insert code here to initialize your application 
-    /*
-    NSImage *image;
-    CGImageRef imgRef = ImageForCharacter('A');
+
+    TermWindowController *controller;
+
     
-    image = [[NSImage alloc] initWithCGImage: imgRef size: CGSizeZero];
+    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
     
-    [imageView setImage: image];
-    [image release];
-    CGImageRelease(imgRef);
-    */
+    [nc addObserver: self selector: @selector(newTerminal:) name: kNotificationNewTerminal object: nil];
     
-    NSWindowController * win = [TermWindowController new];
-    [win showWindow: nil];
+    
+    controller = [TermWindowController new];
+    [controller showWindow: nil];
+    // this leak is ok.
 }
+
+-(void)dealloc {
+ 
+    [[NSNotificationCenter defaultCenter] removeObserver: self];
+    
+    [super dealloc];
+}
+
+
+-(void)newTerminal: (NSNotification *)notification
+{
+    
+    TermWindowController *controller;
+    
+    NSDictionary *userInfo = [notification userInfo];
+
+    
+    Class klass = [userInfo objectForKey: @"Class"];
+    if ([klass conformsToProtocol: @protocol(Emulator)])
+        klass = [VT52 class];
+    
+
+    
+    controller = [TermWindowController new];
+    [controller setEmulator: [[klass new] autorelease]];
+    [controller showWindow: nil];
+    // this leak is ok.
+}
+
+
 
 @end

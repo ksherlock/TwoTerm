@@ -25,7 +25,7 @@
 @implementation EmulatorView
 
 @synthesize fd = _fd;
-
+@synthesize emulator = _emulator;
 
 #pragma mark -
 #pragma mark properties
@@ -82,8 +82,14 @@
     
     _cursorImg = [[_charGen imageForCharacter: '_'] retain];
     
-    _emulator = [VT52 new];
+    //_emulator = [VT52 new];
         
+    
+    // enable drag+drop for files/urls.
+    
+    
+    [self registerForDraggedTypes:[NSArray arrayWithObjects: NSFilenamesPboardType, NSURLPboardType , nil]];    
+    
 }
 
 -(BOOL)isFlipped
@@ -119,7 +125,7 @@
 
 -(void)drawRect:(NSRect)dirtyRect
 {
-    NSRect bounds = [self bounds];
+    //NSRect bounds = [self bounds];
 
     NSRect screenRect = dirtyRect;
 
@@ -285,44 +291,19 @@
 
 -(void)autoTypeText:(NSString *)text
 {
-
     
-    typedef void (*ProcessCharFX)(id, SEL, uint8_t, Screen *, OutputChannel *);
+    NSData *data = [text dataUsingEncoding: NSASCIIStringEncoding allowLossyConversion: YES];
 
-
-    std::vector<unichar> chars;
-    std::vector<unichar>::iterator iter;
-    iRect updateRect; // should be nil but whatever...
+    unsigned length = [data length];
     
     OutputChannel channel(_fd);
     
-    SEL cmd  =  @selector(processCharacter: screen: output:);
-    ProcessCharFX fx = (ProcessCharFX)[_emulator methodForSelector: cmd];
-    
-    
-    unsigned length = [text length];
-    
+
 
     if (!length) return;
     
-    chars.resize(length);
-    
-    [text getCharacters: &chars[0] range: NSMakeRange(0, length)];
-    
-    _screen.beginUpdate();
-    
-
-    // this posts as if it was output, need to post as if it was input
-    for (iter = chars.begin(); iter != chars.end(); ++iter)
-    {
-        fx(_emulator,cmd, *iter, &_screen, &channel);
-    }
-    
-    
-    updateRect = _screen.endUpdate();
-    
-    [self invalidateIRect: updateRect];
-
+    // bad form to write directly rather than going through Emulator object?
+    channel.write([data bytes], length);
 }
 
 
@@ -539,6 +520,86 @@
 
 -(IBAction)copy: (id)sender
 {
+}
+
+
+
+
+#pragma mark -
+#pragma mark Drag/Drop
+
+
+- (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender {
+    
+    NSPasteboard *pboard;
+    pboard = [sender draggingPasteboard];
+
+    NSArray *types = [pboard types];
+    
+    if ([types containsObject: NSFilenamesPboardType]) return NSDragOperationCopy;
+    if ([types containsObject: NSURLPboardType]) return NSDragOperationCopy;
+    
+    
+    return NSDragOperationNone;
+}
+
+- (BOOL)performDragOperation:(id <NSDraggingInfo>)sender {
+    NSPasteboard *pboard;
+    NSDragOperation sourceDragMask;
+    NSArray *types;
+    
+    sourceDragMask = [sender draggingSourceOperationMask];
+    pboard = [sender draggingPasteboard];
+ 
+    
+    types = [pboard types];
+    
+
+    if ([types containsObject: NSFilenamesPboardType])
+    {
+        NSArray *array = [pboard propertyListForType: NSFilenamesPboardType];
+        NSString *string = (NSString *)[array objectAtIndex: 0];
+        
+        string = [string stringByReplacingOccurrencesOfString: @"\\" withString: @"\\\\"];
+        string = [string stringByReplacingOccurrencesOfString: @" " withString: @"\\ "];
+        
+        [self autoTypeText: string];
+        
+        
+        //NSArray *array = [pboard propertyListForType: NSFilenamesPboardType];
+        //NSLog(@"%@", [array class]);
+        //NSLog(@"%@", [pboard propertyListForType: NSFilenamesPboardType]); 
+        return YES;
+    }
+    
+    
+    
+    
+    if ([types containsObject: NSURLPboardType])
+    {
+        NSArray *array = [pboard propertyListForType: NSURLPboardType];
+        NSObject *object = (NSObject *)[array objectAtIndex: 0];
+        
+        if ([object isKindOfClass: [NSString class]])
+        {
+            [self autoTypeText: (NSString *)object];
+            return YES;
+        }
+        
+        if ([object isKindOfClass: [NSURL class]])
+        {
+            [self autoTypeText: [(NSURL *)object absoluteString]];
+            return YES;
+        }
+        
+        // if file://, use the pathname?
+        
+        
+        //NSLog(@"%@", [array class]);
+        //NSLog(@"%@", [pboard propertyListForType: NSURLPboardType]); 
+    }
+    
+    return NO;
 }
 
 

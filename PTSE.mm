@@ -39,6 +39,11 @@ enum  {
     return "proterm-special";
 }
 
++(NSString *)name
+{
+    return @"Proterm Special Emulation";
+}
+
 -(NSString *)name
 {
     return @"Proterm Special Emulation";
@@ -48,6 +53,19 @@ enum  {
 {
     _state = StateText;
 }
+
+-(BOOL)resizable
+{
+    return NO;
+}
+
+-(struct winsize)defaultSize
+{
+    struct winsize ws = { 24, 80, 0, 0 };
+    
+    return ws;
+}
+
 
 -(void)processCharacter:(uint8_t)c screen:(Screen *)screen output:(OutputChannel *)output
 {

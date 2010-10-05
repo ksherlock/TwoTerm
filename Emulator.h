@@ -9,6 +9,7 @@
 #include <sys/ttycom.h>
 
 @class NSEvent;
+@class NSMenu;
 
 #ifdef __cplusplus
 class Screen;
@@ -20,12 +21,23 @@ class OutputChannel;
 
 #import "iGeometry.h"
 
+
+@interface EmulatorManager : NSObject
+
++(void)registerClass: (Class)klass;
++(NSMenu *)emulatorMenu;
++(id)emulatorForTag: (unsigned)tag;
+
+@end
+
 @protocol Emulator
 
 -(void)processCharacter: (uint8_t)c screen: (Screen *)screen output: (OutputChannel *)output;
 -(void)keyDown: (NSEvent *)event screen: (Screen *)screen output: (OutputChannel *)output;
+
 -(void)reset;
 
++(NSString *)name;
 -(NSString *)name;
 
 -(const char *)termName;

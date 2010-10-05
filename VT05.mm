@@ -41,6 +41,11 @@ enum {
 };
 
 
++(NSString *)name
+{
+    return @"vt05";
+}
+
 -(NSString *)name
 {
     return @"vt05";
