@@ -30,6 +30,11 @@ enum {
 };
 
 
++(void)load
+{
+    [EmulatorManager registerClass: self];
+}
+
 -(id)init
 {
     self = [super init];

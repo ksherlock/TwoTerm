@@ -8,6 +8,7 @@
 
 #import "NewTerminalWindowController.h"
 #import "Emulator.h"
+#import "Defaults.h"
 
 @implementation NewTerminalWindowController
 
@@ -22,7 +23,7 @@
 - (void)dealloc {
     // Clean-up code here.
 
-    [_terminalTypeButton release];    
+    //[_terminalTypeButton release];    
     
     [super dealloc];
 }
@@ -53,6 +54,13 @@
     
     if (klass)
     {
+        NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+        NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+                                  klass, @"Class",
+                                  nil];
+        
+        [nc postNotificationName: kNotificationNewTerminal object: self userInfo: userInfo];
+        
         // post notificiation...
     }
     

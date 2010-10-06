@@ -17,6 +17,7 @@
 @property (assign) IBOutlet NSImageView *imageView;
 
 
+
 -(void)newTerminal: (NSNotification *)notification;
 
 @end

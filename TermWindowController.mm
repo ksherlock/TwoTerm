@@ -34,7 +34,7 @@
 -(void)dealloc
 {    
     [_emulator release];
-    [_emulatorView release];
+    //[_emulatorView release];
     
     [super dealloc];
 }
@@ -51,7 +51,7 @@
     int pid;
     int fd;
     struct termios term;
-    struct winsize ws = { 24, 80, 0, 0 };
+    struct winsize ws = [_emulator defaultSize];
     //int flags;
     
     memset(&term, 0, sizeof(term));
@@ -75,7 +75,9 @@
     
     if (pid < 0)
     {
-        //error
+        fprintf(stderr, "forkpty failed\n");
+        fflush(stderr);
+        
         return;
     }
     if (pid == 0)
@@ -83,7 +85,7 @@
         
         std::vector<const char *> environ;
         std::string s;
-        ;
+        
             
         s.append("TERM_PROGRAM=2Term");
         s.append(1, (char)0);
@@ -118,6 +120,7 @@
         
         // TODO -- option for localhost, telnet, ssh, etc.
         execle("/usr/bin/login", "login", "-pf", getlogin(), NULL, &environ[0]);
+        
         fprintf(stderr, "execle failed\n");
         fflush(stderr);
         
@@ -130,6 +133,18 @@
     fcntl(fd, F_SETFL, flags | O_NONBLOCK);
     */
 
+    if (![_emulator resizable])
+    {
+        
+        NSWindow *window = [self window];
+        NSUInteger mask = [window styleMask];
+        
+        
+        [window setShowsResizeIndicator: NO];
+        
+        [window setStyleMask: mask & ~NSResizableWindowMask];
+    }
+    
     _child = pid;
     
     [_emulatorView setFd: fd];

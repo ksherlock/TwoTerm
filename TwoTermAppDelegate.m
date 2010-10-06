@@ -9,6 +9,7 @@
 #import "TwoTermAppDelegate.h"
 
 #import "TermWindowController.h"
+#import "NewTerminalWindowController.h"
 #import "Defaults.h"
 #import "VT52.h"
 
@@ -41,6 +42,18 @@
 }
 
 
+-(IBAction)newDocument: (id)sender
+{
+    NewTerminalWindowController *controller = [NewTerminalWindowController new];
+
+    
+    [controller showWindow: nil];
+    // this leak is ok.
+}
+
+#pragma mark -
+#pragma mark Notificiations
+
 -(void)newTerminal: (NSNotification *)notification
 {
     
@@ -50,7 +63,7 @@
 
     
     Class klass = [userInfo objectForKey: @"Class"];
-    if ([klass conformsToProtocol: @protocol(Emulator)])
+    if (![klass conformsToProtocol: @protocol(Emulator)])
         klass = [VT52 class];
     
 

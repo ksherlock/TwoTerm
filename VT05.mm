@@ -40,15 +40,19 @@ enum {
     
 };
 
++(void)load
+{
+    [EmulatorManager registerClass: self];
+}
 
 +(NSString *)name
 {
-    return @"vt05";
+    return @"VT05";
 }
 
 -(NSString *)name
 {
-    return @"vt05";
+    return @"VT05";
 }
 
 -(const char *)termName

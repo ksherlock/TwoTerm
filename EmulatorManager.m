@@ -28,17 +28,17 @@ static NSMutableArray *array = nil;
     return nil; 
 }
 
-+(void)load
-{
-    array = [NSMutableArray new];
-}
 
+// can be called before +load.
 +(void)registerClass: (Class)klass
 {
     if (klass && [klass conformsToProtocol: @protocol(Emulator)])
     {
         @synchronized (self)
         {
+            if (!array)
+                array = [NSMutableArray new];
+
             [array addObject: klass];
         }
     }
@@ -69,7 +69,7 @@ static NSMutableArray *array = nil;
 {
     @synchronized(self) 
     {
-        if (tag && tag < [array count])
+        if (tag && tag <= [array count])
         {
             return [array objectAtIndex: tag - 1];
         }

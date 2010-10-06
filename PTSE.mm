@@ -33,10 +33,9 @@ enum  {
     
 };
 
-
--(const char *)termName
++(void)load
 {
-    return "proterm-special";
+    [EmulatorManager registerClass: self];
 }
 
 +(NSString *)name
@@ -48,6 +47,12 @@ enum  {
 {
     return @"Proterm Special Emulation";
 }
+
+-(const char *)termName
+{
+    return "proterm-special";
+}
+
 
 -(void)reset
 {

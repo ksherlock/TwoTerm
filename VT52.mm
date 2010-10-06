@@ -41,6 +41,11 @@ enum {
 
 @implementation VT52
 
++(void)load
+{
+    [EmulatorManager registerClass: self];
+}
+
 +(NSString *)name
 {
     return @"VT52";
