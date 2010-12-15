@@ -9,14 +9,19 @@
 #import <Cocoa/Cocoa.h>
 
 
-@interface CharacterGenerator : NSObject {
-
-    unsigned _base;
-    NSArray *_characters;
+@interface CharacterGenerator : NSObject
+{
+    CGImageRef _image;
+    NSMutableArray *_characters;
+    NSSize _size;
 }
 
 +(CharacterGenerator *)generator;
 
+
 -(NSImage *)imageForCharacter: (unsigned)character;
 
+-(void)drawCharacter: (unsigned)character atPoint: (NSPoint)point;
+
 @end
+
