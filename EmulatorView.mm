@@ -40,19 +40,21 @@
 
 -(void)awakeFromNib
 {
-    CIFilter *filter;
-    NSMutableArray *filters;
+    //CIFilter *filter;
+    //NSMutableArray *filters;
     
     _charWidth = 7;
     _charHeight = 16;
     
     
     
-    _foregroundColor = [[NSColor greenColor] retain];
-    _backgroundColor = [[NSColor blackColor] retain];
+    //_foregroundColor = [[NSColor greenColor] retain];
+    //_backgroundColor = [[NSColor blackColor] retain];
     _boldColor = [[NSColor redColor] retain];
+    _foregroundColor  = [[NSColor whiteColor] retain];
+    _backgroundColor = [[NSColor blueColor] retain];
     
-    
+    /*
     [self setWantsLayer: YES];
     
     filters = [NSMutableArray arrayWithCapacity: 3];
@@ -74,13 +76,14 @@
     [filters addObject: filter];
     
     [self setContentFilters: filters];
+    */
     
     _screen.setFD(_fd);
     _screen.setView(self);
     
     _charGen = [[CharacterGenerator generator] retain];
     
-    _cursorImg = [[_charGen imageForCharacter: '_'] retain];
+    _cursorImg = [[_charGen imageForCharacter: 0x7f] retain];
     
     //_emulator = [VT52 new];
         
@@ -192,7 +195,7 @@
             if (flag & Screen::FlagBold)
                 currentFront = _boldColor;
             
-            
+
             img = [_charGen imageForCharacter: ci.c];
             
             if (flag & Screen::FlagInverse)
@@ -222,7 +225,8 @@
                 if (setFront) [currentFront setFill];
                 
                 [img drawInRect: charRect 
-                       fromRect: NSZeroRect operation: NSCompositeCopy 
+                       fromRect: NSZeroRect 
+                      operation: NSCompositeCopy 
                        fraction: 1.0 
                  respectFlipped: YES 
                           hints: nil];

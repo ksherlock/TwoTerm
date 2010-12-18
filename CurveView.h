@@ -16,4 +16,6 @@
 
 @property (nonatomic, retain) NSColor *color;
 
+-(void)initScanLines;
+
 @end

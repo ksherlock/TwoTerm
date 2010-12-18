@@ -10,17 +10,23 @@
 
 
 @class EmulatorView;
+@class CurveView;
+
 @protocol  Emulator;
     
 @interface TermWindowController : NSWindowController <NSWindowDelegate> {
 
-    IBOutlet EmulatorView *_emulatorView;
-
+    EmulatorView *_emulatorView;
+    CurveView *_curveView;
+    
     NSObject <Emulator> *_emulator;
     
     int _child;
     
 }
+
+@property (nonatomic, retain) IBOutlet EmulatorView *emulatorView;
+@property (nonatomic, retain) IBOutlet CurveView *curveView;
 
 @property (nonatomic, retain) NSObject<Emulator> *emulator;
 

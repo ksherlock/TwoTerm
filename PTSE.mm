@@ -111,7 +111,7 @@ enum  {
                 break;
             case CTRL('I'):
                 //Move cursor to next tab stop (every 8 chars).
-                screen->setX((screen->x() + 8) & 0x07);
+                screen->setX((screen->x() + 8) & ~0x07);
                 break;
             case CTRL('A'):
                 //Move cursor to beginning of line.
@@ -139,6 +139,7 @@ enum  {
                 
             case CTRL('D'):
                 //Delete current character (under cursor).
+                // TODO -- does this shift the rest of the row?
                 break;
             case CTRL('F'):
                 //Insert space at cursor.
@@ -209,6 +210,12 @@ enum  {
                 _state = StateTone1;
                 break;
                 
+            default:
+                if (c >= 0x20 && c < 0x7f)
+                {
+                    screen->putc(c);
+                }
+                break;
                 
         }
         
@@ -272,9 +279,20 @@ enum  {
         switch (uc)
         {
             case NSLeftArrowFunctionKey:
+                output->write(CTRL('H'));
+                break;
+                
             case NSRightArrowFunctionKey:
+                output->write(CTRL('U'));
+                break;
+                
             case NSUpArrowFunctionKey:
+                output->write(CTRL('K'));
+                break;
+                
             case NSDownArrowFunctionKey:
+                output->write(CTRL('J'));
+                break;
                 
             default:
                 if (uc <= 0x7f)

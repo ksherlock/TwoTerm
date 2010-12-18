@@ -8,8 +8,10 @@
 
 #import "TermWindowController.h"
 #import "EmulatorView.h"
-#import "VT52.h"
+#import "CurveView.h"
 
+#import "VT52.h"
+#import "PTSE.h"
 
 #define TTYDEFCHARS
 
@@ -25,6 +27,8 @@
 @implementation TermWindowController
 
 @synthesize emulator = _emulator;
+@synthesize emulatorView = _emulatorView;
+@synthesize curveView = _curveView;
 
 +(id)new
 {
@@ -34,7 +38,9 @@
 -(void)dealloc
 {    
     [_emulator release];
-    //[_emulatorView release];
+    [_emulatorView release];
+    [_curveView release];
+
     
     [super dealloc];
 }
@@ -159,9 +165,18 @@
 {
     [super windowDidLoad];
     
-    if (!_emulator) [self setEmulator: [[VT52 new] autorelease]];
+    if (!_emulator)
+    {
+        // window title is bound to _emulator
+        [self willChangeValueForKey: @"emulator"];
+        _emulator = [PTSE new];
+        [self didChangeValueForKey: @"emulator"];
+    }
     
     [_emulatorView setEmulator: _emulator];
+    
+    [_curveView initScanLines];
+    [_curveView setColor: [NSColor blueColor]];
     
     [self initPTY];
 }

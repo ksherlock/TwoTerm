@@ -7,7 +7,7 @@
 //
 
 #import "CurveView.h"
-
+#import "ScanLineFilter.h"
 
 @implementation CurveView
 
@@ -19,6 +19,34 @@
         // Initialization code here.
     }
     return self;
+}
+
+-(void)initScanLines
+{
+    NSMutableArray *filters;
+    CIFilter *filter;
+    
+    [self setWantsLayer: YES];
+    
+    filters = [NSMutableArray arrayWithCapacity: 3];
+    
+    
+    
+    //add the scanlines (which are vertical and must therfore be rotated
+    
+    filter = [[ScanLineFilter new] autorelease];
+    [filter setValue: [NSNumber numberWithFloat: 0.75] forKey: @"inputOpacity"];
+    [filters addObject: filter];
+    
+    //blur it a bit...
+    
+    filter = [CIFilter filterWithName: @"CIGaussianBlur"];
+    [filter setDefaults];
+    [filter setValue: [NSNumber numberWithFloat: 0.33] forKey: @"inputRadius"];
+    
+    [filters addObject: filter];
+    
+    [self setContentFilters: filters];
 }
 
 #define curveSize 4
