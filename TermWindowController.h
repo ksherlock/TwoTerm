@@ -16,14 +16,20 @@
     
 @interface TermWindowController : NSWindowController <NSWindowDelegate> {
 
+    NSDictionary *_parameters;
+    
     EmulatorView *_emulatorView;
     CurveView *_curveView;
+    
+    
     
     NSObject <Emulator> *_emulator;
     
     int _child;
     
 }
+
+@property (nonatomic, retain) NSDictionary *parameters;
 
 @property (nonatomic, retain) IBOutlet EmulatorView *emulatorView;
 @property (nonatomic, retain) IBOutlet CurveView *curveView;

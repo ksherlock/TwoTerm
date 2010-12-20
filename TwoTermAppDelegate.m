@@ -61,15 +61,17 @@
     
     NSDictionary *userInfo = [notification userInfo];
 
-    
+    /*
     Class klass = [userInfo objectForKey: @"Class"];
     if (![klass conformsToProtocol: @protocol(Emulator)])
         klass = [VT52 class];
     
-
+    */
     
     controller = [TermWindowController new];
-    [controller setEmulator: [[klass new] autorelease]];
+    [controller setParameters: userInfo];
+    
+    //[controller setEmulator: [[klass new] autorelease]];
     [controller showWindow: nil];
     // this leak is ok.
 }

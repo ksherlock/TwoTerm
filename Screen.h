@@ -83,10 +83,13 @@ public:
     void setFlag(uint8_t flag);
     
     void putc(uint8_t c, bool incrementX = true);
+    CharInfo getc(int x, int y) const;
+    
+    void deletec();
+    void insertc(uint8_t c);
     
     void tabTo(unsigned x);
     
-    CharInfo getc(int x, int y) const;
     
     
     void erase(EraseRegion);

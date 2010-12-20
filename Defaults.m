@@ -9,4 +9,11 @@
 #import "Defaults.h"
 
 
-NSString *kNotificationNewTerminal = @"com.ksherlock.iiTerm: New Terminal";
+NSString *kNotificationNewTerminal = @"com.ksherlock.TwoTerm: New Terminal";
+
+
+NSString *kForegroundColor = @"Foreground Color";
+NSString *kBackgroundColor = @"Background Color";
+NSString *kScanLines = @"Scan Lines";
+
+NSString *kClass = @"Class";

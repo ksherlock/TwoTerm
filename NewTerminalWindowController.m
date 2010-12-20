@@ -12,6 +12,11 @@
 
 @implementation NewTerminalWindowController
 
+@synthesize terminalTypeButton = _terminalTypeButton;
+@synthesize scanLineButton = _scanLineButton;
+@synthesize foregroundColorControl = _foregroundColorControl;
+@synthesize backgroundColorControl = _backgroundColorControl;
+
 
 +(id)new
 {
@@ -23,7 +28,10 @@
 - (void)dealloc {
     // Clean-up code here.
 
-    //[_terminalTypeButton release];    
+    [_terminalTypeButton release];
+    [_backgroundColorControl release];
+    [_foregroundColorControl release];
+    [_scanLineButton release];
     
     [super dealloc];
 }
@@ -56,7 +64,10 @@
     {
         NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
         NSDictionary *userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                                  klass, @"Class",
+                                  klass, kClass,
+                                  [NSNumber numberWithBool: [_scanLineButton intValue]], kScanLines,
+                                  [_foregroundColorControl color], kForegroundColor,
+                                  [_backgroundColorControl color], kBackgroundColor,
                                   nil];
         
         [nc postNotificationName: kNotificationNewTerminal object: self userInfo: userInfo];

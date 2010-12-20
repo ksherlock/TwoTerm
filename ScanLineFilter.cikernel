@@ -13,7 +13,7 @@ kernel vec4 scanline(sampler image, float opacity)
 	// isOdd == 0 --> return pixel
 	// isOdd == 1 --> return pixel * opacity
 	
-	float multiplier = compare(isOdd - 1.0, 1.0, opacity);
-	
+	//float multiplier = compare(isOdd - 1.0, 1.0, opacity);
+	float multiplier = isOdd == 0.0 ? 1.0 : opacity;
 	return pixel * multiplier;
 }

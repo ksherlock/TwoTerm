@@ -13,6 +13,9 @@
 #import "VT52.h"
 #import "PTSE.h"
 
+#import "Defaults.h"
+
+
 #define TTYDEFCHARS
 
 #include <util.h>
@@ -30,6 +33,10 @@
 @synthesize emulatorView = _emulatorView;
 @synthesize curveView = _curveView;
 
+@synthesize parameters = _parameters;
+
+
+
 +(id)new
 {
     return [[self alloc] initWithWindowNibName: @"TermWindow"];
@@ -41,6 +48,7 @@
     [_emulatorView release];
     [_curveView release];
 
+    [_parameters release];
     
     [super dealloc];
 }
@@ -138,6 +146,8 @@
     if (fcntl(fd, F_GETFL, &flags) < 0) flags = 0;
     fcntl(fd, F_SETFL, flags | O_NONBLOCK);
     */
+    
+    [_emulatorView resizeTo: iSize(ws.ws_col, ws.ws_row)];
 
     if (![_emulator resizable])
     {
@@ -163,20 +173,44 @@
 
 - (void)windowDidLoad
 {
+    
+    BOOL scanLines;
+    NSColor *foregroundColor;
+    NSColor *backgroundColor;
+    Class klass;
+    id o;
+    
     [super windowDidLoad];
     
-    if (!_emulator)
+    klass = [_parameters objectForKey: kClass];
+    if (!klass || ![klass conformsToProtocol: @protocol(Emulator)])
     {
-        // window title is bound to _emulator
-        [self willChangeValueForKey: @"emulator"];
-        _emulator = [PTSE new];
-        [self didChangeValueForKey: @"emulator"];
+        klass = [VT52 class];
     }
     
-    [_emulatorView setEmulator: _emulator];
+    o = [_parameters objectForKey: kScanLines];
+    scanLines = o ? [(NSNumber *)o boolValue] : YES;
     
-    [_curveView initScanLines];
-    [_curveView setColor: [NSColor blueColor]];
+    o = [_parameters objectForKey: kForegroundColor];
+    foregroundColor = o ? (NSColor *)o : [NSColor greenColor];
+    
+    o = [_parameters objectForKey: kBackgroundColor];
+    backgroundColor = o ? (NSColor *)o : [NSColor blackColor];
+    
+    
+    [self willChangeValueForKey: @"emulator"];
+    _emulator = [klass new];
+    [self didChangeValueForKey: @"emulator"];
+
+
+    [_emulatorView setEmulator: _emulator];
+    [_emulatorView setForegroundColor: foregroundColor];
+    [_emulatorView setBackgroundColor: backgroundColor];
+    [_emulatorView setScanLines: scanLines];
+    
+    
+    //[_curveView initScanLines];
+    //[_curveView setColor: [NSColor blueColor]];
     
     [self initPTY];
 }

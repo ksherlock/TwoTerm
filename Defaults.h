@@ -14,6 +14,12 @@ extern "C" {
 #endif
 
     extern NSString *kNotificationNewTerminal;
+    
+    extern NSString *kForegroundColor;
+    extern NSString *kBackgroundColor;
+    extern NSString *kScanLines;
+    extern NSString *kClass;
+    
 
     
 #ifdef __cplusplus

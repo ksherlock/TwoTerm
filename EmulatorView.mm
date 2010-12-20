@@ -27,6 +27,11 @@
 @synthesize fd = _fd;
 @synthesize emulator = _emulator;
 
+@synthesize foregroundColor = _foregroundColor;
+@synthesize backgroundColor = _backgroundColor;
+@synthesize scanLines = _scanLines;
+
+
 #pragma mark -
 #pragma mark properties
 
@@ -40,12 +45,11 @@
 
 -(void)awakeFromNib
 {
-    //CIFilter *filter;
-    //NSMutableArray *filters;
-    
     _charWidth = 7;
     _charHeight = 16;
     
+    _paddingLeft = 8;
+    _paddingTop = 8;
     
     
     //_foregroundColor = [[NSColor greenColor] retain];
@@ -54,36 +58,16 @@
     _foregroundColor  = [[NSColor whiteColor] retain];
     _backgroundColor = [[NSColor blueColor] retain];
     
-    /*
-    [self setWantsLayer: YES];
-    
-    filters = [NSMutableArray arrayWithCapacity: 3];
-    
-    
-    
-    //add the scanlines (which are vertical and must therfore be rotated
-    
-    filter = [[ScanLineFilter new] autorelease];
-    [filter setValue: [NSNumber numberWithFloat: 0.75] forKey: @"inputOpacity"];
-    [filters addObject: filter];
-    
-    //blur it a bit...
-    
-    filter = [CIFilter filterWithName: @"CIGaussianBlur"];
-    [filter setDefaults];
-    [filter setValue: [NSNumber numberWithFloat: 0.33] forKey: @"inputRadius"];
-    
-    [filters addObject: filter];
-    
-    [self setContentFilters: filters];
-    */
+
+
+    //[self initScanLines];
     
     _screen.setFD(_fd);
     _screen.setView(self);
     
     _charGen = [[CharacterGenerator generator] retain];
     
-    _cursorImg = [[_charGen imageForCharacter: 0x7f] retain];
+    _cursorImg = [[_charGen imageForCharacter: '_'] retain];
     
     //_emulator = [VT52 new];
         
@@ -93,6 +77,65 @@
     
     [self registerForDraggedTypes:[NSArray arrayWithObjects: NSFilenamesPboardType, NSURLPboardType , nil]];    
     
+}
+
+-(void)setBackgroundColor:(NSColor *)color
+{
+    if (_backgroundColor == color) return;
+    
+    [_backgroundColor release];
+    _backgroundColor = [color retain];
+    
+    [self setNeedsDisplay: YES];
+}
+
+-(void)setForegroundColor:(NSColor *)color
+{
+    if (_foregroundColor == color) return;
+    
+    [_foregroundColor release];
+    _foregroundColor = [color retain];
+    
+    [self setNeedsDisplay: YES];
+}
+
+-(void)setScanLines:(BOOL)scanLines
+{
+    if (_scanLines == scanLines) return;
+    
+    _scanLines = scanLines;
+    
+    if (_scanLines)
+    {
+        NSMutableArray *filters;
+        CIFilter *filter;
+        
+        [self setWantsLayer: YES];
+        
+        filters = [NSMutableArray arrayWithCapacity: 3];
+        
+        
+        
+        //add the scanlines (which are vertical and must therfore be rotated
+        
+        filter = [[ScanLineFilter new] autorelease];
+        [filter setValue: [NSNumber numberWithFloat: 0.75] forKey: @"inputOpacity"];
+        [filters addObject: filter];
+        
+        //blur it a bit...
+        
+        filter = [CIFilter filterWithName: @"CIGaussianBlur"];
+        [filter setDefaults];
+        [filter setValue: [NSNumber numberWithFloat: 0.33] forKey: @"inputRadius"];
+        
+        [filters addObject: filter];
+        
+        [self setContentFilters: filters];   
+    }
+    else
+    {
+        [self setContentFilters: nil];
+    }
 }
 
 -(BOOL)isFlipped
@@ -181,9 +224,10 @@
         for (y = minY; y <= maxY; ++y)
         {
             NSRect charRect = NSMakeRect(_paddingLeft + x * _charWidth, _paddingTop + y *_charHeight, _charWidth, _charHeight);
-            NSImage *img;
+            //NSImage *img;
             CharInfo ci = _screen.getc(x, y);
             unsigned flag = ci.flag;
+            uint8_t c = ci.c;
             
             // todo -- check flags to determine fg/bg color, etc.
             // need to draw background individually....
@@ -196,7 +240,13 @@
                 currentFront = _boldColor;
             
 
-            img = [_charGen imageForCharacter: ci.c];
+            if (flag & Screen::FlagMouseText)
+            {
+                if (c >= '@' && c <= '_') c |= 0x80;
+            }
+            
+            
+            //img = [_charGen imageForCharacter: c];
             
             if (flag & Screen::FlagInverse)
             {
@@ -211,26 +261,12 @@
             }
             
             if (_foregroundColor != currentFront) setFront = YES;
-            
+            if (setFront) [currentFront setFill];
+
+            [_charGen drawCharacter: c atPoint: NSMakePoint(_paddingLeft + x * _charWidth, _paddingTop + y * _charHeight)];
             
 
-            /*
-            [img drawAtPoint: NSMakePoint(x * _charWidth, y * _charHeight) 
-                    fromRect: NSZeroRect 
-                   operation:NSCompositeCopy 
-                    fraction: 1.0];
-            */
-            if (img)
-            {
-                if (setFront) [currentFront setFill];
-                
-                [img drawInRect: charRect 
-                       fromRect: NSZeroRect 
-                      operation: NSCompositeCopy 
-                       fraction: 1.0 
-                 respectFlipped: YES 
-                          hints: nil];
-            }
+            
         }
     }
     
@@ -371,6 +407,7 @@
         uint8_t buffer[512];
         ssize_t size;
         
+        
         size = read(_fd, buffer, sizeof(buffer));
         
         if (size == 0) break;
@@ -381,8 +418,13 @@
             perror("[EmulatorView dataAvailable]");
             break;
         }
-        
-        
+
+#if 0
+        FILE *debug = fopen("/tmp/debug.txt", "a");
+        fwrite(buffer, 1, size, debug);
+        fflush(debug);
+        fclose(debug);
+#endif
         pool = [NSAutoreleasePool new];
         _screen.beginUpdate();
 
@@ -447,7 +489,9 @@
     wframe.size.height += newSize.height - bounds.size.height;
     wframe.size.width += newSize.width - bounds.size.width;
     
+    _inResizeTo = YES;
     [window setFrame: wframe display: YES animate: YES];
+    _inResizeTo = NO;
 }
 
 
@@ -470,29 +514,52 @@
 #if 0
 -(void)viewWillStartLiveResize
 {
-    NSLog(@"%s", sel_getName(_cmd)); 
-}
-
--(void)viewDidEndLiveResize
-{
-    NSLog(@"%s", sel_getName(_cmd)); 
+    //NSLog(@"%s", sel_getName(_cmd)); 
+    
 }
 #endif
+-(void)viewDidEndLiveResize
+{
+   //NSLog(@"%s", sel_getName(_cmd)); 
+    [super viewDidEndLiveResize];
+    
+    [self setNeedsDisplay: YES];    
+}
 
+
+/*
+ * inLiveResize indicates the user is resizing the window -or- the -(void)setWindowFrame: animated: YES.
+ * non-live resize indicates zooming or resizeTo w/o animation.
+ *
+ *
+ */
 -(void)setFrame:(NSRect)frameRect
 {
     //NSLog(@"%s", sel_getName(_cmd)); 
 
-    if ([self inLiveResize])
+    BOOL inLiveResize = [self inLiveResize];
+
+    [super setFrame: frameRect];
+
+    
+    if (inLiveResize && _inResizeTo)
     {
-        unsigned width = floor((frameRect.size.width - _paddingLeft) / _charWidth);
-        unsigned height = floor((frameRect.size.height - _paddingTop) / _charHeight);
+        return;
+    }
+    
+    if (/* inLiveResize */ YES)
+    {
+        // user is resizing window.
+        // or zoom.
+        unsigned width = floor((frameRect.size.width - _paddingLeft * 2) / _charWidth);
+        unsigned height = floor((frameRect.size.height - _paddingTop * 2) / _charHeight);
         
         _screen.lock();
         _screen.setSize(width, height, false);
         _screen.unlock();
+        
+        return;
     }
-    [super setFrame: frameRect];
 }
 
 

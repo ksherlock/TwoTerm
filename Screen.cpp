@@ -87,6 +87,52 @@ void Screen::putc(uint8_t c, bool incrementX)
     }    
 }
 
+void Screen::deletec()
+{
+    // delete character at cursor.
+    // move following character up
+    // set final character to ' ' (retaining flags from previous char)
+    
+    if (_cursor.x >= _width) return;
+    
+    _updates.push_back(_cursor);
+    _updates.push_back(iPoint(_width - 1, _cursor.y));
+    
+    
+    CharInfoIterator end = _screen[_cursor.y].end() - 1;
+    CharInfoIterator iter = _screen[_cursor.y].begin() + _cursor.x;
+    
+
+    for ( ; iter != end; ++iter)
+    {
+        iter[0] = iter[1];
+        
+    }
+    // retain the flags previously there.
+    end->c = ' ';
+}
+
+void Screen::insertc(uint8_t c)
+{
+    // insert character at cursor.
+    // move following characters up (retaining flags).
+    
+    if (_cursor.x >= _width) return;
+    
+    _updates.push_back(_cursor);
+    _updates.push_back(iPoint(_width - 1, _cursor.y));
+    
+    CharInfoIterator end = _screen[_cursor.y].end() - 1;
+    CharInfoIterator iter = _screen[_cursor.y].begin() + _cursor.x;
+    
+    for ( ; iter != end; ++iter)
+    {
+        iter[1] = iter[0];
+    }
+    
+    iter->c = ' ';
+}
+
 
 void Screen::tabTo(unsigned xPos)
 {
@@ -96,6 +142,9 @@ void Screen::tabTo(unsigned xPos)
     xPos = std::min(xPos, _width - 1);
     
     
+    _updates.push_back(_cursor);
+    _updates.push_back(iPoint(xPos, _cursor.y));
+                       
     for (unsigned x = _cursor.x; x < xPos; ++x)
     {
         _screen[_cursor.y][x] = clear;

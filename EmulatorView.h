@@ -65,6 +65,11 @@ private:
     NSImage *_cursorImg;
     NSTimer *_cursorTimer;
     BOOL _cursorOn;
+    
+    
+    BOOL _scanLines;
+    BOOL _inResizeTo;
+    
         
 #ifdef __cplusplus
     
@@ -73,11 +78,14 @@ private:
 #endif
 }
 
+@property (nonatomic, assign) BOOL scanLines;
 @property (nonatomic, assign) int fd;
+
+@property (nonatomic, retain) NSColor *foregroundColor;
+@property (nonatomic, retain) NSColor *backgroundColor;
 @property (nonatomic, retain) NSObject<Emulator> *emulator;
 
 //@property (nonatomic, assign) iPoint cursor;
-
 
 -(void)startBackgroundReader;
 -(void)dataAvailable;

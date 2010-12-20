@@ -12,8 +12,18 @@
 @interface NewTerminalWindowController : NSWindowController <NSWindowDelegate> {
 @private
 
-    IBOutlet NSPopUpButton *_terminalTypeButton;
+    NSPopUpButton *_terminalTypeButton;
+    NSButton *_scanLineButton;
+    
+    NSColorWell *_foregroundColorControl;
+    NSColorWell *_backgroundColorControl;
+    
 }
+
+@property (nonatomic, retain) IBOutlet NSPopUpButton *terminalTypeButton;
+@property (nonatomic, retain) IBOutlet NSButton *scanLineButton;
+@property (nonatomic, retain) IBOutlet NSColorWell *foregroundColorControl;
+@property (nonatomic, retain) IBOutlet NSColorWell *backgroundColorControl;
 
 -(IBAction)cancelButton: (id)sender;
 -(IBAction)connectButton: (id)sender;

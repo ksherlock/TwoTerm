@@ -107,11 +107,12 @@ enum  {
                 break;
             case CTRL('J'):
                 //Move cursor down one line.
-                screen->incrementY();
+                //screen->incrementY();
+                screen->lineFeed();
                 break;
             case CTRL('I'):
                 //Move cursor to next tab stop (every 8 chars).
-                screen->setX((screen->x() + 8) & ~0x07);
+                screen->tabTo((screen->x() + 8) & ~0x07);
                 break;
             case CTRL('A'):
                 //Move cursor to beginning of line.
@@ -132,7 +133,7 @@ enum  {
                 break;
                 
             case CTRL('M'):
-                screen->lineFeed();
+                //screen->lineFeed();
                 screen->setX(0);
                 break;
                 
@@ -140,15 +141,23 @@ enum  {
             case CTRL('D'):
                 //Delete current character (under cursor).
                 // TODO -- does this shift the rest of the row?
+                screen->deletec();
                 break;
             case CTRL('F'):
                 //Insert space at cursor.
+                screen->insertc(' ');
                 break;
+                
             case CTRL('Z'):
                 //Delete current line.
+                screen->removeLine(screen->y());
                 break;
             case CTRL('V'):
                 //Insert blank like.
+                // TODO -- verify if the line is before or after the current line,
+                // TODO -- verify if x/y change
+                // TODO -- verify scrolling behavior.
+                screen->addLine(screen->y()); 
                 break;
             case CTRL('Y'):
                 //Clear to end of line.
@@ -278,6 +287,20 @@ enum  {
         
         switch (uc)
         {
+            case NSEnterCharacter:
+                output->write(CTRL('M'));
+                break;
+                
+            case NSDeleteCharacter:
+                output->write(0x7f);
+                break;
+                
+            
+                // backspace and left arrow use the same code, alas.
+            case NSBackspaceCharacter:
+                output->write(CTRL('H'));
+                break;
+                
             case NSLeftArrowFunctionKey:
                 output->write(CTRL('H'));
                 break;
@@ -293,6 +316,7 @@ enum  {
             case NSDownArrowFunctionKey:
                 output->write(CTRL('J'));
                 break;
+
                 
             default:
                 if (uc <= 0x7f)
