@@ -138,7 +138,8 @@
         fprintf(stderr, "execle failed\n");
         fflush(stderr);
         
-        exit(-1);
+        // should not call exit.
+        _exit(-1);
         // child
     }
 
