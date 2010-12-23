@@ -17,6 +17,8 @@
 
 /*
  * The GNO Console Driver.
+ * this was gleaned from the source code.
+ *
  * 0x00 n/a
  * 0x01 ^A - enable overstrike mode (IODP_gInsertFlag = 0)
  * 0x02 ^B - enable insert mode (IODP_gInsertFlag = 1)
@@ -58,6 +60,8 @@
 
 
 /*
+ this was gleaned from the kernel reference manual.
+ 
  The new console driver supports all the features of the old 80-column Pascal firmware, 
  and adds a few extensions, with one exception - the codes that switched between 40 and 
  80 columns modes are not supported. It is not compatible with the GS/OS '.console' 
@@ -119,10 +123,12 @@ enum  {
     
     StateDCAX,
     StateDCAY,
-    
-    StateRepeatChar,
-    StateRepeatCount,
-    
+
+    StateSetPort1,
+    StateSetPort2,
+    StateSetPort3,
+    StateSetPort4, 
+    StateSetPort5
 };
 
 +(void)load
@@ -149,6 +155,14 @@ enum  {
 -(void)reset
 {
     _state = StateText;
+    
+    if (_viewPort)
+    {
+        delete _viewPort;
+        _viewPort = NULL;
+    }
+
+    // set flags to plain text.
 }
 
 -(BOOL)resizable
@@ -163,6 +177,11 @@ enum  {
     return ws;
 }
 
+-(void)dealloc
+{
+    delete _viewPort;
+    [super dealloc];
+}
 
 -(void)processCharacter:(uint8_t)c screen:(Screen *)screen output:(OutputChannel *)output
 {
@@ -171,144 +190,132 @@ enum  {
     {
         switch (c)
         {
-            case CTRL('N'):
-                //Set: inverse off, mousetext off.
-                screen->setFlag(Screen::FlagNormal);
-                break;
-            case CTRL('O'):
-                //Set: inverse on, mousetext off.
-                screen->setFlag(Screen::FlagInverse);
-                break;            
-            case CTRL('P'):
-                //Set inverse off, mousetext on.
-                screen->setFlag(Screen::FlagMouseText);
-                break;
-                
-                
-            case CTRL('H'):
-                //Move cursor left one character.
-                screen->decrementX();
-                break;
-            case CTRL('U'):
-                //Move cursor right one character.
-                screen->incrementX();
-                break;
-            case CTRL('K'):
-                //Move cursor up one line.
-                screen->decrementY();
-                break;
-            case CTRL('J'):
-                //Move cursor down one line.
-                //screen->incrementY();
-                screen->lineFeed();
-                break;
-            case CTRL('I'):
-                //Move cursor to next tab stop (every 8 chars).
-                screen->tabTo((screen->x() + 8) & ~0x07);
-                break;
             case CTRL('A'):
-                //Move cursor to beginning of line.
-                screen->setX(0);
+                // set cursor to flashing block.
                 break;
             case CTRL('B'):
-                //Move cursor to end of line.
-                screen->setX(screen->width() - 1);
+                // set cursor to flashing underscore.
                 break;
-            case CTRL('X'):
-                //Move cursor to upper-left corner.
-                screen->setCursor(0, 0);
+            
+            case CTRL('C'):
+                // begin set text window sequence
+                _state = StateSetPort1;
                 break;
-            case CTRL('^'):
-                // CONTROL-^, X + 32, Y + 32
-                //Position cursor to the X, Y coordinates.
-                _state = StateDCAX;
-                break;
-                
-            case CTRL('M'):
-                //screen->lineFeed();
-                screen->setX(0);
-                break;
-                
-                
-            case CTRL('D'):
-                //Delete current character (under cursor).
-                // TODO -- does this shift the rest of the row?
-                screen->deletec();
-                break;
-            case CTRL('F'):
-                //Insert space at cursor.
-                screen->insertc(' ');
-                break;
-                
-            case CTRL('Z'):
-                //Delete current line.
-                screen->removeLine(screen->y());
-                break;
-            case CTRL('V'):
-                //Insert blank like.
-                // TODO -- verify if the line is before or after the current line,
-                // TODO -- verify if x/y change
-                // TODO -- verify scrolling behavior.
-                screen->addLine(screen->y()); 
-                break;
-            case CTRL('Y'):
-                //Clear to end of line.
-                screen->eraseLine();
-                break;
-            case CTRL('W'):
-                //Clear to end of screen.
-                screen->eraseScreen();
-                break;
-            case CTRL('L'):
-                //Clear the screen (and home cursor)
-                screen->setCursor(0, 0);
-                screen->eraseScreen();
-                break;
-                
-                
+            
             case CTRL('E'):
-                //Inquire if using ProTERM Special Emulation
-                /*
-                 * When you send out [CONTROL-E] to a caller using ProTERM 
-                 * Special, the caller’s ProTERM will send back [CONTROL-“]”] 
-                 * (ASCII code 29). This allows a BBS to transparently 
-                 * detect the use of PSE.
-                 */
-                output->write(29);
+                // cursor on
+                break;
+            
+            case CTRL('F'):
+                //cursor off
                 break;
                 
-            case CTRL('R'):
-                //CONTROL-R, character, count
-                //Display character, count times.
-                /*
-                 * This allows a three character code to be used to display 
-                 * multiple characters. For example, to display a window frame, 
-                 * it is necessary to show the top and bottom borders which are 
-                 * long lines of the same character (dashes, underlines, etc.). 
-                 * To draw a 64-character line consisting of equal signs, send 
-                 * [CONTROL-R = @] where “@” is the ASCII code for 64.                 
-                 */
-                _state = StateRepeatChar;
-                break;
-         
             case CTRL('G'):
-                //Sound the Bell.
                 NSBeep();
                 break;
                 
-            case CTRL('T'):
-                //Sound single/dual-tone for duration.
-                /*
-                 * The tone command has two forms. The first invokes the single-tone 
-                 * generator, which produces relatively pure tones. The second 
-                 * invokes the dual-tone generator, which produces some rather 
-                 * interesting sounds. The three parameters, tone1, tone2, and 
-                 * duration, can all take values from 1 through 127. There is 
-                 * currently no known translation between pitch/duration values 
-                 * and actual frequencies/times.
-                 */
-                //NB - parsed but ignored, for now.
-                _state = StateTone1;
+            case CTRL('H'):
+                // todo -- honor the viewport.
+                screen->decrementX(true);
+                break;
+                
+            case CTRL('I'):
+                // tab
+                screen->tabTo((screen->x() + 8) & ~0x07);
+                break;
+            
+            case CTRL('J'):
+                // down 1 line.
+                screen->lineFeed();
+                break;
+            
+            case CTRL('K'):
+                // clear to end of screen
+                screen->erase(Screen::EraseAfterCursor);
+                break;
+                
+            case CTRL('L'):
+                // clear screen, go home.
+                screen->erase(Screen::EraseAll);
+                screen->setCursor(0, 0, true, true);
+                break;
+                
+            case CTRL('M'):
+                // move to left edge.
+                screen->setX(0, true);
+                break;
+                
+            case CTRL('N'):
+                // normal text.
+                screen->clearFlagBit(Screen::FlagInverse);
+                break;
+            
+            case CTRL('O'):
+                // inverse text.
+                screen->setFlagBit(Screen::FlagInverse);
+                break;
+                
+            case CTRL('Q'):
+                // insert line.
+                //TODO
+                break;
+            case CTRL('R'):
+                // delete line
+                // TODO
+                break;
+                
+            case CTRL('U'):
+                // right arrow.
+                screen->incrementX(true);
+                break;
+            
+            case CTRL('V'):
+                // scroll down 1 line.
+                // TODO
+                break;
+            case CTRL('W'):
+                // scroll up 1 line.
+                // TODO
+                break;
+            
+            case CTRL('X'):
+                //mouse text off
+                screen->clearFlagBit(Screen::FlagMouseText);
+                break;
+            
+            case CTRL('Y'):
+                // cursor home
+                screen->setCursor(0, 0, true, true);
+                break;
+            case CTRL('Z'):
+                // clear entire line
+                screen->erase(Screen::EraseLineAll);
+                break;
+            
+            case CTRL('['):
+                // mouse text on
+                // inverse must also be on.
+                screen->setFlagBit(Screen::FlagMouseText);
+                break;
+            
+            case CTRL('\\'):
+                // move cursor 1 character to the right
+                screen->incrementX(true);
+                break;
+                
+            case CTRL(']'):
+                // clear to end of line.
+                screen->erase(Screen::EraseLineAfterCursor);
+                break;
+            
+            case CTRL('^'):
+                // goto x y
+                _state = StateDCAX;
+                break;
+            
+            case CTRL('_'):
+                // move up 1 line
+                screen->decrementY(true);
                 break;
                 
             default:
@@ -337,29 +344,68 @@ enum  {
             _state = StateText;
             break;
     
-        case StateRepeatChar:
-            _repeatChar = c;
-            _state = StateRepeatCount;
+        case StateSetPort1:
+            // [
+            if (c == ']')
+            {
+                _state++;
+            }
+            else
+            {
+                _state = StateText;
+            }
             break;
         
-        case StateRepeatCount:
-            for (unsigned i = 0; i < c; ++i)
-            {
-                screen->putc(_repeatChar);
-            }
-            _state = StateText;
+        case StateSetPort2:
+            // left
+            _vp[0] = c - 32;
+            _state++;
             break;
+        
+        case StateSetPort3:
+            // right
+            _vp[1] = c - 32;
+            _state++;
+            break;
+        
+        case StateSetPort4:
+            // top
+            _vp[2] = c - 32;
+            _state++;
+            break;
+        case StateSetPort5:
+            // bottom
+            // and validation.
             
-        case StateTone1:
-            _state = StateTone2;
-            break;
-        case StateTone2:
-            // CONTROL-A indicates same as tone1.
-            _state = StateToneDuration;
-            break;
-        case StateToneDuration:
+            _vp[3] = c - 32;
+            
+            _vp[0] = std::max(0, _vp[0]);
+            _vp[2] = std::max(0, _vp[2]);
+            
+            _vp[1] = std::min(80, _vp[1]);
+            _vp[3] = std::min(24, _vp[3]);
+            
+
+            if (_vp[1] <= _vp[0]) _vp[1] = 80;
+            if (_vp[3] <= _vp[2]) _vp[3] = 24;
+            
+            if (_vp[0] == 0 && _vp[1] == 80 && _vp[2] == 0 && _vp[3] == 24)
+            {
+                delete _viewPort;
+                _viewPort = NULL;
+            }
+            else
+            {
+                if (!_viewPort) _viewPort = new ViewPort;
+                _viewPort->frame = iRect(_vp[0], _vp[2], _vp[1] - _vp[0], _vp[3] - _vp[2]);
+                
+                _viewPort->flags.wrap = 1;
+                _viewPort->flags.scroll = 1;
+                
+            }
+            
             _state = StateText;
-            break;
+            
     }
     
     
@@ -382,15 +428,14 @@ enum  {
             case NSEnterCharacter:
                 output->write(CTRL('M'));
                 break;
-                
+            /*    
             case NSDeleteCharacter:
                 output->write(0x7f);
                 break;
-                
+            */
             
-                // backspace and left arrow use the same code, alas.
             case NSBackspaceCharacter:
-                output->write(CTRL('H'));
+                output->write(0x7f);
                 break;
                 
             case NSLeftArrowFunctionKey:

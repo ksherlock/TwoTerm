@@ -12,12 +12,19 @@
 #include "iGeometry.h"
 
 
+
 @interface GNOConsole : NSObject <Emulator>
 {
     unsigned _state;
     
     iPoint _dca;
-    uint8_t _repeatChar;
+
+    int _vp[4];
+#ifdef __cplusplus
+    class ViewPort;
+    ViewPort *_viewPort;
+#endif
+    
     
 }
 
