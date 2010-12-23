@@ -28,27 +28,26 @@ typedef struct CharInfo {
 } CharInfo;
 
 
-typedef struct ViewPort {
+typedef struct TextPort {
 
+    enum RightMargin {
+        RMTruncate,
+        RMWrap,
+        RMOverwrite
+    };
+    
+    
         
     iRect frame;
+
+
+    RightMargin rightMargin;
     
-    union flags
-    {
-        unsigned wrap:1;
-        unsigned advance:1;
-        unsigned lineFeed:1;
-        unsigned scroll:1;
-        
-        flags()
-        {
-            wrap = 0;
-            advance = 0;
-            lineFeed = 0;
-            scroll = 0;
-        }
-        
-    } flags;
+    bool advanceCursor;
+    //bool lineFeed;
+    bool scroll;
+    
+
 };
 
 class Screen {
@@ -128,11 +127,15 @@ public:
     
     
     void lineFeed();
+    void lineFeed(TextPort *textPort);
+
     void reverseLineFeed();
+    void reverseLineFeed(TextPort *textPort);
     
     
-    void addLine(unsigned line);
-    void removeLine(unsigned line);
+    
+    void deleteLine(unsigned line);
+    void insertLine(unsigned line);
     
     
     void beginUpdate();
@@ -150,8 +153,8 @@ private:
     
     iPoint _cursor;
     
-    unsigned _height;
-    unsigned _width;
+    TextPort _port;    
+
     
     uint8_t _flag;
     
@@ -195,12 +198,12 @@ inline uint8_t Screen::flag() const
 
 inline unsigned Screen::height() const
 {
-    return _height;
+    return _port.frame.size.height;
 }
 
 inline unsigned Screen::width() const
 {
-    return _width;
+    return _port.frame.size.width;
 }
 
 inline void Screen::setCursor(iPoint point, bool clampX, bool clampY)
@@ -230,7 +233,7 @@ inline void Screen::unlock()
 inline CharInfo Screen::getc(int x, int y) const
 {
     if (x < 0 || y < 0) return CharInfo(0,0);
-    if (x >= _width || y >= _height) return CharInfo(0,0);
+    if (x >= width() || y >= height()) return CharInfo(0,0);
     
     return _screen[y][x];
 }

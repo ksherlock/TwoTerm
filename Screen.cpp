@@ -13,17 +13,21 @@
 
 Screen::Screen(unsigned height, unsigned width)
 {
-    _height = height;
-    _width = width;
+    
+    _port.frame = iRect(0, 0, width, height);
+    _port.rightMargin = TextPort::RMTruncate;
+    _port.advanceCursor = true;
+    _port.scroll = true;
+
     
     _flag = 0;
     
-    _screen.resize(_height);
+    _screen.resize(height);
     
     
     for (ScreenIterator iter = _screen.begin(); iter != _screen.end(); ++iter)
     {
-        iter->resize(_width);
+        iter->resize(width);
     }
     
     
@@ -45,8 +49,8 @@ iRect Screen::endUpdate()
 {
     int maxX = -1;
     int maxY = -1;
-    int minX = _width;
-    int minY = _height;
+    int minX = width();
+    int minY = height();
     
     
     if (_cursor != _updateCursor)
@@ -86,13 +90,13 @@ void Screen::clearFlagBit(uint8_t bit)
 
 void Screen::putc(uint8_t c, bool incrementX)
 {
-    if (_cursor.x < _width)
+    if (_cursor.x < width())
     {
         _updates.push_back(_cursor);
 
         _screen[_cursor.y][_cursor.x] = CharInfo(c, _flag);
         
-        if (incrementX && _cursor.x < _width - 1) ++_cursor.x;
+        if (incrementX && _cursor.x < width() - 1) ++_cursor.x;
     }    
 }
 
@@ -102,10 +106,10 @@ void Screen::deletec()
     // move following character up
     // set final character to ' ' (retaining flags from previous char)
     
-    if (_cursor.x >= _width) return;
+    if (_cursor.x >= width()) return;
     
     _updates.push_back(_cursor);
-    _updates.push_back(iPoint(_width - 1, _cursor.y));
+    _updates.push_back(iPoint(width() - 1, _cursor.y));
     
     
     CharInfoIterator end = _screen[_cursor.y].end() - 1;
@@ -126,10 +130,10 @@ void Screen::insertc(uint8_t c)
     // insert character at cursor.
     // move following characters up (retaining flags).
     
-    if (_cursor.x >= _width) return;
+    if (_cursor.x >= width()) return;
     
     _updates.push_back(_cursor);
-    _updates.push_back(iPoint(_width - 1, _cursor.y));
+    _updates.push_back(iPoint(width() - 1, _cursor.y));
     
     CharInfoIterator end = _screen[_cursor.y].end() - 1;
     CharInfoIterator iter = _screen[_cursor.y].begin() + _cursor.x;
@@ -148,7 +152,7 @@ void Screen::tabTo(unsigned xPos)
     CharInfo clear(' ', _flag);
     CharInfoIterator iter;
     
-    xPos = std::min(xPos, _width - 1);
+    xPos = std::min(xPos, width() - 1);
     
     
     _updates.push_back(_cursor);
@@ -169,9 +173,9 @@ void Screen::setX(int x, bool clamp)
         if (clamp) _cursor.x = 0;
         return;
     }
-    if (x >= _width)
+    if (x >= width())
     {
-        if (clamp) _cursor.x = _width - 1;
+        if (clamp) _cursor.x = width() - 1;
         return;
     }
     
@@ -186,9 +190,9 @@ void Screen::setY(int y, bool clamp)
         if (clamp) _cursor.y = 0;
         return;
     }
-    if (y >= _height)
+    if (y >= height())
     {
-        if (clamp) _cursor.y = _height - 1;
+        if (clamp) _cursor.y = height() - 1;
         return;
     }
     
@@ -238,7 +242,7 @@ void Screen::erase(EraseRegion region)
             std::fill(screenIter->begin(), screenIter->end(), CharInfo(0,0));
         }
         _updates.push_back(iPoint(0,0));
-        _updates.push_back(iPoint(_width - 1, _height - 1));
+        _updates.push_back(iPoint(width() - 1, height() - 1));
         
         return;
     }
@@ -253,7 +257,7 @@ void Screen::erase(EraseRegion region)
             std::fill(screenIter->begin(), screenIter->end(), CharInfo(0,0));
         }
         _updates.push_back(iPoint(0,0));
-        _updates.push_back(iPoint(_width - 1, _cursor.y));
+        _updates.push_back(iPoint(width() - 1, _cursor.y));
         
         region = EraseLineBeforeCursor;
     }
@@ -266,7 +270,7 @@ void Screen::erase(EraseRegion region)
             std::fill(screenIter->begin(), screenIter->end(), CharInfo(0,0));
         }
         _updates.push_back(iPoint(0,_cursor.y + 1));
-        _updates.push_back(iPoint(_width - 1, _height - 1));
+        _updates.push_back(iPoint(width() - 1, height() - 1));
         
         region = EraseLineAfterCursor;
     }
@@ -278,7 +282,7 @@ void Screen::erase(EraseRegion region)
         std::fill(_screen[y].begin(), _screen[y].end(), CharInfo(0,0));
         
         _updates.push_back(iPoint(0, _cursor.y));
-        _updates.push_back(iPoint(_width - 1, _cursor.y));
+        _updates.push_back(iPoint(width() - 1, _cursor.y));
         
         return;
     }
@@ -300,7 +304,7 @@ void Screen::erase(EraseRegion region)
         std::fill(_screen[y].begin() + _cursor.x, _screen[y].end(), CharInfo(0,0));
         
         _updates.push_back(_cursor);     
-        _updates.push_back(iPoint(_width - 1, _cursor.y));
+        _updates.push_back(iPoint(width() - 1, _cursor.y));
         
     }
     
@@ -317,7 +321,7 @@ void Screen::eraseLine()
     }
     
     _updates.push_back(_cursor);
-    _updates.push_back(iPoint(_width - 1, _cursor.y));
+    _updates.push_back(iPoint(width() - 1, _cursor.y));
 }
 void Screen::eraseScreen()
 {
@@ -325,7 +329,7 @@ void Screen::eraseScreen()
     
     eraseLine();
     
-    if (_cursor.y == _height -1) return;
+    if (_cursor.y == height() -1) return;
     
     for (ScreenIterator iter = _screen.begin() + _cursor.y; iter < _screen.end(); ++iter)
     {
@@ -337,15 +341,15 @@ void Screen::eraseScreen()
     }
     
     _updates.push_back(iPoint(0, _cursor.y + 1));
-    _updates.push_back(iPoint(_width - 1, _height - 1));
+    _updates.push_back(iPoint(width() - 1, height() - 1));
 }
 
 
 void Screen::eraseRect(iRect rect)
 {
 
-    unsigned maxX = std::min(_width, (unsigned)rect.maxX());
-    unsigned maxY = std::min(_height, (unsigned)rect.maxY());
+    unsigned maxX = std::min(width(), (unsigned)rect.maxX());
+    unsigned maxY = std::min(height(), (unsigned)rect.maxY());
     
     CharInfo clear;
     
@@ -367,34 +371,39 @@ void Screen::lineFeed()
 {
     // moves the screen up one row, inserting a blank line at the bottom.
 
-    if (_cursor.y == _height - 1)
-    {
-        /*
-        // move lines 1..end up 1 line.
-        for (ScreenIterator iter = _screen.begin() + 1; iter < _screen.end(); ++iter)
-        {
-            iter[-1] = *iter;
-        }
-        
-        // reset the bottom line
-        //_screen.back().clear();
-        //_screen.back().resize(_width);
-        
-        for (CharInfoIterator ciIter = _screen.back().begin(); ciIter < _screen.back().end(); ++ciIter)
-        {
-            *ciIter = CharInfo(0, 0);
-        }        
-
-        _updates.push_back(iPoint(0, 0));
-        _updates.push_back(iPoint(_width - 1, _height - 1));
-        */
-        
-        removeLine(0);
+    if (_cursor.y == height() - 1)
+    {        
+        deleteLine(0);
     }
     else
     {
         _cursor.y++;
     }
+}
+
+void Screen::lineFeed(TextPort *textPort)
+{
+    int maxY;
+    
+    if (!textPort)
+    {
+        lineFeed();
+        return;
+    }
+    
+    maxY = textPort->frame.maxY();
+    
+    maxY = std::min(maxY, (int)height());
+    
+    if (_cursor.y < maxY)
+    {
+        _cursor.y++;
+    }
+    else if (textPort->scroll)
+    {
+        _cursor.y++;
+    }
+    
 }
 
 
@@ -404,26 +413,7 @@ void Screen::reverseLineFeed()
     
     if (_cursor.y == 0)
     {
-        /*
-        for (ReverseScreenIterator iter = _screen.rbegin() + 1; iter < _screen.rend(); ++iter)
-        {
-            iter[-1] = *iter;
-        }        
-        
-        // reset the top line
-        //_screen.front().clear();
-        //_screen.front().resize(_width);
-        
-        for (CharInfoIterator ciIter = _screen.front().begin(); ciIter < _screen.front().end(); ++ciIter)
-        {
-            *ciIter = CharInfo(0, 0);
-        }
-        
-        _updates.push_back(iPoint(0, 0));
-        _updates.push_back(iPoint(_width - 1, _height - 1));
-        */
-        
-        addLine(0);
+        insertLine(0);
     }
     else
     {
@@ -434,15 +424,15 @@ void Screen::reverseLineFeed()
 
 
 
-void Screen::addLine(unsigned line)
+void Screen::insertLine(unsigned line)
 {
 
-    if (line >= _height) return;
+    if (line >= height()) return;
     
-    if (line == _height - 1)
+    if (line == height() - 1)
     {
         _screen.back().clear();
-        _screen.back().resize(_width);
+        _screen.back().resize(width());
     }
     else
     {
@@ -451,19 +441,19 @@ void Screen::addLine(unsigned line)
         
         _screen.pop_back();
         iter = _screen.insert(_screen.begin() + line, newLine);
-        iter->resize(_width);
+        iter->resize(width());
     }
 
     _updates.push_back(iPoint(0, line));
-    _updates.push_back(iPoint(_width - 1, _height - 1));
+    _updates.push_back(iPoint(width() - 1, height() - 1));
 }
 
-void Screen::removeLine(unsigned line)
+void Screen::deleteLine(unsigned line)
 {
 
-    if (line >= _height) return;
+    if (line >= height()) return;
     
-    if (line == _height - 1)
+    if (line == height() - 1)
     {
         _screen.back().clear();
 
@@ -477,11 +467,11 @@ void Screen::removeLine(unsigned line)
         _screen.push_back(newLine);
     }
     
-    _screen.back().resize(_width);
+    _screen.back().resize(width());
     
     
     _updates.push_back(iPoint(0, line));
-    _updates.push_back(iPoint(_width - 1, _height - 1));    
+    _updates.push_back(iPoint(width() - 1, height() - 1));    
 }
 
 
@@ -489,18 +479,18 @@ void Screen::removeLine(unsigned line)
 
 
 
-void Screen::setSize(unsigned width, unsigned height)
+void Screen::setSize(unsigned w, unsigned h)
 {
 
-    if ((_height == height) && (_width == width)) return;
+    if ((height() == h) && (width() == w)) return;
     
-    if (_height < height)
+    if (height() < h)
     {
-        _screen.resize(height);        
+        _screen.resize(h);        
     }
-    else if (_height > height)
+    else if (height() > h)
     {
-        unsigned count = _height - height;
+        unsigned count = height() - h;
         // erase lines from the top.
         _screen.erase(_screen.begin(), _screen.begin() + count);
     }
@@ -511,17 +501,16 @@ void Screen::setSize(unsigned width, unsigned height)
         ScreenIterator iter;
         for (iter = _screen.begin(); iter != _screen.end(); ++iter)
         {
-            iter->resize(width);
+            iter->resize(w);
         }
 
     }
 
-    _height = height;
-    _width = width;
+    _port.frame.size = iSize(w, h);
 
 
-    if (_cursor.y >= height) _cursor.y = height - 1;
-    if (_cursor.x >= width) _cursor.x = width - 1;
+    if (_cursor.y >= h) _cursor.y = h - 1;
+    if (_cursor.x >= w) _cursor.x = w - 1;
     
     //fprintf(stderr, "setSize(%u, %u)\n", width, height);
         
