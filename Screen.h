@@ -27,6 +27,30 @@ typedef struct CharInfo {
     
 } CharInfo;
 
+
+typedef struct ViewPort {
+
+        
+    iRect frame;
+    
+    union flags
+    {
+        unsigned wrap:1;
+        unsigned advance:1;
+        unsigned lineFeed:1;
+        unsigned scroll:1;
+        
+        flags()
+        {
+            wrap = 0;
+            advance = 0;
+            lineFeed = 0;
+            scroll = 0;
+        }
+        
+    } flags;
+};
+
 class Screen {
     
 public:
@@ -37,7 +61,7 @@ public:
     static const unsigned FlagBold = 0x04;
     static const unsigned FlagUnderscore = 0x08;
     static const unsigned FlagBlink = 0x10;
-    static const unsigned FlagSelected = 0x20;
+    static const unsigned FlagSelected = 0x8000;
     
     
 
@@ -81,6 +105,9 @@ public:
 
     
     void setFlag(uint8_t flag);
+    void setFlagBit(uint8_t bit);
+    void clearFlagBit(uint8_t bit);
+    
     
     void putc(uint8_t c, bool incrementX = true);
     CharInfo getc(int x, int y) const;

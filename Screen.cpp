@@ -74,6 +74,15 @@ void Screen::setFlag(uint8_t flag)
     _flag = flag;
 }
 
+void Screen::setFlagBit(uint8_t bit)
+{
+    _flag |= bit;
+}
+void Screen::clearFlagBit(uint8_t bit)
+{
+    _flag &= ~bit;
+}
+
 
 void Screen::putc(uint8_t c, bool incrementX)
 {
