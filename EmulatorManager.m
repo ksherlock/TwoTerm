@@ -40,6 +40,15 @@ static NSMutableArray *array = nil;
                 array = [NSMutableArray new];
 
             [array addObject: klass];
+            
+            [array sortUsingComparator: ^(id lhs, id rhs){
+                NSString *a, *b;
+                
+                a = (NSString *)[lhs name];
+                b = (NSString *)[rhs name];
+                
+                return [a caseInsensitiveCompare: b];
+            }];
         }
     }
     
