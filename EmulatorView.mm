@@ -55,12 +55,10 @@
     //_foregroundColor = [[NSColor greenColor] retain];
     //_backgroundColor = [[NSColor blackColor] retain];
     _boldColor = [[NSColor redColor] retain];
-    _foregroundColor  = [[NSColor whiteColor] retain];
-    _backgroundColor = [[NSColor blueColor] retain];
+    //_foregroundColor  = [[NSColor whiteColor] retain];
+    //_backgroundColor = [[NSColor blueColor] retain];
     
 
-
-    //[self initScanLines];
     
     _screen.setFD(_fd);
     _screen.setView(self);
@@ -69,7 +67,6 @@
     
     _cursorImg = [[_charGen imageForCharacter: '_'] retain];
     
-    //_emulator = [VT52 new];
         
     
     // enable drag+drop for files/urls.
