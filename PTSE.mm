@@ -150,14 +150,14 @@ enum  {
                 
             case CTRL('Z'):
                 //Delete current line.
-                screen->removeLine(screen->y());
+                screen->deleteLine(screen->y());
                 break;
             case CTRL('V'):
                 //Insert blank like.
                 // TODO -- verify if the line is before or after the current line,
                 // TODO -- verify if x/y change
                 // TODO -- verify scrolling behavior.
-                screen->addLine(screen->y()); 
+                screen->insertLine(screen->y()); 
                 break;
             case CTRL('Y'):
                 //Clear to end of line.
