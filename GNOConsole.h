@@ -21,8 +21,8 @@
 
     int _vp[4];
 #ifdef __cplusplus
-    class ViewPort;
-    ViewPort *_viewPort;
+    class TextPort;
+    TextPort *_textPort;
 #endif
     
     

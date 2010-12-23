@@ -156,10 +156,10 @@ enum  {
 {
     _state = StateText;
     
-    if (_viewPort)
+    if (_textPort)
     {
-        delete _viewPort;
-        _viewPort = NULL;
+        delete _textPort;
+        _textPort = NULL;
     }
 
     // set flags to plain text.
@@ -179,7 +179,7 @@ enum  {
 
 -(void)dealloc
 {
-    delete _viewPort;
+    delete _textPort;
     [super dealloc];
 }
 
@@ -391,16 +391,18 @@ enum  {
             
             if (_vp[0] == 0 && _vp[1] == 80 && _vp[2] == 0 && _vp[3] == 24)
             {
-                delete _viewPort;
-                _viewPort = NULL;
+                delete _textPort;
+                _textPort = NULL;
             }
             else
             {
-                if (!_viewPort) _viewPort = new ViewPort;
-                _viewPort->frame = iRect(_vp[0], _vp[2], _vp[1] - _vp[0], _vp[3] - _vp[2]);
+                if (!_textPort) _textPort = new TextPort;
+                _textPort->frame = iRect(_vp[0], _vp[2], _vp[1] - _vp[0], _vp[3] - _vp[2]);
                 
-                _viewPort->flags.wrap = 1;
-                _viewPort->flags.scroll = 1;
+                _textPort->rightMargin = TextPort::RMTruncate;
+                _textPort->advanceCursor = true;
+                _textPort->scroll = true;
+                
                 
             }
             
