@@ -20,7 +20,7 @@ typedef struct iSize {
     
 #ifdef __cplusplus
     iSize() : width(0), height(0) {}
-    iSize(const iSize &aSize) : width(aSize.width), height(aSize.width) {}
+    iSize(const iSize &aSize) : width(aSize.width), height(aSize.height) {}
     iSize(int w, int h) : width(w), height(h) {} 
     
 
