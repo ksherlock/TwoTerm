@@ -152,7 +152,7 @@ void Screen::tabTo(unsigned xPos)
     CharInfo clear(' ', _flag);
     CharInfoIterator iter;
     
-    xPos = std::min(xPos, width() - 1);
+    xPos = std::min((int)xPos, width() - 1);
     
     
     _updates.push_back(_cursor);
@@ -348,8 +348,8 @@ void Screen::eraseScreen()
 void Screen::eraseRect(iRect rect)
 {
 
-    unsigned maxX = std::min(width(), (unsigned)rect.maxX());
-    unsigned maxY = std::min(height(), (unsigned)rect.maxY());
+    unsigned maxX = std::min(width(), rect.maxX());
+    unsigned maxY = std::min(height(), rect.maxY());
     
     CharInfo clear;
     
@@ -423,7 +423,6 @@ void Screen::reverseLineFeed()
 }
 
 
-
 void Screen::insertLine(unsigned line)
 {
 
@@ -446,6 +445,54 @@ void Screen::insertLine(unsigned line)
 
     _updates.push_back(iPoint(0, line));
     _updates.push_back(iPoint(width() - 1, height() - 1));
+}
+
+// line is relative to the textView.
+// textView has been constrained.
+
+void Screen::insertLine(TextPort *textPort, unsigned line)
+{
+    iRect frame;
+    CharInfo ci;
+    
+    int minY;
+    int maxY;
+    int minX;
+    int maxX;
+    
+    if (!textPort) return insertLine(line);
+    
+    frame = textPort->frame;
+    
+    minY = frame.minY();
+    maxY = frame.maxY();
+    
+    minX = frame.minX();
+    minY = frame.maxX();
+    
+    if (line < 0) return;
+    if (line >= frame.height()) return;
+        
+    // move all subsequent lines forward by 1.
+    for (int y = maxY - 2; y >= minY + line; --y)
+    {
+        CharInfoIterator iter;
+        CharInfoIterator end;
+        
+        iter = _screen[y].begin() + minX;
+        end = _screen[y].begin() + maxX;
+        
+        std::copy(iter, end, _screen[y + 1].begin() + minX);
+    }
+    
+    // clear the line.
+    std::fill(_screen[minY + line].begin() + minX, _screen[minY + line].begin() + maxX, ci);
+    
+    // set the update region.
+    
+    _updates.push_back(iPoint(minX, minY + line));
+    _updates.push_back(iPoint(maxX - 1, maxY - 1));
+
 }
 
 void Screen::deleteLine(unsigned line)
@@ -475,7 +522,50 @@ void Screen::deleteLine(unsigned line)
 }
 
 
-
+void Screen::deleteLine(TextPort *textPort, unsigned line)
+{
+    iRect frame;
+    CharInfo ci;
+    
+    int minY;
+    int maxY;
+    int minX;
+    int maxX;
+    
+    if (!textPort) return deleteLine(line);
+    
+    frame = textPort->frame;
+    
+    minY = frame.minY();
+    maxY = frame.maxY();
+    
+    minX = frame.minX();
+    minY = frame.maxX();
+    
+    if (line < 0) return;
+    if (line >= frame.height()) return;
+    
+    // move all subsequent lines back by 1.
+    for (int y = minY + line; y < maxY - 2; ++y)
+    {
+        CharInfoIterator iter;
+        CharInfoIterator end;
+        
+        iter = _screen[y + 1].begin() + minX;
+        end = _screen[y + 1].begin() + maxX;
+        
+        std::copy(iter, end, _screen[y].begin() + minX);
+    }
+    
+    // clear the last line.
+    std::fill(_screen[maxY - 1].begin() + minX, _screen[maxY - 1].begin() + maxX, ci);
+    
+    // set the update region.
+    
+    _updates.push_back(iPoint(minX, minY + line));
+    _updates.push_back(iPoint(maxX - 1, maxY - 1));
+    
+}
 
 
 

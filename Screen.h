@@ -87,8 +87,8 @@ public:
     iPoint cursor() const;
     uint8_t flag() const;
     
-    unsigned height() const;
-    unsigned width() const;
+    int height() const;
+    int width() const;
     
     
     int incrementX(bool clamp = true);
@@ -137,6 +137,9 @@ public:
     void deleteLine(unsigned line);
     void insertLine(unsigned line);
     
+    void insertLine(TextPort *textPort, unsigned line);
+    void deleteLine(TextPort *textPort, unsigned line);
+
     
     void beginUpdate();
     iRect endUpdate();
@@ -196,12 +199,12 @@ inline uint8_t Screen::flag() const
     return _flag;
 }
 
-inline unsigned Screen::height() const
+inline int Screen::height() const
 {
     return _port.frame.size.height;
 }
 
-inline unsigned Screen::width() const
+inline int Screen::width() const
 {
     return _port.frame.size.width;
 }
