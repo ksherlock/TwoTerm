@@ -150,7 +150,7 @@
     fcntl(fd, F_SETFL, flags | O_NONBLOCK);
     */
     
-    [_emulatorView resizeTo: iSize(ws.ws_col, ws.ws_row)];
+    [_emulatorView resizeTo: iSize(ws.ws_col, ws.ws_row) animated: NO];
 
     if (![_emulator resizable])
     {
