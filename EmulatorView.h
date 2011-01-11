@@ -91,7 +91,8 @@ private:
 -(void)dataAvailable;
 -(void)invalidateIRect: (iRect)rect;
 
--(void)resizeTo: (iSize)size;
+//-(void)resizeTo: (iSize)size;
+-(void)resizeTo: (iSize)size animated: (BOOL)animated;
 
 -(void)cursorTimer: (NSTimer *)timer;
 

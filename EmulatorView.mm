@@ -463,7 +463,8 @@
     
 }
 
--(void)resizeTo: (iSize)size
+
+-(void)resizeTo: (iSize)size animated: (BOOL)animated
 {
     NSWindow *window = [self window];
     NSRect bounds = [self bounds];
@@ -477,7 +478,7 @@
     
     // best case -- no change.
     if (NSEqualSizes(newSize,  bounds.size)) return;
-        
+    
     
     // ok, change needed.
     
@@ -487,8 +488,13 @@
     wframe.size.width += newSize.width - bounds.size.width;
     
     _inResizeTo = YES;
-    [window setFrame: wframe display: YES animate: YES];
-    _inResizeTo = NO;
+    [window setFrame: wframe display: YES animate: animated];
+    _inResizeTo = NO;    
+}
+
+-(void)resizeTo: (iSize)size
+{
+    [self resizeTo: size animated: YES];
 }
 
 
@@ -697,7 +703,7 @@ void ViewScreen::setSize(unsigned width, unsigned height, bool resizeView)
     
     if (resizeView)
     {
-        [_view resizeTo: iSize(width, height)];
+        [_view resizeTo: iSize(width, height) animated: YES];
     }
 }
 
