@@ -32,7 +32,7 @@
  * 0x0a ^J - Line Feed (checks IODP_Scroll)
  * 0x0b ^K - clear EOP ???? up arrow???
  * 0x0c ^L - form feed - clear screen
- * 0x0d ^M - carraige return cursor = left margin
+ * 0x0d ^M - carriage return cursor = left margin
  * 0x0e ^N - inverse off - invert flag &= 0x7fff
  * 0x0f ^O - inverse on - invert flag |= 0x8000
  * 0x10 n/a
@@ -190,6 +190,8 @@ enum  {
         _textPort.leftMargin = TextPort::MarginWrap;
         _textPort.rightMargin = TextPort::MarginWrap;
     }
+    
+    return self;
 }
 
 -(void)processCharacter:(uint8_t)c screen:(Screen *)screen output:(OutputChannel *)output
@@ -247,7 +249,7 @@ enum  {
             case CTRL('L'):
                 // clear screen, go home.
                 screen->erase(&_textPort, Screen::EraseAll);
-                screen->setCursor(&_textPort.origin, true);
+                screen->setCursor(&_textPort, iPoint(0,0));
                 break;
                 
             case CTRL('M'):
@@ -267,16 +269,16 @@ enum  {
                 
             case CTRL('Q'):
                 // insert line.
-                screen->insertLine(&_textPort, screen->y() - _textPort.origin.y);
+                screen->insertLine(&_textPort, screen->y() - _textPort.frame.origin.y);
                 break;
             case CTRL('R'):
                 // delete line
-                screen->deleteLine(&_textPort, screen->y() - _textPort.origin.y);
+                screen->deleteLine(&_textPort, screen->y() - _textPort.frame.origin.y);
                 break;
                 
             case CTRL('U'):
                 // right arrow.
-                screen->incrementX(&_textPort, true);
+                screen->incrementX(&_textPort);
                 break;
             
             case CTRL('V'):
@@ -325,7 +327,7 @@ enum  {
             
             case CTRL('_'):
                 // move up 1 line
-                screen->decrementY(&_textPort, true);
+                screen->decrementY(&_textPort);
                 break;
                 
             default:
@@ -406,7 +408,7 @@ enum  {
             
             // move the cursor to the top left
             // gnome clamps the horizontal, doesn't adjust the vertical.
-            screen->setCursor(_textPort, 0, 0);
+            screen->setCursor(&_textPort, iPoint(0,0));
 
             
             _state = StateText;
