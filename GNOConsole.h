@@ -10,22 +10,20 @@
 
 #import "Emulator.h"
 #include "iGeometry.h"
-
+#include "Screen.h"
 
 
 @interface GNOConsole : NSObject <Emulator>
 {
     unsigned _state;
+
+    TextPort _textPort;
+
     
     iPoint _dca;
 
     int _vp[4];
-#ifdef __cplusplus
-    class TextPort;
-    TextPort *_textPort;
-#endif
-    
-    
+
 }
 
 

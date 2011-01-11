@@ -61,6 +61,13 @@ enum  {
     return ws;
 }
 
+-(void)initTerm: (struct termios *)term
+{
+    // Control-U is used by the up-arrow key.
+    term->c_cc[VKILL] = CTRL('X');
+}
+
+
 -(void)processCharacter:(uint8_t)c screen:(Screen *)screen output:(OutputChannel *)output
 {
     

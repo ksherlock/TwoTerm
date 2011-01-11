@@ -156,11 +156,6 @@ enum  {
 {
     _state = StateText;
     
-    if (_textPort)
-    {
-        delete _textPort;
-        _textPort = NULL;
-    }
 
     // set flags to plain text.
 }
@@ -177,10 +172,24 @@ enum  {
     return ws;
 }
 
--(void)dealloc
+-(void)initTerm: (struct termios *)term
 {
-    delete _textPort;
-    [super dealloc];
+    // Control-U is used by the up-arrow key.
+    term->c_cc[VKILL] = CTRL('X');
+}
+
+-(id)init
+{
+    if ((self = [super init]))
+    {
+        _textPort.frame = iRect(0, 0, 24, 80);
+        _textPort.cursor = iPoint(0,0);
+        
+        _textPort.scroll = true;
+        _textPort.advanceCursor = true;
+        _textPort.leftMargin = TextPort::MarginWrap;
+        _textPort.rightMargin = TextPort::MarginWrap;
+    }
 }
 
 -(void)processCharacter:(uint8_t)c screen:(Screen *)screen output:(OutputChannel *)output
@@ -215,34 +224,35 @@ enum  {
                 break;
                 
             case CTRL('H'):
-                // todo -- honor the viewport.
-                screen->decrementX(true);
+                screen->decrementX(&_textPort);
+                //screen->decrementX(true);
                 break;
                 
             case CTRL('I'):
                 // tab
-                screen->tabTo((screen->x() + 8) & ~0x07);
+                screen->tabTo(&_textPort, (screen->x() + 8) & ~0x07);
+                //screen->tabTo((screen->x() + 8) & ~0x07);
                 break;
             
             case CTRL('J'):
                 // down 1 line.
-                screen->lineFeed();
+                screen->lineFeed(&_textPort);
                 break;
             
             case CTRL('K'):
                 // clear to end of screen
-                screen->erase(Screen::EraseAfterCursor);
+                screen->erase(&_textPort, Screen::EraseAfterCursor);
                 break;
                 
             case CTRL('L'):
                 // clear screen, go home.
-                screen->erase(Screen::EraseAll);
-                screen->setCursor(0, 0, true, true);
+                screen->erase(&_textPort, Screen::EraseAll);
+                screen->setCursor(&_textPort.origin, true);
                 break;
                 
             case CTRL('M'):
                 // move to left edge.
-                screen->setX(0, true);
+                screen->setX(&_textPort, 0);
                 break;
                 
             case CTRL('N'):
@@ -257,25 +267,25 @@ enum  {
                 
             case CTRL('Q'):
                 // insert line.
-                //TODO
+                screen->insertLine(&_textPort, screen->y() - _textPort.origin.y);
                 break;
             case CTRL('R'):
                 // delete line
-                // TODO
+                screen->deleteLine(&_textPort, screen->y() - _textPort.origin.y);
                 break;
                 
             case CTRL('U'):
                 // right arrow.
-                screen->incrementX(true);
+                screen->incrementX(&_textPort, true);
                 break;
             
             case CTRL('V'):
                 // scroll down 1 line.
-                // TODO
+                screen->insertLine(&_textPort, 0);
                 break;
             case CTRL('W'):
                 // scroll up 1 line.
-                // TODO
+                screen->deleteLine(&_textPort, 0);
                 break;
             
             case CTRL('X'):
@@ -285,11 +295,11 @@ enum  {
             
             case CTRL('Y'):
                 // cursor home
-                screen->setCursor(0, 0, true, true);
+                screen->setCursor(_textPort.frame.origin, true, true);
                 break;
             case CTRL('Z'):
                 // clear entire line
-                screen->erase(Screen::EraseLineAll);
+                screen->erase(&_textPort, Screen::EraseLineAll);
                 break;
             
             case CTRL('['):
@@ -300,12 +310,12 @@ enum  {
             
             case CTRL('\\'):
                 // move cursor 1 character to the right
-                screen->incrementX(true);
+                screen->incrementX(&_textPort);
                 break;
                 
             case CTRL(']'):
                 // clear to end of line.
-                screen->erase(Screen::EraseLineAfterCursor);
+                screen->erase(&_textPort, Screen::EraseLineAfterCursor);
                 break;
             
             case CTRL('^'):
@@ -315,13 +325,13 @@ enum  {
             
             case CTRL('_'):
                 // move up 1 line
-                screen->decrementY(true);
+                screen->decrementY(&_textPort, true);
                 break;
                 
             default:
                 if (c >= 0x20 && c < 0x7f)
                 {
-                    screen->putc(c);
+                    screen->putc(&_textPort, c);
                 }
                 break;
                 
@@ -389,22 +399,15 @@ enum  {
             if (_vp[1] <= _vp[0]) _vp[1] = 80;
             if (_vp[3] <= _vp[2]) _vp[3] = 24;
             
-            if (_vp[0] == 0 && _vp[1] == 80 && _vp[2] == 0 && _vp[3] == 24)
-            {
-                delete _textPort;
-                _textPort = NULL;
-            }
-            else
-            {
-                if (!_textPort) _textPort = new TextPort;
-                _textPort->frame = iRect(_vp[0], _vp[2], _vp[1] - _vp[0], _vp[3] - _vp[2]);
-                
-                _textPort->rightMargin = TextPort::RMTruncate;
-                _textPort->advanceCursor = true;
-                _textPort->scroll = true;
-                
-                
-            }
+
+            _textPort.frame = iRect(_vp[0], _vp[2], _vp[1] - _vp[0], _vp[3] - _vp[2]);
+            
+
+            
+            // move the cursor to the top left
+            // gnome clamps the horizontal, doesn't adjust the vertical.
+            screen->setCursor(_textPort, 0, 0);
+
             
             _state = StateText;
             

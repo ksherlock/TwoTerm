@@ -194,11 +194,11 @@
         screenRect.origin.y = 0;
     }
     
-    unsigned minX = floor(screenRect.origin.x / _charWidth);
-    unsigned maxX = ceil((screenRect.origin.x + screenRect.size.width) / _charWidth);
+    int minX = floor(screenRect.origin.x / _charWidth);
+    int maxX = ceil((screenRect.origin.x + screenRect.size.width) / _charWidth);
 
-    unsigned minY = floor(screenRect.origin.y / _charHeight);
-    unsigned maxY = ceil((screenRect.origin.y + screenRect.size.height) / _charHeight);
+    int minY = floor(screenRect.origin.y / _charHeight);
+    int maxY = ceil((screenRect.origin.y + screenRect.size.height) / _charHeight);
     
     // x/y are 0-indexed here.
 

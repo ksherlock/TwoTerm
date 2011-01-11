@@ -7,6 +7,7 @@
 //
 
 #include <sys/ttycom.h>
+#include <sys/termios.h>
 
 @class NSEvent;
 @class NSMenu;
@@ -45,5 +46,9 @@ class OutputChannel;
 -(BOOL)resizable;
 
 -(struct winsize)defaultSize;
+
+@optional
+
+-(void)initTerm: (struct termios *)term;
 
 @end

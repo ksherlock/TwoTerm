@@ -21,9 +21,11 @@
 		B61D0D63125B89E8001C713B /* EmulatorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B61D0D62125B89E8001C713B /* EmulatorManager.m */; };
 		B61D0D69125B8E06001C713B /* Defaults.m in Sources */ = {isa = PBXBuildFile; fileRef = B61D0D68125B8E06001C713B /* Defaults.m */; };
 		B64925DA11EE6C350065E73A /* VT100.mm in Sources */ = {isa = PBXBuildFile; fileRef = B64925D911EE6C350065E73A /* VT100.mm */; };
+		B653E41812C05C8C001DCE27 /* GNOConsole.mm in Sources */ = {isa = PBXBuildFile; fileRef = B653E41612C05C8C001DCE27 /* GNOConsole.mm */; };
 		B669798511E6A786002ED475 /* Lock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B669798411E6A786002ED475 /* Lock.cpp */; };
 		B6697A0F11E6BF95002ED475 /* CurveView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6697A0E11E6BF95002ED475 /* CurveView.m */; };
 		B6697A3D11E7CCA0002ED475 /* PTSE.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6697A3C11E7CCA0002ED475 /* PTSE.mm */; };
+		B673C14B12C3F0CF00923CE5 /* Apple80.mm in Sources */ = {isa = PBXBuildFile; fileRef = B673C14A12C3F0CF00923CE5 /* Apple80.mm */; };
 		B676063B11DEAD3500D6B66C /* TermWindowController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B676063A11DEAD3500D6B66C /* TermWindowController.mm */; };
 		B676065111DEBAE900D6B66C /* TermWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B676065011DEBAE900D6B66C /* TermWindow.xib */; };
 		B67606DA11DF6DAB00D6B66C /* EmulatorView.mm in Sources */ = {isa = PBXBuildFile; fileRef = B67606D911DF6DAB00D6B66C /* EmulatorView.mm */; };
@@ -85,12 +87,16 @@
 		B61D0D68125B8E06001C713B /* Defaults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Defaults.m; sourceTree = "<group>"; };
 		B64925D811EE6C350065E73A /* VT100.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VT100.h; sourceTree = "<group>"; };
 		B64925D911EE6C350065E73A /* VT100.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VT100.mm; sourceTree = "<group>"; };
+		B653E41612C05C8C001DCE27 /* GNOConsole.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GNOConsole.mm; sourceTree = "<group>"; };
+		B653E41712C05C8C001DCE27 /* GNOConsole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GNOConsole.h; sourceTree = "<group>"; };
 		B669798311E6A786002ED475 /* Lock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lock.h; sourceTree = "<group>"; };
 		B669798411E6A786002ED475 /* Lock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Lock.cpp; sourceTree = "<group>"; };
 		B6697A0D11E6BF95002ED475 /* CurveView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurveView.h; sourceTree = "<group>"; };
 		B6697A0E11E6BF95002ED475 /* CurveView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurveView.m; sourceTree = "<group>"; };
 		B6697A3B11E7CCA0002ED475 /* PTSE.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTSE.h; sourceTree = "<group>"; };
 		B6697A3C11E7CCA0002ED475 /* PTSE.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PTSE.mm; sourceTree = "<group>"; };
+		B673C14912C3F0CF00923CE5 /* Apple80.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Apple80.h; sourceTree = "<group>"; };
+		B673C14A12C3F0CF00923CE5 /* Apple80.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Apple80.mm; sourceTree = "<group>"; };
 		B676063911DEAD3500D6B66C /* TermWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TermWindowController.h; sourceTree = "<group>"; };
 		B676063A11DEAD3500D6B66C /* TermWindowController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TermWindowController.mm; sourceTree = "<group>"; };
 		B676064D11DEBAE300D6B66C /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/TermWindow.xib; sourceTree = "<group>"; };
@@ -248,6 +254,8 @@
 		B6697A3A11E7CC80002ED475 /* Emulators */ = {
 			isa = PBXGroup;
 			children = (
+				B653E41612C05C8C001DCE27 /* GNOConsole.mm */,
+				B653E41712C05C8C001DCE27 /* GNOConsole.h */,
 				B699A08B11E5720F00F54CC8 /* Emulator.h */,
 				B61D0D62125B89E8001C713B /* EmulatorManager.m */,
 				B6697A3B11E7CCA0002ED475 /* PTSE.h */,
@@ -258,6 +266,8 @@
 				B699A09011E572A300F54CC8 /* VT52.mm */,
 				B64925D811EE6C350065E73A /* VT100.h */,
 				B64925D911EE6C350065E73A /* VT100.mm */,
+				B673C14912C3F0CF00923CE5 /* Apple80.h */,
+				B673C14A12C3F0CF00923CE5 /* Apple80.mm */,
 			);
 			name = Emulators;
 			sourceTree = "<group>";
@@ -347,6 +357,8 @@
 				B61D0D60125B7ACA001C713B /* NewTerminalWindowController.m in Sources */,
 				B61D0D63125B89E8001C713B /* EmulatorManager.m in Sources */,
 				B61D0D69125B8E06001C713B /* Defaults.m in Sources */,
+				B653E41812C05C8C001DCE27 /* GNOConsole.mm in Sources */,
+				B673C14B12C3F0CF00923CE5 /* Apple80.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -11,11 +11,20 @@
 
 #include <algorithm>
 
+iPoint TextPort::absoluteCursor() const
+{
+    return iPoint(frame.origin.x + cursor.x, frame.origin.y + cursor.y);
+}
+
+
+
 Screen::Screen(unsigned height, unsigned width)
 {
     
     _port.frame = iRect(0, 0, width, height);
-    _port.rightMargin = TextPort::RMTruncate;
+    _port.rightMargin = TextPort::MarginTruncate;
+    _port.rightMargin = TextPort::MarginTruncate;
+
     _port.advanceCursor = true;
     _port.scroll = true;
 
@@ -42,7 +51,7 @@ void Screen::beginUpdate()
 {
     _lock.lock();
     _updates.clear();
-    _updateCursor = _cursor;
+    _updateCursor = cursor();
 }
 
 iRect Screen::endUpdate()
@@ -52,10 +61,11 @@ iRect Screen::endUpdate()
     int minX = width();
     int minY = height();
     
+    iPoint c = cursor();
     
-    if (_cursor != _updateCursor)
+    if (c != _updateCursor)
     {
-        _updates.push_back(_cursor);
+        _updates.push_back(c);
         _updates.push_back(_updateCursor);
     }
 
@@ -88,145 +98,268 @@ void Screen::clearFlagBit(uint8_t bit)
 }
 
 
-void Screen::putc(uint8_t c, bool incrementX)
+
+
+
+void Screen::putc(TextPort *textPort, uint8_t c)
 {
-    if (_cursor.x < width())
+    /*
+     * textport must be valid.
+     * cursor must be within textport.
+     */
+    
+
+    if (!textPort) textPort = &_port;
+    iPoint cursor = textPort->absoluteCursor();
+    
+    // right margin is a special case.
+    if (textPort->cursor.x == textPort->frame.width() -1)
     {
-        _updates.push_back(_cursor);
-
-        _screen[_cursor.y][_cursor.x] = CharInfo(c, _flag);
-        
-        if (incrementX && _cursor.x < width() - 1) ++_cursor.x;
-    }    
-}
-
-void Screen::deletec()
-{
-    // delete character at cursor.
-    // move following character up
-    // set final character to ' ' (retaining flags from previous char)
-    
-    if (_cursor.x >= width()) return;
-    
-    _updates.push_back(_cursor);
-    _updates.push_back(iPoint(width() - 1, _cursor.y));
-    
-    
-    CharInfoIterator end = _screen[_cursor.y].end() - 1;
-    CharInfoIterator iter = _screen[_cursor.y].begin() + _cursor.x;
-    
-
-    for ( ; iter != end; ++iter)
-    {
-        iter[0] = iter[1];
-        
+        if (textPort->rightMargin == TextPort::MarginTruncate) return;
+        if (textPort->rightMargin == TextPort::MarginOverwrite)
+        {
+            _updates.push_back(cursor);
+            _screen[cursor.y][cursor.x] = CharInfo(c, _flag);
+            return;
+        }
+        //if (textPort->rightMargin == TextPort::MarginWrap)
     }
-    // retain the flags previously there.
-    end->c = ' ';
-}
 
-void Screen::insertc(uint8_t c)
-{
-    // insert character at cursor.
-    // move following characters up (retaining flags).
-    
-    if (_cursor.x >= width()) return;
-    
-    _updates.push_back(_cursor);
-    _updates.push_back(iPoint(width() - 1, _cursor.y));
-    
-    CharInfoIterator end = _screen[_cursor.y].end() - 1;
-    CharInfoIterator iter = _screen[_cursor.y].begin() + _cursor.x;
-    
-    for ( ; iter != end; ++iter)
+    _updates.push_back(cursor);
+    _screen[cursor.y][cursor.x] = CharInfo(c, _flag);
+        
+    if (textPort->advanceCursor)
     {
-        iter[1] = iter[0];
+        incrementX(textPort);
     }
-    
-    iter->c = ' ';
+
 }
 
 
-void Screen::tabTo(unsigned xPos)
+
+void Screen::tabTo(TextPort *textPort, unsigned xPos)
 {
+    if (!textPort) textPort = &_port;
+ 
     CharInfo clear(' ', _flag);
-    CharInfoIterator iter;
+    iPoint cursor = textPort->absoluteCursor();
     
-    xPos = std::min((int)xPos, width() - 1);
+    xPos = std::min((int)xPos, textPort->frame.width() - 1);
     
+    _updates.push_back(cursor);
     
-    _updates.push_back(_cursor);
-    _updates.push_back(iPoint(xPos, _cursor.y));
-                       
-    for (unsigned x = _cursor.x; x < xPos; ++x)
+    for (unsigned x = textPort->cursor.x; x < xPos; ++x)
     {
-        _screen[_cursor.y][x] = clear;
+        
+        _screen[cursor.y][x + textPort->frame.minX()] = clear;
     }
-    _cursor.x = xPos;
+    
+    textPort->cursor.x += xPos;
+    if (textPort != &_port) _port.cursor = textPort->absoluteCursor();
+
+    _updates.push_back(_port.cursor);
+
 }
 
 
-void Screen::setX(int x, bool clamp)
+#pragma mark -
+#pragma mark Cursor manipulation.
+
+
+
+
+/*
+ * sets cursor.x within the textport.
+ * if x is outside the textport and clampX is true, it will be clamped to 0/width-1
+ * if x is outside the textport and clampX is false, x will not be updated.
+ *
+ * returns the new cursor.x
+ */
+
+int Screen::setX(TextPort *textPort, int x)
 {
+    // honors clampX.
+    if (!textPort) textPort = &_port;
+
+    bool clamp = textPort->clampX;
+    
     if (x < 0)
     {
-        if (clamp) _cursor.x = 0;
-        return;
+        if (clamp) textPort->cursor.x = 0;
     }
-    if (x >= width())
+    else if (x >= textPort->frame.width())
     {
-        if (clamp) _cursor.x = width() - 1;
-        return;
+        if (clamp) textPort->cursor.x = textPort->frame.width() - 1;
     }
+    else
+    {
+        textPort->cursor.x = x;
+    }
+
+    if (textPort != &_port) _port.cursor = textPort->absoluteCursor();
     
-    _cursor.x = x;
+    return textPort->cursor.x;
 }
 
+/*
+ * sets cursor.y within the textport.
+ * if y is outside the textport and clampY is true, it will be clamped to 0/height-1
+ * if y is outside the textport and clampY is false, y will not be updated.
+ *
+ * returns the new cursor.y
+ */
 
-void Screen::setY(int y, bool clamp)
+int Screen::setY(TextPort *textPort, int y)
 {
+    // honors clampY.
+    
+    if (!textPort) textPort = &_port;
+    
+    bool clamp = textPort->clampY;
+    
     if (y < 0)
     {
-        if (clamp) _cursor.y = 0;
-        return;
+        if (clamp) textPort->cursor.y = 0;
     }
-    if (y >= height())
+    else if (y >= textPort->frame.height())
     {
-        if (clamp) _cursor.y = height() - 1;
-        return;
+        if (clamp) textPort->cursor.y = textPort->frame.height() - 1;
+    }
+    else
+    {
+        textPort->cursor.y = y;
     }
     
-    _cursor.y = y;
+    if (textPort != &_port) _port.cursor = textPort->absoluteCursor();
+    
+    return textPort->cursor.y;    
 }
 
-
-
-int Screen::incrementX(bool clamp)
+/*
+ * increments cursor.x within the textport.
+ * if rightMargin wraps, it will set x = 0 and incrementY (which may scroll)
+ * if rightMargin does not wrap, it will not be updated.
+ *
+ * returns the new cursor.x
+ */
+int Screen::incrementX(TextPort *textPort)
 {
-    setX(_cursor.x + 1, clamp);
-    return _cursor.x;
+    // honors wrap, scroll.
+    if (!textPort) textPort = &_port;
+    
+
+    if (textPort->cursor.x == textPort->frame.width() - 1)
+    {
+        if (textPort->rightMargin == TextPort::MarginWrap)
+        {
+            textPort->cursor.x = 0;
+            incrementY(textPort);
+        }
+    }
+    else
+    {
+        textPort->cursor.x++;
+    }
+    
+    if (textPort != &_port) _port.cursor = textPort->absoluteCursor();
+    
+    return textPort->cursor.x;
 }
 
-int Screen::decrementX(bool clamp)
+/*
+ * decrements cursor.x within the textport.
+ * if leftMargin wraps, it will set x = width - 1 and decrementY (which may scroll)
+ * if leftMargin does not wrap, it will not be updated.
+ *
+ * returns the new cursor.x
+ */
+
+int Screen::decrementX(TextPort *textPort)
 {
-    setX(_cursor.x - 1, clamp);
-    return _cursor.x;
+    // honors wrap, scroll.
+    if (!textPort) textPort = &_port;
+    
+    
+    if (textPort->cursor.x == 0)
+    {
+        if (textPort->leftMargin == TextPort::MarginWrap)
+        {
+            textPort->cursor.x = textPort->frame.width() - 1;
+            decrementY(textPort);
+        }
+    }
+    else
+    {
+        textPort->cursor.x--;
+    }
+    
+    if (textPort != &_port) _port.cursor = textPort->absoluteCursor();
+    
+    return textPort->cursor.x;    
+    
 }
 
-int Screen::incrementY(bool clamp)
+/*
+ * increment cursor.y
+ * this is similar to lineFeed, except that it honors the scroll flag
+ * at the bottom of the screen.
+ * returns the new cursor.y
+ */
+
+int Screen::incrementY(TextPort *textPort)
 {
-    setY(_cursor.y + 1, clamp);
-    return _cursor.y;
+    // similar to linefeed, but honors scroll.
+    if (!textPort) textPort = &_port;
+
+    if (textPort->scroll)
+        return lineFeed(textPort);
+
+    if (textPort->cursor.y < textPort->frame.height() - 1)
+        return lineFeed(textPort);
+    
+    return textPort->cursor.y;    
 }
 
-int Screen::decrementY(bool clamp)
+
+/*
+ * decrement cursor.y
+ * this is similar to revereseLineFeed, except that it honors the scroll flag
+ * at the top of the screen.
+ * returns the new cursor.y
+ */
+int Screen::decrementY(TextPort *textPort)
 {
-    setY(_cursor.y - 1, clamp);
-    return _cursor.y;
+    // similar to reverseLineFeed, but will not scroll.
+    if (!textPort) textPort = &_port;
+
+    if (!textPort) textPort = &_port;
+    
+    if (textPort->scroll) 
+        return lineFeed(textPort);
+    
+    
+    if (textPort->cursor.y > 0)
+        return reverseLineFeed(textPort);
+    
+    
+    return textPort->cursor.y;   
 }
 
 
+void Screen::setCursor(TextPort *textPort,iPoint point)
+{
+    setX(textPort, point.x);
+    setY(textPort, point.y);
+}
 
+void Screen::setCursor(TextPort *textPort, int x, int y)
+{
+    setX(textPort, x);
+    setY(textPort, y);
+}
+
+#pragma mark -
+#pragma mark Erase
 
 void Screen::erase(EraseRegion region)
 {
@@ -251,13 +384,13 @@ void Screen::erase(EraseRegion region)
     // TODO -- be smart and check if cursor is at x = 0 (or x = _width - 1)
     if (region == EraseBeforeCursor)
     {
-        ScreenIterator end = _screen.begin() + _cursor.y - 1;
+        ScreenIterator end = _screen.begin() + y() - 1;
         for (screenIter = _screen.begin(); screenIter < end; ++screenIter)
         {
             std::fill(screenIter->begin(), screenIter->end(), CharInfo(0,0));
         }
         _updates.push_back(iPoint(0,0));
-        _updates.push_back(iPoint(width() - 1, _cursor.y));
+        _updates.push_back(iPoint(width() - 1, y()));
         
         region = EraseLineBeforeCursor;
     }
@@ -265,46 +398,42 @@ void Screen::erase(EraseRegion region)
     if (region == EraseAfterCursor)
     {
         ScreenIterator end = _screen.end();
-        for (screenIter = _screen.begin() + _cursor.y + 1; screenIter < end; ++screenIter)
+        for (screenIter = _screen.begin() + y() + 1; screenIter < end; ++screenIter)
         {
             std::fill(screenIter->begin(), screenIter->end(), CharInfo(0,0));
         }
-        _updates.push_back(iPoint(0,_cursor.y + 1));
+        _updates.push_back(iPoint(0, y() + 1));
         _updates.push_back(iPoint(width() - 1, height() - 1));
         
         region = EraseLineAfterCursor;
     }
     
     if (region == EraseLineAll)
-    {
-    
-        int y = _cursor.y;
-        std::fill(_screen[y].begin(), _screen[y].end(), CharInfo(0,0));
+    {    
+        std::fill(_screen[y()].begin(), _screen[y()].end(), CharInfo(0,0));
         
-        _updates.push_back(iPoint(0, _cursor.y));
-        _updates.push_back(iPoint(width() - 1, _cursor.y));
+        _updates.push_back(iPoint(0, y()));
+        _updates.push_back(iPoint(width() - 1, y()));
         
         return;
     }
     
     if (region == EraseLineBeforeCursor)
     {
-        int y = _cursor.y;
-        std::fill(_screen[y].begin(), _screen[y].begin() + _cursor.x + 1, CharInfo(0,0));
+        std::fill(_screen[y()].begin(), _screen[y()].begin() + x() + 1, CharInfo(0,0));
         
-        _updates.push_back(iPoint(0, _cursor.y));
-        _updates.push_back(_cursor);
+        _updates.push_back(iPoint(0, y()));
+        _updates.push_back(cursor());
         
         return;        
     }
     
     if (region == EraseLineAfterCursor)
     {
-        int y = _cursor.y;
-        std::fill(_screen[y].begin() + _cursor.x, _screen[y].end(), CharInfo(0,0));
+        std::fill(_screen[y()].begin() + x(), _screen[y()].end(), CharInfo(0,0));
         
-        _updates.push_back(_cursor);     
-        _updates.push_back(iPoint(width() - 1, _cursor.y));
+        _updates.push_back(cursor());     
+        _updates.push_back(iPoint(width() - 1, y()));
         
     }
     
@@ -315,13 +444,13 @@ void Screen::eraseLine()
 {
     // erases everything to the right of, and including, the cursor
     
-    for (CharInfoIterator ciIter = _screen[_cursor.y].begin() + _cursor.x; ciIter < _screen[_cursor.y].end(); ++ciIter)
+    for (CharInfoIterator ciIter = _screen[y()].begin() + x(); ciIter < _screen[y()].end(); ++ciIter)
     {
         *ciIter = CharInfo(0, _flag);
     }
     
-    _updates.push_back(_cursor);
-    _updates.push_back(iPoint(width() - 1, _cursor.y));
+    _updates.push_back(cursor());
+    _updates.push_back(iPoint(width() - 1, y()));
 }
 void Screen::eraseScreen()
 {
@@ -329,9 +458,9 @@ void Screen::eraseScreen()
     
     eraseLine();
     
-    if (_cursor.y == height() -1) return;
+    if (y() == height() -1) return;
     
-    for (ScreenIterator iter = _screen.begin() + _cursor.y; iter < _screen.end(); ++iter)
+    for (ScreenIterator iter = _screen.begin() + y(); iter < _screen.end(); ++iter)
     {
         for (CharInfoIterator ciIter = iter->begin(); ciIter < iter->end(); ++ciIter)
         {
@@ -340,7 +469,7 @@ void Screen::eraseScreen()
         
     }
     
-    _updates.push_back(iPoint(0, _cursor.y + 1));
+    _updates.push_back(iPoint(0, y() + 1));
     _updates.push_back(iPoint(width() - 1, height() - 1));
 }
 
@@ -371,53 +500,87 @@ void Screen::lineFeed()
 {
     // moves the screen up one row, inserting a blank line at the bottom.
 
-    if (_cursor.y == height() - 1)
+    if (y() == height() - 1)
     {        
         deleteLine(0);
     }
     else
     {
-        _cursor.y++;
+        _port.cursor.y++;
     }
 }
 
-void Screen::lineFeed(TextPort *textPort)
+/*
+ * perform a line feed. This increments Y.  If Y was at the bottom of the 
+ * textPort, the textPort scrolls.
+ *
+ */
+int Screen::lineFeed(TextPort *textPort)
 {
-    int maxY;
     
     if (!textPort)
     {
         lineFeed();
-        return;
+        return y();
     }
     
-    maxY = textPort->frame.maxY();
-    
-    maxY = std::min(maxY, (int)height());
-    
-    if (_cursor.y < maxY)
+
+    if (textPort->cursor.y == textPort->frame.height() - 1)
     {
-        _cursor.y++;
+        deleteLine(textPort, 0);
     }
-    else if (textPort->scroll)
+    else
     {
-        _cursor.y++;
+        textPort->cursor.y++;
+        if (textPort != &_port) _port.cursor = textPort->absoluteCursor();        
     }
     
+    return textPort->cursor.y;
 }
+
+
+
+/*
+ * perform a reverse line feed. This increments Y.  If Y was at the top of the 
+ * textPort, the textPort scrolls.
+ *
+ */
+int Screen::reverseLineFeed(TextPort *textPort)
+{
+    
+    if (!textPort)
+    {
+        reverseLineFeed();
+        return y();
+    }
+    
+    
+    if (textPort->cursor.y == 0)
+    {
+        insertLine(textPort, 0);
+    }
+    else
+    {
+        textPort->cursor.y--;
+        if (textPort != &_port) _port.cursor = textPort->absoluteCursor();        
+    }
+    
+    return textPort->cursor.y;
+}
+
 
 
 void Screen::reverseLineFeed()
 {  
     // moves the cursor down one row, inserting a blank line at the top.
     
-    if (_cursor.y == 0)
+    if (y() == 0)
     {
         insertLine(0);
     }
     else
     {
-        _cursor.y--;
+        _port.cursor.y--;
     }
     
 }
@@ -452,37 +615,30 @@ void Screen::insertLine(unsigned line)
 
 void Screen::insertLine(TextPort *textPort, unsigned line)
 {
-    iRect frame;
     CharInfo ci;
     
-    int minY;
-    int maxY;
-    int minX;
-    int maxX;
     
     if (!textPort) return insertLine(line);
     
-    frame = textPort->frame;
+    iRect frame(textPort->frame);
     
-    minY = frame.minY();
-    maxY = frame.maxY();
+    int minY = frame.minY();
+    int maxY = frame.maxY();
     
-    minX = frame.minX();
-    minY = frame.maxX();
+    int minX = frame.minX();
+    int maxX = frame.maxX();
     
     if (line < 0) return;
     if (line >= frame.height()) return;
         
     // move all subsequent lines forward by 1.
-    for (int y = maxY - 2; y >= minY + line; --y)
+    for (int y = frame.height() - 2; y >= line; --y)
     {
         CharInfoIterator iter;
-        CharInfoIterator end;
         
-        iter = _screen[y].begin() + minX;
-        end = _screen[y].begin() + maxX;
+        iter = _screen[minY + y].begin();
         
-        std::copy(iter, end, _screen[y + 1].begin() + minX);
+        std::copy(iter +minX, iter + maxX, _screen[minY + y + 1].begin() + minX);
     }
     
     // clear the line.
@@ -524,37 +680,30 @@ void Screen::deleteLine(unsigned line)
 
 void Screen::deleteLine(TextPort *textPort, unsigned line)
 {
-    iRect frame;
     CharInfo ci;
-    
-    int minY;
-    int maxY;
-    int minX;
-    int maxX;
     
     if (!textPort) return deleteLine(line);
     
-    frame = textPort->frame;
+    iRect frame(textPort->frame);
     
-    minY = frame.minY();
-    maxY = frame.maxY();
+    int minY = frame.minY();
+    int maxY = frame.maxY();
     
-    minX = frame.minX();
-    minY = frame.maxX();
+    int minX = frame.minX();
+    int maxX = frame.maxX();
     
     if (line < 0) return;
     if (line >= frame.height()) return;
     
     // move all subsequent lines back by 1.
-    for (int y = minY + line; y < maxY - 2; ++y)
+    for (int y = line; y < frame.height() - 2; ++y)
     {
         CharInfoIterator iter;
         CharInfoIterator end;
         
-        iter = _screen[y + 1].begin() + minX;
-        end = _screen[y + 1].begin() + maxX;
+        iter = _screen[minY + y + 1].begin();
         
-        std::copy(iter, end, _screen[y].begin() + minX);
+        std::copy(iter + minX, iter + maxX, _screen[minY + y].begin() + minX);
     }
     
     // clear the last line.
@@ -571,6 +720,7 @@ void Screen::deleteLine(TextPort *textPort, unsigned line)
 
 void Screen::setSize(unsigned w, unsigned h)
 {
+    // TODO -- have separate minimum size for textport?
 
     if ((height() == h) && (width() == w)) return;
     
@@ -599,8 +749,8 @@ void Screen::setSize(unsigned w, unsigned h)
     _port.frame.size = iSize(w, h);
 
 
-    if (_cursor.y >= h) _cursor.y = h - 1;
-    if (_cursor.x >= w) _cursor.x = w - 1;
+    if (_port.cursor.y >= h) _port.cursor.y = h - 1;
+    if (_port.cursor.x >= w) _port.cursor.x = w - 1;
     
     //fprintf(stderr, "setSize(%u, %u)\n", width, height);
         

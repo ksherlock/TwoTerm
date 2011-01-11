@@ -83,6 +83,8 @@
     
     memcpy(term.c_cc, ttydefchars, sizeof(ttydefchars));
   
+    if ([_emulator respondsToSelector: @selector(initTerm:)])
+        [_emulator initTerm: &term];
     
     
     pid = forkpty(&fd, NULL, &term, &ws);

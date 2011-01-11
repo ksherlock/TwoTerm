@@ -30,23 +30,31 @@ typedef struct CharInfo {
 
 typedef struct TextPort {
 
-    enum RightMargin {
-        RMTruncate,
-        RMWrap,
-        RMOverwrite
+    enum MarginBehavior {
+        MarginTruncate,
+        MarginWrap,
+        MarginOverwrite
     };
     
     
         
     iRect frame;
+    iPoint cursor;
 
 
-    RightMargin rightMargin;
+    MarginBehavior leftMargin;
+    MarginBehavior rightMargin;
     
     bool advanceCursor;
     //bool lineFeed;
     bool scroll;
     
+    // clamp setCursor calls.
+    bool clampX;
+    bool clampY;
+    
+    
+    iPoint absoluteCursor() const;
 
 };
 
@@ -99,9 +107,24 @@ public:
     void setX(int x, bool clamp = true);
     void setY(int y, bool clamp = true);
     
+
     void setCursor(iPoint point, bool clampX = true, bool clampY = true);
     void setCursor(int x, int y, bool clampX = true, bool clampY = true);
 
+
+    int setX(TextPort *textPort, int x);
+    int setY(TextPort *textPort, int y);
+    
+    int incrementX(TextPort *textPort);
+    int incrementY(TextPort *textPort);
+    
+    int decrementX(TextPort *textPort);
+    int  decrementY(TextPort *textPort);        
+    
+    void setCursor(TextPort *textPort,iPoint point);
+    void setCursor(TextPort *textPort, int x, int y);
+    
+    
     
     void setFlag(uint8_t flag);
     void setFlagBit(uint8_t bit);
@@ -109,13 +132,16 @@ public:
     
     
     void putc(uint8_t c, bool incrementX = true);
+    void putc(TextPort *textPort, uint8_t c);
+    
+    
     CharInfo getc(int x, int y) const;
     
     void deletec();
     void insertc(uint8_t c);
     
     void tabTo(unsigned x);
-    
+    void tabTo(TextPort *textPort, unsigned x);
     
     
     void erase(EraseRegion);
@@ -127,10 +153,10 @@ public:
     
     
     void lineFeed();
-    void lineFeed(TextPort *textPort);
+    int lineFeed(TextPort *textPort);
 
     void reverseLineFeed();
-    void reverseLineFeed(TextPort *textPort);
+    int reverseLineFeed(TextPort *textPort);
     
     
     
@@ -153,9 +179,7 @@ public:
 
     
 private:
-    
-    iPoint _cursor;
-    
+        
     TextPort _port;    
 
     
@@ -181,17 +205,17 @@ private:
 
 inline int Screen::x() const
 {
-    return _cursor.x;
+    return _port.cursor.x;
 }
 
 inline int Screen::y() const 
 {
-    return _cursor.y;
+    return _port.cursor.y;
 }
 
 inline iPoint Screen::cursor() const
 {
-    return _cursor;
+    return _port.cursor;
 }
 
 inline uint8_t Screen::flag() const
