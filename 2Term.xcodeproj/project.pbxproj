@@ -12,31 +12,31 @@
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		B602376211E94D9800C0B73E /* iGeometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B602376111E94D9800C0B73E /* iGeometry.cpp */; };
 		B60EBD1211E8DEEF00C1974F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60EBD1111E8DEEF00C1974F /* QuartzCore.framework */; };
 		B60EBDE311E90FC300C1974F /* ScanLineFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = B60EBDE211E90FC300C1974F /* ScanLineFilter.m */; };
 		B60EBE2B11E918D500C1974F /* ScanLineFilter.cikernel in Resources */ = {isa = PBXBuildFile; fileRef = B60EBDE711E9143F00C1974F /* ScanLineFilter.cikernel */; };
+		B612F45012DD5DAD005D1B77 /* iGeometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B612F44712DD5DAD005D1B77 /* iGeometry.cpp */; };
+		B612F45112DD5DAD005D1B77 /* Lock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B612F44912DD5DAD005D1B77 /* Lock.cpp */; };
+		B612F45212DD5DAD005D1B77 /* OutputChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B612F44B12DD5DAD005D1B77 /* OutputChannel.cpp */; };
+		B612F45312DD5DAD005D1B77 /* Screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B612F44D12DD5DAD005D1B77 /* Screen.cpp */; };
+		B612F45412DD5DAD005D1B77 /* Screen_Texport.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B612F44F12DD5DAD005D1B77 /* Screen_Texport.cpp */; };
+		B612F46412DD5DF1005D1B77 /* Apple80.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F45712DD5DF1005D1B77 /* Apple80.mm */; };
+		B612F46512DD5DF1005D1B77 /* EmulatorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B612F45912DD5DF1005D1B77 /* EmulatorManager.m */; };
+		B612F46612DD5DF1005D1B77 /* GNOConsole.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F45B12DD5DF1005D1B77 /* GNOConsole.mm */; };
+		B612F46712DD5DF1005D1B77 /* PTSE.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F45D12DD5DF1005D1B77 /* PTSE.mm */; };
+		B612F46812DD5DF1005D1B77 /* VT05.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F45F12DD5DF1005D1B77 /* VT05.mm */; };
+		B612F46912DD5DF1005D1B77 /* VT100.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F46112DD5DF1005D1B77 /* VT100.mm */; };
+		B612F46A12DD5DF1005D1B77 /* VT52.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F46312DD5DF1005D1B77 /* VT52.mm */; };
+		B612F47012DD5E02005D1B77 /* CurveView.m in Sources */ = {isa = PBXBuildFile; fileRef = B612F46D12DD5E02005D1B77 /* CurveView.m */; };
+		B612F47112DD5E02005D1B77 /* EmulatorView.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F46F12DD5E02005D1B77 /* EmulatorView.mm */; };
 		B61D0D5D125B740C001C713B /* NewTerminal.xib in Resources */ = {isa = PBXBuildFile; fileRef = B61D0D5B125B740C001C713B /* NewTerminal.xib */; };
 		B61D0D60125B7ACA001C713B /* NewTerminalWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = B61D0D5F125B7ACA001C713B /* NewTerminalWindowController.m */; };
-		B61D0D63125B89E8001C713B /* EmulatorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B61D0D62125B89E8001C713B /* EmulatorManager.m */; };
 		B61D0D69125B8E06001C713B /* Defaults.m in Sources */ = {isa = PBXBuildFile; fileRef = B61D0D68125B8E06001C713B /* Defaults.m */; };
-		B64925DA11EE6C350065E73A /* VT100.mm in Sources */ = {isa = PBXBuildFile; fileRef = B64925D911EE6C350065E73A /* VT100.mm */; };
-		B653E41812C05C8C001DCE27 /* GNOConsole.mm in Sources */ = {isa = PBXBuildFile; fileRef = B653E41612C05C8C001DCE27 /* GNOConsole.mm */; };
-		B669798511E6A786002ED475 /* Lock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B669798411E6A786002ED475 /* Lock.cpp */; };
-		B6697A0F11E6BF95002ED475 /* CurveView.m in Sources */ = {isa = PBXBuildFile; fileRef = B6697A0E11E6BF95002ED475 /* CurveView.m */; };
-		B6697A3D11E7CCA0002ED475 /* PTSE.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6697A3C11E7CCA0002ED475 /* PTSE.mm */; };
-		B673C14B12C3F0CF00923CE5 /* Apple80.mm in Sources */ = {isa = PBXBuildFile; fileRef = B673C14A12C3F0CF00923CE5 /* Apple80.mm */; };
 		B676063B11DEAD3500D6B66C /* TermWindowController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B676063A11DEAD3500D6B66C /* TermWindowController.mm */; };
 		B676065111DEBAE900D6B66C /* TermWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B676065011DEBAE900D6B66C /* TermWindow.xib */; };
-		B67606DA11DF6DAB00D6B66C /* EmulatorView.mm in Sources */ = {isa = PBXBuildFile; fileRef = B67606D911DF6DAB00D6B66C /* EmulatorView.mm */; };
 		B67B3CE512B6FA040033AE07 /* a2-charset-40.png in Resources */ = {isa = PBXBuildFile; fileRef = B67B3CE312B6FA040033AE07 /* a2-charset-40.png */; };
 		B67B3CE612B6FA040033AE07 /* a2-charset-80.png in Resources */ = {isa = PBXBuildFile; fileRef = B67B3CE412B6FA040033AE07 /* a2-charset-80.png */; };
-		B699A03011E528BC00F54CC8 /* Screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B699A02F11E528BC00F54CC8 /* Screen.cpp */; };
-		B699A05D11E54D4500F54CC8 /* OutputChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B699A05C11E54D4500F54CC8 /* OutputChannel.cpp */; };
-		B699A09111E572A300F54CC8 /* VT52.mm in Sources */ = {isa = PBXBuildFile; fileRef = B699A09011E572A300F54CC8 /* VT52.mm */; };
-		B6C843E412DD5B2100D4BEEB /* Screen_Texport.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6C843E212DD5B2100D4BEEB /* Screen_Texport.cpp */; };
 		B6EBE2B511E0EA9100EA0458 /* CharacterGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EBE2B411E0EA9100EA0458 /* CharacterGenerator.m */; };
-		B6F444C811E41AC000C3A836 /* VT05.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6F444C711E41AC000C3A836 /* VT05.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -75,49 +75,49 @@
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		8D1107310486CEB800E47090 /* TwoTerm-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "TwoTerm-Info.plist"; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* 2Term.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 2Term.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B602376111E94D9800C0B73E /* iGeometry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = iGeometry.cpp; sourceTree = "<group>"; };
 		B60EBD1111E8DEEF00C1974F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = /System/Library/Frameworks/QuartzCore.framework; sourceTree = "<absolute>"; };
 		B60EBDE111E90FC300C1974F /* ScanLineFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScanLineFilter.h; sourceTree = "<group>"; };
 		B60EBDE211E90FC300C1974F /* ScanLineFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScanLineFilter.m; sourceTree = "<group>"; };
 		B60EBDE711E9143F00C1974F /* ScanLineFilter.cikernel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = ScanLineFilter.cikernel; sourceTree = "<group>"; };
+		B612F44712DD5DAD005D1B77 /* iGeometry.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = iGeometry.cpp; sourceTree = "<group>"; };
+		B612F44812DD5DAD005D1B77 /* iGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iGeometry.h; sourceTree = "<group>"; };
+		B612F44912DD5DAD005D1B77 /* Lock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Lock.cpp; sourceTree = "<group>"; };
+		B612F44A12DD5DAD005D1B77 /* Lock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lock.h; sourceTree = "<group>"; };
+		B612F44B12DD5DAD005D1B77 /* OutputChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OutputChannel.cpp; sourceTree = "<group>"; };
+		B612F44C12DD5DAD005D1B77 /* OutputChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutputChannel.h; sourceTree = "<group>"; };
+		B612F44D12DD5DAD005D1B77 /* Screen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Screen.cpp; sourceTree = "<group>"; };
+		B612F44E12DD5DAD005D1B77 /* Screen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Screen.h; sourceTree = "<group>"; };
+		B612F44F12DD5DAD005D1B77 /* Screen_Texport.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Screen_Texport.cpp; sourceTree = "<group>"; };
+		B612F45612DD5DF1005D1B77 /* Apple80.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Apple80.h; sourceTree = "<group>"; };
+		B612F45712DD5DF1005D1B77 /* Apple80.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Apple80.mm; sourceTree = "<group>"; };
+		B612F45812DD5DF1005D1B77 /* Emulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Emulator.h; sourceTree = "<group>"; };
+		B612F45912DD5DF1005D1B77 /* EmulatorManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmulatorManager.m; sourceTree = "<group>"; };
+		B612F45A12DD5DF1005D1B77 /* GNOConsole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GNOConsole.h; sourceTree = "<group>"; };
+		B612F45B12DD5DF1005D1B77 /* GNOConsole.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GNOConsole.mm; sourceTree = "<group>"; };
+		B612F45C12DD5DF1005D1B77 /* PTSE.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTSE.h; sourceTree = "<group>"; };
+		B612F45D12DD5DF1005D1B77 /* PTSE.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PTSE.mm; sourceTree = "<group>"; };
+		B612F45E12DD5DF1005D1B77 /* VT05.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VT05.h; sourceTree = "<group>"; };
+		B612F45F12DD5DF1005D1B77 /* VT05.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VT05.mm; sourceTree = "<group>"; };
+		B612F46012DD5DF1005D1B77 /* VT100.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VT100.h; sourceTree = "<group>"; };
+		B612F46112DD5DF1005D1B77 /* VT100.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VT100.mm; sourceTree = "<group>"; };
+		B612F46212DD5DF1005D1B77 /* VT52.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VT52.h; sourceTree = "<group>"; };
+		B612F46312DD5DF1005D1B77 /* VT52.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VT52.mm; sourceTree = "<group>"; };
+		B612F46C12DD5E02005D1B77 /* CurveView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurveView.h; sourceTree = "<group>"; };
+		B612F46D12DD5E02005D1B77 /* CurveView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurveView.m; sourceTree = "<group>"; };
+		B612F46E12DD5E02005D1B77 /* EmulatorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmulatorView.h; sourceTree = "<group>"; };
+		B612F46F12DD5E02005D1B77 /* EmulatorView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EmulatorView.mm; sourceTree = "<group>"; };
 		B61D0D5C125B740C001C713B /* NewTerminal.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = NewTerminal.xib; path = English.lproj/NewTerminal.xib; sourceTree = "<group>"; };
 		B61D0D5E125B7ACA001C713B /* NewTerminalWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewTerminalWindowController.h; sourceTree = "<group>"; };
 		B61D0D5F125B7ACA001C713B /* NewTerminalWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewTerminalWindowController.m; sourceTree = "<group>"; };
-		B61D0D62125B89E8001C713B /* EmulatorManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmulatorManager.m; sourceTree = "<group>"; };
 		B61D0D67125B8E06001C713B /* Defaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Defaults.h; sourceTree = "<group>"; };
 		B61D0D68125B8E06001C713B /* Defaults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Defaults.m; sourceTree = "<group>"; };
-		B64925D811EE6C350065E73A /* VT100.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VT100.h; sourceTree = "<group>"; };
-		B64925D911EE6C350065E73A /* VT100.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VT100.mm; sourceTree = "<group>"; };
-		B653E41612C05C8C001DCE27 /* GNOConsole.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GNOConsole.mm; sourceTree = "<group>"; };
-		B653E41712C05C8C001DCE27 /* GNOConsole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GNOConsole.h; sourceTree = "<group>"; };
-		B669798311E6A786002ED475 /* Lock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Lock.h; sourceTree = "<group>"; };
-		B669798411E6A786002ED475 /* Lock.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Lock.cpp; sourceTree = "<group>"; };
-		B6697A0D11E6BF95002ED475 /* CurveView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CurveView.h; sourceTree = "<group>"; };
-		B6697A0E11E6BF95002ED475 /* CurveView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurveView.m; sourceTree = "<group>"; };
-		B6697A3B11E7CCA0002ED475 /* PTSE.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTSE.h; sourceTree = "<group>"; };
-		B6697A3C11E7CCA0002ED475 /* PTSE.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PTSE.mm; sourceTree = "<group>"; };
-		B673C14912C3F0CF00923CE5 /* Apple80.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Apple80.h; sourceTree = "<group>"; };
-		B673C14A12C3F0CF00923CE5 /* Apple80.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Apple80.mm; sourceTree = "<group>"; };
 		B676063911DEAD3500D6B66C /* TermWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TermWindowController.h; sourceTree = "<group>"; };
 		B676063A11DEAD3500D6B66C /* TermWindowController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TermWindowController.mm; sourceTree = "<group>"; };
 		B676064D11DEBAE300D6B66C /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/TermWindow.xib; sourceTree = "<group>"; };
-		B67606D811DF6DAB00D6B66C /* EmulatorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmulatorView.h; sourceTree = "<group>"; };
-		B67606D911DF6DAB00D6B66C /* EmulatorView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EmulatorView.mm; sourceTree = "<group>"; };
 		B67B3CE312B6FA040033AE07 /* a2-charset-40.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "a2-charset-40.png"; sourceTree = "<group>"; };
 		B67B3CE412B6FA040033AE07 /* a2-charset-80.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "a2-charset-80.png"; sourceTree = "<group>"; };
-		B699A02E11E528BC00F54CC8 /* Screen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Screen.h; sourceTree = "<group>"; };
-		B699A02F11E528BC00F54CC8 /* Screen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Screen.cpp; sourceTree = "<group>"; };
-		B699A03211E528DE00F54CC8 /* iGeometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iGeometry.h; sourceTree = "<group>"; };
-		B699A05B11E54D4500F54CC8 /* OutputChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OutputChannel.h; sourceTree = "<group>"; };
-		B699A05C11E54D4500F54CC8 /* OutputChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OutputChannel.cpp; sourceTree = "<group>"; };
-		B699A08B11E5720F00F54CC8 /* Emulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Emulator.h; sourceTree = "<group>"; };
-		B699A08F11E572A300F54CC8 /* VT52.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VT52.h; sourceTree = "<group>"; };
-		B699A09011E572A300F54CC8 /* VT52.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VT52.mm; sourceTree = "<group>"; };
-		B6C843E212DD5B2100D4BEEB /* Screen_Texport.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Screen_Texport.cpp; sourceTree = "<group>"; };
 		B6EBE2B311E0EA9100EA0458 /* CharacterGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CharacterGenerator.h; sourceTree = "<group>"; };
 		B6EBE2B411E0EA9100EA0458 /* CharacterGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CharacterGenerator.m; sourceTree = "<group>"; };
-		B6F444C611E41AC000C3A836 /* VT05.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VT05.h; sourceTree = "<group>"; };
-		B6F444C711E41AC000C3A836 /* VT05.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VT05.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -142,14 +142,8 @@
 				256AC3D90F4B6AC300CF3369 /* TwoTermAppDelegate.m */,
 				B676063911DEAD3500D6B66C /* TermWindowController.h */,
 				B676063A11DEAD3500D6B66C /* TermWindowController.mm */,
-				B67606D811DF6DAB00D6B66C /* EmulatorView.h */,
-				B67606D911DF6DAB00D6B66C /* EmulatorView.mm */,
 				B6EBE2B311E0EA9100EA0458 /* CharacterGenerator.h */,
 				B6EBE2B411E0EA9100EA0458 /* CharacterGenerator.m */,
-				B699A03211E528DE00F54CC8 /* iGeometry.h */,
-				B602376111E94D9800C0B73E /* iGeometry.cpp */,
-				B6697A0D11E6BF95002ED475 /* CurveView.h */,
-				B6697A0E11E6BF95002ED475 /* CurveView.m */,
 				B60EBDE111E90FC300C1974F /* ScanLineFilter.h */,
 				B60EBDE211E90FC300C1974F /* ScanLineFilter.m */,
 			);
@@ -186,8 +180,9 @@
 		29B97314FDCFA39411CA2CEA /* 2Term */ = {
 			isa = PBXGroup;
 			children = (
-				B6697A3911E7CC66002ED475 /* cpp */,
-				B6697A3A11E7CC80002ED475 /* Emulators */,
+				B612F46B12DD5E02005D1B77 /* Views */,
+				B612F45512DD5DF1005D1B77 /* Emulators */,
+				B612F44612DD5DAD005D1B77 /* cpp */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -231,6 +226,54 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		B612F44612DD5DAD005D1B77 /* cpp */ = {
+			isa = PBXGroup;
+			children = (
+				B612F44712DD5DAD005D1B77 /* iGeometry.cpp */,
+				B612F44812DD5DAD005D1B77 /* iGeometry.h */,
+				B612F44912DD5DAD005D1B77 /* Lock.cpp */,
+				B612F44A12DD5DAD005D1B77 /* Lock.h */,
+				B612F44B12DD5DAD005D1B77 /* OutputChannel.cpp */,
+				B612F44C12DD5DAD005D1B77 /* OutputChannel.h */,
+				B612F44D12DD5DAD005D1B77 /* Screen.cpp */,
+				B612F44E12DD5DAD005D1B77 /* Screen.h */,
+				B612F44F12DD5DAD005D1B77 /* Screen_Texport.cpp */,
+			);
+			path = cpp;
+			sourceTree = "<group>";
+		};
+		B612F45512DD5DF1005D1B77 /* Emulators */ = {
+			isa = PBXGroup;
+			children = (
+				B612F45612DD5DF1005D1B77 /* Apple80.h */,
+				B612F45712DD5DF1005D1B77 /* Apple80.mm */,
+				B612F45812DD5DF1005D1B77 /* Emulator.h */,
+				B612F45912DD5DF1005D1B77 /* EmulatorManager.m */,
+				B612F45A12DD5DF1005D1B77 /* GNOConsole.h */,
+				B612F45B12DD5DF1005D1B77 /* GNOConsole.mm */,
+				B612F45C12DD5DF1005D1B77 /* PTSE.h */,
+				B612F45D12DD5DF1005D1B77 /* PTSE.mm */,
+				B612F45E12DD5DF1005D1B77 /* VT05.h */,
+				B612F45F12DD5DF1005D1B77 /* VT05.mm */,
+				B612F46012DD5DF1005D1B77 /* VT100.h */,
+				B612F46112DD5DF1005D1B77 /* VT100.mm */,
+				B612F46212DD5DF1005D1B77 /* VT52.h */,
+				B612F46312DD5DF1005D1B77 /* VT52.mm */,
+			);
+			path = Emulators;
+			sourceTree = "<group>";
+		};
+		B612F46B12DD5E02005D1B77 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B612F46C12DD5E02005D1B77 /* CurveView.h */,
+				B612F46D12DD5E02005D1B77 /* CurveView.m */,
+				B612F46E12DD5E02005D1B77 /* EmulatorView.h */,
+				B612F46F12DD5E02005D1B77 /* EmulatorView.mm */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		B66979CE11E6BCAE002ED475 /* images */ = {
 			isa = PBXGroup;
 			children = (
@@ -238,41 +281,6 @@
 				B67B3CE412B6FA040033AE07 /* a2-charset-80.png */,
 			);
 			path = images;
-			sourceTree = "<group>";
-		};
-		B6697A3911E7CC66002ED475 /* cpp */ = {
-			isa = PBXGroup;
-			children = (
-				B669798311E6A786002ED475 /* Lock.h */,
-				B669798411E6A786002ED475 /* Lock.cpp */,
-				B699A02E11E528BC00F54CC8 /* Screen.h */,
-				B6C843E212DD5B2100D4BEEB /* Screen_Texport.cpp */,
-				B699A02F11E528BC00F54CC8 /* Screen.cpp */,
-				B699A05B11E54D4500F54CC8 /* OutputChannel.h */,
-				B699A05C11E54D4500F54CC8 /* OutputChannel.cpp */,
-			);
-			name = cpp;
-			sourceTree = "<group>";
-		};
-		B6697A3A11E7CC80002ED475 /* Emulators */ = {
-			isa = PBXGroup;
-			children = (
-				B653E41612C05C8C001DCE27 /* GNOConsole.mm */,
-				B653E41712C05C8C001DCE27 /* GNOConsole.h */,
-				B699A08B11E5720F00F54CC8 /* Emulator.h */,
-				B61D0D62125B89E8001C713B /* EmulatorManager.m */,
-				B6697A3B11E7CCA0002ED475 /* PTSE.h */,
-				B6697A3C11E7CCA0002ED475 /* PTSE.mm */,
-				B6F444C611E41AC000C3A836 /* VT05.h */,
-				B6F444C711E41AC000C3A836 /* VT05.mm */,
-				B699A08F11E572A300F54CC8 /* VT52.h */,
-				B699A09011E572A300F54CC8 /* VT52.mm */,
-				B64925D811EE6C350065E73A /* VT100.h */,
-				B64925D911EE6C350065E73A /* VT100.mm */,
-				B673C14912C3F0CF00923CE5 /* Apple80.h */,
-				B673C14A12C3F0CF00923CE5 /* Apple80.mm */,
-			);
-			name = Emulators;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -345,24 +353,24 @@
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
 				256AC3DA0F4B6AC300CF3369 /* TwoTermAppDelegate.m in Sources */,
 				B676063B11DEAD3500D6B66C /* TermWindowController.mm in Sources */,
-				B67606DA11DF6DAB00D6B66C /* EmulatorView.mm in Sources */,
 				B6EBE2B511E0EA9100EA0458 /* CharacterGenerator.m in Sources */,
-				B6F444C811E41AC000C3A836 /* VT05.mm in Sources */,
-				B699A03011E528BC00F54CC8 /* Screen.cpp in Sources */,
-				B699A05D11E54D4500F54CC8 /* OutputChannel.cpp in Sources */,
-				B699A09111E572A300F54CC8 /* VT52.mm in Sources */,
-				B669798511E6A786002ED475 /* Lock.cpp in Sources */,
-				B6697A0F11E6BF95002ED475 /* CurveView.m in Sources */,
-				B6697A3D11E7CCA0002ED475 /* PTSE.mm in Sources */,
 				B60EBDE311E90FC300C1974F /* ScanLineFilter.m in Sources */,
-				B602376211E94D9800C0B73E /* iGeometry.cpp in Sources */,
-				B64925DA11EE6C350065E73A /* VT100.mm in Sources */,
 				B61D0D60125B7ACA001C713B /* NewTerminalWindowController.m in Sources */,
-				B61D0D63125B89E8001C713B /* EmulatorManager.m in Sources */,
 				B61D0D69125B8E06001C713B /* Defaults.m in Sources */,
-				B653E41812C05C8C001DCE27 /* GNOConsole.mm in Sources */,
-				B673C14B12C3F0CF00923CE5 /* Apple80.mm in Sources */,
-				B6C843E412DD5B2100D4BEEB /* Screen_Texport.cpp in Sources */,
+				B612F45012DD5DAD005D1B77 /* iGeometry.cpp in Sources */,
+				B612F45112DD5DAD005D1B77 /* Lock.cpp in Sources */,
+				B612F45212DD5DAD005D1B77 /* OutputChannel.cpp in Sources */,
+				B612F45312DD5DAD005D1B77 /* Screen.cpp in Sources */,
+				B612F45412DD5DAD005D1B77 /* Screen_Texport.cpp in Sources */,
+				B612F46412DD5DF1005D1B77 /* Apple80.mm in Sources */,
+				B612F46512DD5DF1005D1B77 /* EmulatorManager.m in Sources */,
+				B612F46612DD5DF1005D1B77 /* GNOConsole.mm in Sources */,
+				B612F46712DD5DF1005D1B77 /* PTSE.mm in Sources */,
+				B612F46812DD5DF1005D1B77 /* VT05.mm in Sources */,
+				B612F46912DD5DF1005D1B77 /* VT100.mm in Sources */,
+				B612F46A12DD5DF1005D1B77 /* VT52.mm in Sources */,
+				B612F47012DD5E02005D1B77 /* CurveView.m in Sources */,
+				B612F47112DD5E02005D1B77 /* EmulatorView.mm in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
