@@ -34,6 +34,7 @@
 		B699A03011E528BC00F54CC8 /* Screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B699A02F11E528BC00F54CC8 /* Screen.cpp */; };
 		B699A05D11E54D4500F54CC8 /* OutputChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B699A05C11E54D4500F54CC8 /* OutputChannel.cpp */; };
 		B699A09111E572A300F54CC8 /* VT52.mm in Sources */ = {isa = PBXBuildFile; fileRef = B699A09011E572A300F54CC8 /* VT52.mm */; };
+		B6C843E412DD5B2100D4BEEB /* Screen_Texport.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6C843E212DD5B2100D4BEEB /* Screen_Texport.cpp */; };
 		B6EBE2B511E0EA9100EA0458 /* CharacterGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EBE2B411E0EA9100EA0458 /* CharacterGenerator.m */; };
 		B6F444C811E41AC000C3A836 /* VT05.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6F444C711E41AC000C3A836 /* VT05.mm */; };
 /* End PBXBuildFile section */
@@ -112,6 +113,7 @@
 		B699A08B11E5720F00F54CC8 /* Emulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Emulator.h; sourceTree = "<group>"; };
 		B699A08F11E572A300F54CC8 /* VT52.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VT52.h; sourceTree = "<group>"; };
 		B699A09011E572A300F54CC8 /* VT52.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VT52.mm; sourceTree = "<group>"; };
+		B6C843E212DD5B2100D4BEEB /* Screen_Texport.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Screen_Texport.cpp; sourceTree = "<group>"; };
 		B6EBE2B311E0EA9100EA0458 /* CharacterGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CharacterGenerator.h; sourceTree = "<group>"; };
 		B6EBE2B411E0EA9100EA0458 /* CharacterGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CharacterGenerator.m; sourceTree = "<group>"; };
 		B6F444C611E41AC000C3A836 /* VT05.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VT05.h; sourceTree = "<group>"; };
@@ -244,6 +246,7 @@
 				B669798311E6A786002ED475 /* Lock.h */,
 				B669798411E6A786002ED475 /* Lock.cpp */,
 				B699A02E11E528BC00F54CC8 /* Screen.h */,
+				B6C843E212DD5B2100D4BEEB /* Screen_Texport.cpp */,
 				B699A02F11E528BC00F54CC8 /* Screen.cpp */,
 				B699A05B11E54D4500F54CC8 /* OutputChannel.h */,
 				B699A05C11E54D4500F54CC8 /* OutputChannel.cpp */,
@@ -359,6 +362,7 @@
 				B61D0D69125B8E06001C713B /* Defaults.m in Sources */,
 				B653E41812C05C8C001DCE27 /* GNOConsole.mm in Sources */,
 				B673C14B12C3F0CF00923CE5 /* Apple80.mm in Sources */,
+				B6C843E412DD5B2100D4BEEB /* Screen_Texport.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
