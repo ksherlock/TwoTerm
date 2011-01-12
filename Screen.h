@@ -56,7 +56,7 @@ typedef struct TextPort {
     
     iPoint absoluteCursor() const;
 
-};
+} TextPort;
 
 class Screen {
     
@@ -68,6 +68,8 @@ public:
     static const unsigned FlagBold = 0x04;
     static const unsigned FlagUnderscore = 0x08;
     static const unsigned FlagBlink = 0x10;
+    static const unsigned FlagStrike = 0x20;
+    
     static const unsigned FlagSelected = 0x8000;
     
     
@@ -119,9 +121,9 @@ public:
     int incrementY(TextPort *textPort);
     
     int decrementX(TextPort *textPort);
-    int  decrementY(TextPort *textPort);        
+    int decrementY(TextPort *textPort);        
     
-    void setCursor(TextPort *textPort,iPoint point);
+    void setCursor(TextPort *textPort, iPoint point);
     void setCursor(TextPort *textPort, int x, int y);
     
     
@@ -145,6 +147,7 @@ public:
     
     
     void erase(EraseRegion);
+    void erase(TextPort *, EraseRegion);
     
     void eraseLine();
     void eraseScreen();

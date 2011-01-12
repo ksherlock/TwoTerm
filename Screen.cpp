@@ -420,7 +420,7 @@ void Screen::erase(EraseRegion region)
     
     if (region == EraseLineBeforeCursor)
     {
-        std::fill(_screen[y()].begin(), _screen[y()].begin() + x() + 1, CharInfo(0,0));
+        std::fill(_screen[y()].begin(), _screen[y()].begin() + x(), CharInfo(0,0));
         
         _updates.push_back(iPoint(0, y()));
         _updates.push_back(cursor());
@@ -435,7 +435,144 @@ void Screen::erase(EraseRegion region)
         _updates.push_back(cursor());     
         _updates.push_back(iPoint(width() - 1, y()));
         
+        return;
     }
+}
+
+
+
+void Screen::erase(TextPort* textPort, EraseRegion region)
+{
+    if (!textPort) textPort = &_port;
+    
+    iRect frame = textPort->frame;
+    iPoint cursor = textPort->absoluteCursor();
+
+    
+    if (region == EraseAll)
+    {
+        //erase the current screen
+        
+        ScreenIterator begin = _screen.begin() + frame.minY();
+        ScreenIterator end = _screen.begin() + frame.maxY();
+        
+        for (ScreenIterator iter = begin; iter != end; ++iter)
+        {
+            CharInfoIterator begin = iter->begin() + frame.minX();
+            CharInfoIterator end = iter->begin() + frame.maxX();
+            
+            std::fill(begin, end, CharInfo(0, 0));
+        }
+        
+        _updates.push_back(frame.origin);
+        _updates.push_back(iPoint(frame.maxX() - 1, frame.maxY() - 1));
+        
+        
+        return;
+    }
+    
+    if (region == EraseLineAll)
+    {   
+        
+        // erase the current line.
+        
+        ScreenIterator iter = _screen.begin() + cursor.y;
+        CharInfoIterator begin = iter->begin() + frame.minX();
+        CharInfoIterator end = iter->begin() + frame.maxX();        
+        
+        std::fill(begin, end, CharInfo(0, 0));
+        
+        _updates.push_back(iPoint(frame.minX(), cursor.y));
+        _updates.push_back(iPoint(frame.maxX() - 1, cursor.y));
+        
+        return;
+    }
+    
+    
+    if (region == EraseBeforeCursor)
+    {
+        // erase everything before the cursor
+        // part 1 -- erase all lines prior to the current line.
+    
+        ScreenIterator begin = _screen.begin() + frame.minY();
+        ScreenIterator end = _screen.begin() + cursor.y;
+        
+        for (ScreenIterator iter = begin; iter != end; ++iter)
+        {
+            CharInfoIterator begin = iter->begin() + frame.minX();
+            CharInfoIterator end = iter->begin() + frame.maxX();
+            
+            std::fill(begin, end, CharInfo(0, 0));
+        }
+        
+        _updates.push_back(frame.origin);
+        _updates.push_back(iPoint(frame.maxX() - 1, cursor.y - 1));
+        
+        // handle rest below.
+        region = EraseLineBeforeCursor;
+    }
+    
+    if (region == EraseAfterCursor)
+    {
+        // erase everything after the cursor
+        // part 1 -- erase all lines after the current line.
+        
+        ScreenIterator begin = _screen.begin() + cursor.y + 1;
+        ScreenIterator end = _screen.begin() + frame.maxY();       
+        
+        if (begin < end)
+        {
+
+            for (ScreenIterator iter = begin; iter != end; ++iter)
+            {
+                CharInfoIterator begin = iter->begin() + frame.minX();
+                CharInfoIterator end = iter->begin() + frame.maxX();
+                
+                std::fill(begin, end, CharInfo(0, 0));
+            }
+            
+            _updates.push_back(iPoint(cursor.x, cursor.y + 1));
+            _updates.push_back(iPoint(frame.maxX() - 1, frame.maxY() - 1));            
+            
+            
+        }
+        
+        region = EraseLineAfterCursor;
+    }
+    
+    
+    if (region == EraseLineBeforeCursor)
+    {
+        // erase the current line, before the cursor.
+        
+        ScreenIterator iter = _screen.begin() + cursor.y;
+        CharInfoIterator begin = iter->begin() + frame.minX();
+        CharInfoIterator end = iter->begin() + cursor.x;
+        
+        std::fill(begin, end, CharInfo(0, 0));
+        
+        _updates.push_back(iPoint(frame.minX(), cursor.y));
+        _updates.push_back(iPoint(cursor.x - 1, cursor.y));        
+        
+        return;
+    }
+    
+    if (region == EraseLineAfterCursor)
+    {
+        // erase the current line, after the cursor.
+        
+        ScreenIterator iter = _screen.begin() + cursor.y;
+        CharInfoIterator begin = iter->begin() + cursor.x;
+        CharInfoIterator end = iter->begin() + frame.maxX();
+        
+        std::fill(begin, end, CharInfo(0, 0));
+        
+        _updates.push_back(iPoint(cursor.x, cursor.y));
+        _updates.push_back(iPoint(frame.maxX() - 1, cursor.y));        
+        
+        return;
+    }    
+    
     
     
 }
