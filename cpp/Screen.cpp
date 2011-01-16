@@ -868,8 +868,24 @@ void Screen::setSize(unsigned w, unsigned h)
     else if (height() > h)
     {
         unsigned count = height() - h;
+        int y = _port.cursor.y;
+        int maxY = height() - 1;
+        
+        // 1. erase from the bottom, up to the cursor (if blank)
+        // 2. erase lines from the top.
+        
+        while (count && maxY > y)
+        {
+            // todo -- check if blank...
+            _screen.pop_back();
+            --count;
+            --maxY;
+        }
+        
+        
         // erase lines from the top.
-        _screen.erase(_screen.begin(), _screen.begin() + count);
+        if (count) 
+            _screen.erase(_screen.begin(), _screen.begin() + count);
     }
 
     
