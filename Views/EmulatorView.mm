@@ -116,7 +116,7 @@
         //add the scanlines (which are vertical and must therfore be rotated
         
         filter = [[ScanLineFilter new] autorelease];
-        [filter setValue: [NSNumber numberWithFloat: 0.75] forKey: @"inputOpacity"];
+        [filter setValue: [NSNumber numberWithFloat: 0.66] forKey: @"inputOpacity"];
         [filters addObject: filter];
         
         //blur it a bit...
@@ -237,17 +237,23 @@
                 currentFront = _boldColor;
             
 
-            if (flag & Screen::FlagMouseText)
-            {
-                if (c >= '@' && c <= '_') c |= 0x80;
-            }
+  
             
             
             //img = [_charGen imageForCharacter: c];
             
             if (flag & Screen::FlagInverse)
             {
-                std::swap(currentBack, currentFront);
+  
+                // mouse text actually requires mouse text and inverse to be on.
+                if (flag & Screen::FlagMouseText)
+                {
+                    if (c >= '@' && c <= '_') c |= 0x80;
+                }
+                else
+                {
+                    std::swap(currentBack, currentFront);
+                }
             }
                         
             if (currentBack != _backgroundColor)
@@ -260,9 +266,30 @@
             if (_foregroundColor != currentFront) setFront = YES;
             if (setFront) [currentFront setFill];
 
-            [_charGen drawCharacter: c atPoint: NSMakePoint(_paddingLeft + x * _charWidth, _paddingTop + y * _charHeight)];
+            [_charGen drawCharacter: c 
+                            atPoint: NSMakePoint(_paddingLeft + x * _charWidth, _paddingTop + y * _charHeight)];
             
 
+            // strikethrough -- draw a centered line.
+            if (flag & Screen::FlagStrike)
+            {
+            
+                NSRectFill(NSMakeRect(_paddingLeft + x * _charWidth, 
+                                      _paddingTop + y * _charHeight + floor(_charHeight / 2) - 1, 
+                                      _charWidth, 
+                                      2));                
+            }
+            
+            // underscore -- draw a bottom line. (eg, ``_'')
+            if (flag & Screen::FlagUnderscore)
+            {
+                NSRectFill(NSMakeRect(_paddingLeft + x * _charWidth, 
+                                      _paddingTop + y * _charHeight + _charHeight - 2, 
+                                      _charWidth, 
+                                      2));
+            
+            }
+            
             
         }
     }
