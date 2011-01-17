@@ -152,6 +152,7 @@
     
     [_emulatorView resizeTo: iSize(ws.ws_col, ws.ws_row) animated: NO];
 
+    
     if (![_emulator resizable])
     {
         
@@ -183,7 +184,15 @@
     Class klass;
     id o;
     
+    NSWindow *window;
+    
     [super windowDidLoad];
+    
+    window = [self window];
+    
+    // resize in 2.0 he ight increments to prevent jittering the scan lines.
+    [window setResizeIncrements: NSMakeSize(1.0, 2.0)];
+    
     
     klass = [_parameters objectForKey: kClass];
     if (!klass || ![klass conformsToProtocol: @protocol(Emulator)])
@@ -216,6 +225,8 @@
     //[_curveView setColor: [NSColor blueColor]];
     
     [self initPTY];
+    
+    [window setMinSize: [window frame].size];
 }
 
 -(void)windowWillClose:(NSNotification *)notification
