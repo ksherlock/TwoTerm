@@ -1,5 +1,5 @@
 //
-//  Screen_Texport.cpp
+//  Screen_TextPort.cpp
 //  2Term
 //
 //  Created by Kelvin Sherlock on 1/11/2011.
