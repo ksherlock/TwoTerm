@@ -10,6 +10,9 @@
 #import "EmulatorView.h"
 #import "CurveView.h"
 
+#import "ChildMonitor.h"
+
+
 #import "VT52.h"
 #import "PTSE.h"
 
@@ -35,6 +38,7 @@
 
 @synthesize parameters = _parameters;
 
+@synthesize childMonitor = _childMonitor;
 
 
 +(id)new
@@ -43,12 +47,16 @@
 }
 
 -(void)dealloc
-{    
+{
+
+    [_childMonitor release];
+    
     [_emulator release];
     [_emulatorView release];
     [_curveView release];
 
     [_parameters release];
+
     
     [super dealloc];
 }
@@ -165,10 +173,21 @@
         [window setStyleMask: mask & ~NSResizableWindowMask];
     }
     
+    
+    if (!_childMonitor)
+    {
+        _childMonitor = [ChildMonitor new];
+        [_childMonitor setDelegate: _emulatorView];
+    }
+    
+    [_childMonitor setChildPID: pid];
+    [_childMonitor setFd: fd];
+    
     _child = pid;
     
     [_emulatorView setFd: fd];
-    [_emulatorView startBackgroundReader];
+    //[_emulatorView startBackgroundReader];
+    [_childMonitor start];
 }
 
 
@@ -223,7 +242,7 @@
     
     //[_curveView initScanLines];
     //[_curveView setColor: [NSColor blueColor]];
-    
+
     [self initPTY];
     
     [window setMinSize: [window frame].size];
@@ -231,6 +250,9 @@
 
 -(void)windowWillClose:(NSNotification *)notification
 {
+    [_childMonitor setDelegate: nil];
+    [_childMonitor cancel];
+    
     [self autorelease];
 }
 

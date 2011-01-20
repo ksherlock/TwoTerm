@@ -11,6 +11,7 @@
 
 @class EmulatorView;
 @class CurveView;
+@class ChildMonitor;
 
 @protocol  Emulator;
     
@@ -25,11 +26,15 @@
     
     NSObject <Emulator> *_emulator;
     
+    ChildMonitor *_childMonitor;
+    
     int _child;
     
 }
 
 @property (nonatomic, retain) NSDictionary *parameters;
+
+@property (nonatomic, retain) IBOutlet ChildMonitor *childMonitor;
 
 @property (nonatomic, retain) IBOutlet EmulatorView *emulatorView;
 @property (nonatomic, retain) IBOutlet CurveView *curveView;
