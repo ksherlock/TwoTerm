@@ -155,6 +155,14 @@ enum  {
 -(void)reset
 {
     _state = StateText;
+
+    _textPort.frame = iRect(0, 0, 80, 24);
+    _textPort.cursor = iPoint(0,0);
+    
+    _textPort.scroll = true;
+    _textPort.advanceCursor = true;
+    _textPort.leftMargin = TextPort::MarginWrap;
+    _textPort.rightMargin = TextPort::MarginWrap;
     
 
     // set flags to plain text.
@@ -182,13 +190,7 @@ enum  {
 {
     if ((self = [super init]))
     {
-        _textPort.frame = iRect(0, 0, 24, 80);
-        _textPort.cursor = iPoint(0,0);
-        
-        _textPort.scroll = true;
-        _textPort.advanceCursor = true;
-        _textPort.leftMargin = TextPort::MarginWrap;
-        _textPort.rightMargin = TextPort::MarginWrap;
+        [self reset];
     }
     
     return self;
@@ -232,7 +234,7 @@ enum  {
                 
             case CTRL('I'):
                 // tab
-                screen->tabTo(&_textPort, (screen->x() + 8) & ~0x07);
+                screen->tabTo(&_textPort, (_textPort.cursor.x + 8) & ~0x07);
                 //screen->tabTo((screen->x() + 8) & ~0x07);
                 break;
             
@@ -249,7 +251,7 @@ enum  {
             case CTRL('L'):
                 // clear screen, go home.
                 screen->erase(&_textPort, Screen::EraseAll);
-                screen->setCursor(&_textPort, iPoint(0,0));
+                screen->setCursor(&_textPort, 0, 0);
                 break;
                 
             case CTRL('M'):
@@ -269,11 +271,14 @@ enum  {
                 
             case CTRL('Q'):
                 // insert line.
-                screen->insertLine(&_textPort, screen->y() - _textPort.frame.origin.y);
+                // TODO -- verify textPort
+                screen->insertLine(&_textPort, _textPort.cursor.y);
                 break;
+                
             case CTRL('R'):
                 // delete line
-                screen->deleteLine(&_textPort, screen->y() - _textPort.frame.origin.y);
+                // TODO -- verify textPort
+                screen->deleteLine(&_textPort, _textPort.cursor.y);
                 break;
                 
             case CTRL('U'):
@@ -297,8 +302,9 @@ enum  {
             
             case CTRL('Y'):
                 // cursor home
-                screen->setCursor(_textPort.frame.origin, true, true);
+                screen->setCursor(&_textPort, 0, 0);
                 break;
+                
             case CTRL('Z'):
                 // clear entire line
                 screen->erase(&_textPort, Screen::EraseLineAll);
@@ -351,7 +357,7 @@ enum  {
 
         case StateDCAY:
             _dca.y = c - 32;
-            screen->setCursor(_dca);
+            screen->setCursor(&_textPort, _dca);
             
             _state = StateText;
             break;
