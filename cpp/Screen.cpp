@@ -154,7 +154,7 @@ void Screen::tabTo(TextPort *textPort, unsigned xPos)
         _screen[cursor.y][x + textPort->frame.minX()] = clear;
     }
     
-    textPort->cursor.x += xPos;
+    textPort->cursor.x = xPos;
     if (textPort != &_port) _port.cursor = textPort->absoluteCursor();
 
     _updates.push_back(_port.cursor);
@@ -833,7 +833,7 @@ void Screen::deleteLine(TextPort *textPort, unsigned line)
     if (line >= frame.height()) return;
     
     // move all subsequent lines back by 1.
-    for (int y = line; y < frame.height() - 2; ++y)
+    for (int y = line; y < frame.height() - 1; ++y)
     {
         CharInfoIterator iter;
         CharInfoIterator end;
