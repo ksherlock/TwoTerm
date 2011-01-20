@@ -9,6 +9,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include "Emulator.h"
+#include "ChildMonitor.h"
 
 #include "iGeometry.h"
 
@@ -102,5 +103,10 @@ private:
 -(IBAction)paste: (id)sender;
 -(IBAction)copy: (id)sender;
 
+
+@end
+
+
+@interface EmulatorView (ChildMonitor) <ChildMonitorDelegate> 
 
 @end

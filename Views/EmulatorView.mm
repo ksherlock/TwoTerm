@@ -266,6 +266,8 @@
             if (_foregroundColor != currentFront) setFront = YES;
             if (setFront) [currentFront setFill];
 
+            // need to apply the scanline filter here.
+            
             [_charGen drawCharacter: c 
                             atPoint: NSMakePoint(_paddingLeft + x * _charWidth, _paddingTop + y * _charHeight)];
             
@@ -375,6 +377,8 @@
 
 -(void)startBackgroundReader
 {
+    return;
+    
     if (_readerThread) return;
     
     _readerThread = [[NSThread alloc] initWithTarget: self selector: @selector(_readerThread) object: nil];
@@ -705,6 +709,23 @@
 
 
 
+@end
+
+
+@implementation EmulatorView (ChildMonitor)
+
+-(void)childDataAvailable: (ChildMonitor *)monitor
+{
+    // this is called from a separate thread.
+    [self dataAvailable];
+}
+
+-(void)childFinished: (ChildMonitor *)monitor
+{
+    NSLog(@"[process complete]");
+    // writeline "[process complete]"
+}
+    
 @end
 
 
