@@ -3,17 +3,23 @@
  *
  */
 
-kernel vec4 scanline(sampler image, float opacity)
+kernel vec4 scanline(sampler image, float strength)
 {
-	vec2 coord = samplerCoord(image);
+
+    vec4 fudge = vec4( 0.4, 0.4, 0.4, 0.0 );
+
+    vec2 coord = samplerCoord(image);
 	vec4 pixel = sample(image, coord);
 	
-	float isOdd = mod(floor(coord.y), 2.0);
 
-	// isOdd == 0 --> return pixel
-	// isOdd == 1 --> return pixel * opacity
-	
-	//float multiplier = compare(isOdd - 1.0, 1.0, opacity);
-	float multiplier = isOdd == 0.0 ? 1.0 : opacity;
-	return pixel * multiplier;
+    fudge *= strength;
+
+    float yy = mod(coord.y, 2.0);
+
+    fudge *= (yy < 1.0) ? 1.0 : -1.0;
+
+    pixel = unpremultiply(pixel);
+    pixel += fudge;
+    return premultiply(pixel);
+
 }

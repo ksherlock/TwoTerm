@@ -47,10 +47,10 @@ static CIKernel *_kernel = nil;
              [NSNumber numberWithDouble:  0.00], kCIAttributeMax,
              [NSNumber numberWithDouble:  0.00], kCIAttributeSliderMin,
              [NSNumber numberWithDouble:  1.00], kCIAttributeSliderMax,
-             [NSNumber numberWithDouble:  0.50], kCIAttributeDefault,
+             [NSNumber numberWithDouble:  0.40], kCIAttributeDefault,
              [NSNumber numberWithDouble:  0.00], kCIAttributeIdentity,
              kCIAttributeTypeDistance,           kCIAttributeType,
-             nil],                               @"inputOpacity",
+             nil],                               @"inputStrength",
             
             nil];
 }
@@ -59,16 +59,16 @@ static CIKernel *_kernel = nil;
 // called when setting up for fragment program and also calls fragment program
 - (CIImage *)outputImage
 {
-    float opacity;
+    float strength;
     CISampler *src;
     
     src = [CISampler samplerWithImage:inputImage];
 
-    opacity = [inputOpacity floatValue];
-    if (opacity < 0) opacity = 0;
-    if (opacity > 1.0) opacity = 1.0;
+    strength = [inputStrength floatValue];
+    if (strength < 0) strength = 0;
+    if (strength > 1.0) strength = 1.0;
     
-    return [self apply: _kernel, src, [NSNumber numberWithFloat: opacity], nil];
+    return [self apply: _kernel, src, [NSNumber numberWithFloat: strength], nil];
 }
 
 

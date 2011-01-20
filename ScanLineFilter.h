@@ -11,7 +11,7 @@
 
 
 @interface ScanLineFilter : CIFilter {
-    NSNumber *inputOpacity;
+    NSNumber *inputStrength;
     CIImage *inputImage;
 }
 
