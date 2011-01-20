@@ -43,6 +43,10 @@
 {
     int fd = _fd;
         
+    // poll(2) does not work for ptys.
+    // todo -- check if kqueue works with ptys
+    // kqueue can also monitor the child process.
+    
     
     for(;;)
     {
