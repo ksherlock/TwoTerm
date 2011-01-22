@@ -45,6 +45,8 @@
 
 -(void)awakeFromNib
 {
+    NSSize size;
+    
     _charWidth = 7;
     _charHeight = 16;
     
@@ -67,7 +69,10 @@
     
     _cursorImg = [[_charGen imageForCharacter: '_'] retain];
     
-        
+    
+    size  = [_charGen characterSize];
+    _charWidth = size.width;
+    _charHeight = size.height;
     
     // enable drag+drop for files/urls.
     
@@ -113,11 +118,7 @@
         
         
         
-        //add the scanlines (which are vertical and must therfore be rotated
-        
-        filter = [[ScanLineFilter new] autorelease];
-        [filter setValue: [NSNumber numberWithFloat: 0.66] forKey: @"inputOpacity"];
-        [filters addObject: filter];
+
         
         //blur it a bit...
         
@@ -126,6 +127,13 @@
         [filter setValue: [NSNumber numberWithFloat: 0.33] forKey: @"inputRadius"];
         
         [filters addObject: filter];
+
+        
+        //add the scanlines
+        
+        filter = [[ScanLineFilter new] autorelease];
+        [filter setValue: [NSNumber numberWithFloat: 0.1] forKey: @"inputStrength"];
+        [filters addObject: filter];        
         
         [self setContentFilters: filters];   
     }
@@ -344,6 +352,9 @@
     OutputChannel channel(_fd);
     iRect updateRect; // should be nil but whatever...
     
+    
+    
+    [NSCursor setHiddenUntilMouseMoves: YES];
     
     _screen.beginUpdate();
     
