@@ -18,6 +18,7 @@
 
 +(CharacterGenerator *)generator;
 
+@property (nonatomic, readonly) NSSize characterSize;
 
 -(NSImage *)imageForCharacter: (unsigned)character;
 

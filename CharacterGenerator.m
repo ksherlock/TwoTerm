@@ -12,6 +12,8 @@
 
 @implementation CharacterGenerator
 
+@synthesize characterSize = _size;
+
 static CGImageRef PNGImage(NSString *path)
 {
     CGImageRef image = NULL;
@@ -45,11 +47,13 @@ static CGImageRef PNGImage(NSString *path)
         
         CGImageRef mask;
         CGImageRef src;
+        NSSize size;
         
         
         mainBundle = [NSBundle mainBundle];
         
-        imagePath = [mainBundle pathForResource: @"a2-charset-80" ofType: @"png"];
+        //imagePath = [mainBundle pathForResource: @"a2-charset-80" ofType: @"png"];
+        imagePath = [mainBundle pathForResource: @"vt100-charset" ofType: @"png"];
 
         
         
@@ -58,6 +62,14 @@ static CGImageRef PNGImage(NSString *path)
         
         
         src = PNGImage(imagePath);
+        
+        size.width = CGImageGetWidth(src);
+        size.height = CGImageGetHeight(src);
+        
+        size.width /= 16;
+        size.height /= 16; 
+        
+        _size = size;
         
         if (src)
         {
