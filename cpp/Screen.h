@@ -166,8 +166,8 @@ public:
     void deleteLine(unsigned line);
     void insertLine(unsigned line);
     
-    void insertLine(TextPort *textPort, unsigned line);
-    void deleteLine(TextPort *textPort, unsigned line);
+    void insertLine(TextPort *textPort, int line);
+    void deleteLine(TextPort *textPort, int line);
 
     
     void beginUpdate();

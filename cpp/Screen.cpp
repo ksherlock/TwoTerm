@@ -750,7 +750,7 @@ void Screen::insertLine(unsigned line)
 // line is relative to the textView.
 // textView has been constrained.
 
-void Screen::insertLine(TextPort *textPort, unsigned line)
+void Screen::insertLine(TextPort *textPort, int line)
 {
     CharInfo ci;
     
@@ -815,7 +815,7 @@ void Screen::deleteLine(unsigned line)
 }
 
 
-void Screen::deleteLine(TextPort *textPort, unsigned line)
+void Screen::deleteLine(TextPort *textPort, int line)
 {
     CharInfo ci;
     
