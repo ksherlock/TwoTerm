@@ -47,10 +47,20 @@ static CIKernel *_kernel = nil;
              [NSNumber numberWithDouble:  0.00], kCIAttributeMax,
              [NSNumber numberWithDouble:  0.00], kCIAttributeSliderMin,
              [NSNumber numberWithDouble:  1.00], kCIAttributeSliderMax,
-             [NSNumber numberWithDouble:  0.40], kCIAttributeDefault,
+             [NSNumber numberWithDouble:  0.00], kCIAttributeDefault,
              [NSNumber numberWithDouble:  0.00], kCIAttributeIdentity,
              kCIAttributeTypeDistance,           kCIAttributeType,
-             nil],                               @"inputStrength",
+             nil],                               @"inputLighten",
+
+            [NSDictionary dictionaryWithObjectsAndKeys:
+             [NSNumber numberWithDouble:  0.00], kCIAttributeMin,
+             [NSNumber numberWithDouble:  0.00], kCIAttributeMax,
+             [NSNumber numberWithDouble:  0.00], kCIAttributeSliderMin,
+             [NSNumber numberWithDouble:  1.00], kCIAttributeSliderMax,
+             [NSNumber numberWithDouble:  0.80], kCIAttributeDefault,
+             [NSNumber numberWithDouble:  0.00], kCIAttributeIdentity,
+             kCIAttributeTypeDistance,           kCIAttributeType,
+             nil],                               @"inputDarken",            
             
             nil];
 }
@@ -59,16 +69,21 @@ static CIKernel *_kernel = nil;
 // called when setting up for fragment program and also calls fragment program
 - (CIImage *)outputImage
 {
-    float strength;
+    float l, d;
     CISampler *src;
     
-    src = [CISampler samplerWithImage:inputImage];
+    src = [CISampler samplerWithImage: inputImage];
 
-    strength = [inputStrength floatValue];
-    if (strength < 0) strength = 0;
-    if (strength > 1.0) strength = 1.0;
+    l = [inputLighten floatValue];
+    d = [inputDarken floatValue];
     
-    return [self apply: _kernel, src, [NSNumber numberWithFloat: strength], nil];
+    if (l < 0) l = 0;
+    if (l > 1.0) l = 1.0;
+
+    if (d < 0) d = 0;
+    if (d > 1.0) d = 1.0;    
+    
+    return [self apply: _kernel, src, [NSNumber numberWithFloat: l], [NSNumber numberWithFloat: d], nil];
 }
 
 
