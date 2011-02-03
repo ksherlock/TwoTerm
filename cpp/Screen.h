@@ -84,6 +84,13 @@ public:
         EraseLineAfterCursor
     };
     
+    enum CursorType {
+        CursorNone,
+        CursorUnderscore,
+        CursorPipe,
+        CursorBlock
+    };
+    
     Screen(unsigned height = 24, unsigned width = 80);
 
 
