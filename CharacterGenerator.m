@@ -52,8 +52,8 @@ static CGImageRef PNGImage(NSString *path)
         
         mainBundle = [NSBundle mainBundle];
         
-        //imagePath = [mainBundle pathForResource: @"a2-charset-80" ofType: @"png"];
-        imagePath = [mainBundle pathForResource: @"vt100-charset" ofType: @"png"];
+        imagePath = [mainBundle pathForResource: @"a2-charset-80" ofType: @"png"];
+        //imagePath = [mainBundle pathForResource: @"vt100-charset" ofType: @"png"];
 
         
         
