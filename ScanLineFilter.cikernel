@@ -3,23 +3,22 @@
  *
  */
 
-kernel vec4 scanline(sampler image, float strength)
+kernel vec4 scanline(sampler image, float l, float d)
 {
-
-    vec4 fudge = vec4( 0.4, 0.4, 0.4, 0.0 );
+    vec4 light, dark;
 
     vec2 coord = samplerCoord(image);
 	vec4 pixel = sample(image, coord);
-	
-
-    fudge *= strength;
-
-    float yy = mod(coord.y, 2.0);
-
-    fudge *= (yy < 1.0) ? 1.0 : -1.0;
-
     pixel = unpremultiply(pixel);
-    pixel += fudge;
-    return premultiply(pixel);
 
+    light = dark = pixel;
+
+    
+    dark.rgb = pixel.rgb * (1.0 - d);
+    light.rgb = pixel.rgb * (1.0 - l) + l;
+
+    pixel.rgb = mod(coord.y, 2.0) < 1.0 ? light.rgb : dark.rgb;
+
+
+    return premultiply(pixel);
 }
