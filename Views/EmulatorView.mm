@@ -118,7 +118,12 @@
         
         
         
-
+        //add the scanlines
+        
+        filter = [[ScanLineFilter new] autorelease];
+        [filter setValue: [NSNumber numberWithFloat: 1.0] forKey: @"inputDarken"];
+        [filter setValue: [NSNumber numberWithFloat: 0.025] forKey: @"inputLighten"];
+        [filters addObject: filter];  
         
         //blur it a bit...
         
@@ -127,13 +132,9 @@
         [filter setValue: [NSNumber numberWithFloat: 0.33] forKey: @"inputRadius"];
         
         [filters addObject: filter];
-
+         
         
-        //add the scanlines
-        
-        filter = [[ScanLineFilter new] autorelease];
-        [filter setValue: [NSNumber numberWithFloat: 0.1] forKey: @"inputStrength"];
-        [filters addObject: filter];        
+      
         
         [self setContentFilters: filters];   
     }
