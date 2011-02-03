@@ -472,6 +472,10 @@ enum  {
                 if (uc <= 0x7f)
                 {
                     char c = uc;
+                    if (flags & (NSShiftKeyMask | NSAlphaShiftKeyMask))
+                    {
+                        c = toupper(c);
+                    }
                     if (flags & NSControlKeyMask)
                         c = CTRL(c);
                     

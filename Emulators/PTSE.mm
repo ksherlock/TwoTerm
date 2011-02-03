@@ -95,7 +95,7 @@ enum  {
                 break;            
             case CTRL('P'):
                 //Set inverse off, mousetext on.
-                screen->setFlag(Screen::FlagMouseText);
+                screen->setFlag(Screen::FlagMouseText | Screen::FlagInverse);
                 break;
                 
                 
@@ -304,7 +304,7 @@ enum  {
             
                 // backspace and left arrow use the same code, alas.
             case NSBackspaceCharacter:
-                output->write(CTRL('H'));
+                output->write(0x7f);
                 break;
                 
             case NSLeftArrowFunctionKey:
