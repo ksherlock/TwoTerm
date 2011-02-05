@@ -164,6 +164,7 @@ enum  {
     _textPort.leftMargin = TextPort::MarginWrap;
     _textPort.rightMargin = TextPort::MarginWrap;
     
+    _cursorType = Screen::CursorTypeUnderscore;
 
     // set flags to plain text.
 }
@@ -205,8 +206,12 @@ enum  {
         {
             case CTRL('A'):
                 // set cursor to flashing block.
+                _cursorType = Screen::CursorTypeBlock;
+                screen->setCursorType((Screen::CursorType)_cursorType);
                 break;
             case CTRL('B'):
+                _cursorType = Screen::CursorTypeUnderscore;
+                screen->setCursorType((Screen::CursorType)_cursorType);
                 // set cursor to flashing underscore.
                 break;
             
@@ -217,10 +222,12 @@ enum  {
             
             case CTRL('E'):
                 // cursor on
+                screen->setCursorType((Screen::CursorType)_cursorType);                
                 break;
             
             case CTRL('F'):
                 //cursor off
+                screen->setCursorType(Screen::CursorTypeNone);
                 break;
                 
             case CTRL('G'):

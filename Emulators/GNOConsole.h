@@ -23,6 +23,8 @@
     iPoint _dca;
 
     int _vp[4];
+    
+    int _cursorType;
 
 }
 
