@@ -178,13 +178,20 @@ enum {
                     break;
                     
                 case VTEOL:
-                    // erase line
-                    screen->eraseLine();
+                    // erase line (EOL)
+                    // erase all data from the current cursor position 
+                    // (including data in the cursor position)
+                    // to end of the line.
+                    screen->erase(Screen::EraseLineAfterCursor);
                     break;
                     
                 case VTEOS:
-                    // erase screen,
-                    screen->eraseScreen();
+                    // erase screen (EOS)
+                    // erase all data on the crt screen from the current
+                    // cursor position (including data in the cursor position)
+                    // to line 20, character position 72.
+                    //
+                    screen->erase(Screen::EraseAfterCursor);
                     break;
                     
                 default:

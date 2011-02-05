@@ -302,13 +302,13 @@ enum {
                 // erasing
                 case 'K':
                     // erase to end of line
-                    screen->eraseLine();
+                    screen->erase(Screen::EraseLineAfterCursor);
                     _state = StateText;
                     break;
                     
                 case 'J':
                     // erase to end of screen.
-                    screen->eraseScreen();
+                    screen->erase(Screen::EraseAfterCursor);
                     _state = StateText;
                     break;
 
