@@ -24,6 +24,7 @@ class ViewScreen: public Screen
 public:
     
     virtual void setSize(unsigned width, unsigned height);
+    virtual void setCursorType(CursorType cursorType);
     
     void setSize(unsigned width, unsigned height, bool resizeView);
     
@@ -96,6 +97,8 @@ private:
 -(void)resizeTo: (iSize)size animated: (BOOL)animated;
 
 -(void)cursorTimer: (NSTimer *)timer;
+
+-(void)setCursorType: (unsigned)cursorType;
 
 
 -(void)autoTypeText: (NSString *)text;

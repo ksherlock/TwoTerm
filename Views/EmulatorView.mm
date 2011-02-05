@@ -767,4 +767,10 @@ void ViewScreen::setSize(unsigned width, unsigned height, bool resizeView)
     }
 }
 
+void ViewScreen::setCursorType(CursorType cursorType)
+{
+    Screen::setCursorType(cursorType);
+}
+
+
 
