@@ -85,10 +85,10 @@ public:
     };
     
     enum CursorType {
-        CursorNone,
-        CursorUnderscore,
-        CursorPipe,
-        CursorBlock
+        CursorTypeNone,
+        CursorTypeUnderscore,
+        CursorTypePipe,
+        CursorTypeBlock
     };
     
     Screen(unsigned height = 24, unsigned width = 80);
@@ -186,6 +186,10 @@ public:
     
     
     virtual void setSize(unsigned width, unsigned height);
+    
+    virtual void setCursorType(CursorType cursor);
+    
+    CursorType cursorType() const;
 
     
 private:
@@ -194,6 +198,8 @@ private:
 
     
     uint8_t _flag;
+    
+    CursorType _cursorType;
     
     
     Lock _lock;
@@ -231,6 +237,11 @@ inline iPoint Screen::cursor() const
 inline uint8_t Screen::flag() const
 {
     return _flag;
+}
+
+inline Screen::CursorType Screen::cursorType() const
+{
+    return _cursorType;
 }
 
 inline int Screen::height() const

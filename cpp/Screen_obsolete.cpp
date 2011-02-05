@@ -146,3 +146,38 @@ void Screen::insertc(uint8_t c)
     
     iter->c = ' ';
 }
+
+void Screen::eraseLine()
+{
+    // erases everything to the right of, and including, the cursor
+    
+    for (CharInfoIterator ciIter = _screen[y()].begin() + x(); ciIter < _screen[y()].end(); ++ciIter)
+    {
+        *ciIter = CharInfo(0, _flag);
+    }
+    
+    _updates.push_back(cursor());
+    _updates.push_back(iPoint(width() - 1, y()));
+}
+
+void Screen::eraseScreen()
+{
+    // returns everything to the right of, and including, the cursor as well as all subsequent lines.
+    
+    eraseLine();
+    
+    if (y() == height() -1) return;
+    
+    for (ScreenIterator iter = _screen.begin() + y(); iter < _screen.end(); ++iter)
+    {
+        for (CharInfoIterator ciIter = iter->begin(); ciIter < iter->end(); ++ciIter)
+        {
+            *ciIter = CharInfo(0, _flag);
+        }
+        
+    }
+    
+    _updates.push_back(iPoint(0, y() + 1));
+    _updates.push_back(iPoint(width() - 1, height() - 1));
+}
+
