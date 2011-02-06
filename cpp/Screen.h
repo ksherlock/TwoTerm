@@ -46,7 +46,6 @@ typedef struct TextPort {
     MarginBehavior rightMargin;
     
     bool advanceCursor;
-    //bool lineFeed;
     bool scroll;
     
     // clamp setCursor calls.
@@ -176,6 +175,9 @@ public:
     void insertLine(TextPort *textPort, int line);
     void deleteLine(TextPort *textPort, int line);
 
+    void insertc(TextPort *textPort, uint8_t c);
+    void deletec(TextPort *textPort);
+    
     
     void beginUpdate();
     iRect endUpdate();
@@ -184,7 +186,7 @@ public:
     void lock();
     void unlock();
     
-    
+    void setTextPort(const TextPort& textPort);
     virtual void setSize(unsigned width, unsigned height);
     
     virtual void setCursorType(CursorType cursor);

@@ -137,29 +137,7 @@ void Screen::putc(TextPort *textPort, uint8_t c)
 
 
 
-void Screen::tabTo(TextPort *textPort, unsigned xPos)
-{
-    if (!textPort) textPort = &_port;
- 
-    CharInfo clear(' ', _flag);
-    iPoint cursor = textPort->absoluteCursor();
-    
-    xPos = std::min((int)xPos, textPort->frame.width() - 1);
-    
-    _updates.push_back(cursor);
-    
-    for (unsigned x = textPort->cursor.x; x < xPos; ++x)
-    {
-        
-        _screen[cursor.y][x + textPort->frame.minX()] = clear;
-    }
-    
-    textPort->cursor.x = xPos;
-    if (textPort != &_port) _port.cursor = textPort->absoluteCursor();
 
-    _updates.push_back(_port.cursor);
-
-}
 
 
 #pragma mark -
