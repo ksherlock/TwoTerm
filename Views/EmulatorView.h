@@ -72,6 +72,7 @@ private:
     BOOL _scanLines;
     BOOL _inResizeTo;
     
+    unsigned _cursorType;
         
 #ifdef __cplusplus
     
@@ -82,6 +83,7 @@ private:
 
 @property (nonatomic, assign) BOOL scanLines;
 @property (nonatomic, assign) int fd;
+@property (nonatomic, assign) unsigned cursorType;
 
 @property (nonatomic, retain) NSColor *foregroundColor;
 @property (nonatomic, retain) NSColor *backgroundColor;
@@ -96,9 +98,6 @@ private:
 //-(void)resizeTo: (iSize)size;
 -(void)resizeTo: (iSize)size animated: (BOOL)animated;
 
--(void)cursorTimer: (NSTimer *)timer;
-
--(void)setCursorType: (unsigned)cursorType;
 
 
 -(void)autoTypeText: (NSString *)text;
@@ -111,5 +110,15 @@ private:
 
 
 @interface EmulatorView (ChildMonitor) <ChildMonitorDelegate> 
+
+@end
+
+
+@interface EmulatorView (Cursor)
+
+-(void)stopCursorTimer;
+-(void)cursorTimer: (NSTimer *)timer;
+-(void)startCursorTimer;
+
 
 @end

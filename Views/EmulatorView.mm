@@ -22,9 +22,106 @@
 
 #import "ScanLineFilter.h"
 
+
+@implementation EmulatorView (Cursor)
+
+-(void)startCursorTimer
+{
+    // timers must be added/removed from the same thread.
+    
+    if (_cursorTimer) return;
+    
+    if ([NSThread isMainThread])
+    {
+
+        _cursorOn = NO;
+        _cursorTimer = [[NSTimer alloc] initWithFireDate: [NSDate date] 
+                                                interval: 0.5 
+                                                  target: self
+                                                selector: @selector(cursorTimer:) 
+                                                userInfo: nil 
+                                                 repeats: YES ];
+        [[NSRunLoop currentRunLoop] addTimer: _cursorTimer forMode: NSDefaultRunLoopMode];
+        
+        /*
+        _cursorTimer = [[NSTimer scheduledTimerWithTimeInterval: .5 
+                                                         target: self 
+                                                       selector: @selector(cursorTimer:) 
+                                                       userInfo: nil 
+                                                        repeats: YES] retain];
+         */
+    }
+    else
+    {
+        [self performSelectorOnMainThread: _cmd withObject: nil waitUntilDone: NO];
+    }
+}
+
+-(void)stopCursorTimer
+{
+    if ([NSThread isMainThread])
+    {
+        [_cursorTimer invalidate];
+        [_cursorTimer release];
+        _cursorTimer = nil;
+    }
+    else
+    {
+        [self performSelectorOnMainThread: _cmd withObject: nil waitUntilDone: NO];
+    }
+}
+
+
+-(void)cursorTimer: (NSTimer *)timer
+{
+    
+    _screen.lock();
+    
+    _cursorOn = !_cursorOn;
+    
+    iRect r(_screen.cursor(), iSize(1,1));
+    
+    [self invalidateIRect: r];
+    
+    _screen.unlock();
+}
+
+-(void)setCursorType: (unsigned)cursorType
+{
+    if (_cursorType == cursorType) return;
+    
+    _cursorOn = NO;
+    _cursorType = cursorType;
+    
+    // todo -- set the cursor image...
+    
+    if (cursorType == Screen::CursorTypeNone)
+    {
+        [self stopCursorTimer];
+    }
+    else
+    {
+        [self startCursorTimer];
+    }
+
+    
+    iRect r(_screen.cursor(), iSize(1,1));
+    
+    [self invalidateIRect: r];
+}
+
+-(unsigned)cursorType
+{
+    return _cursorType;
+}
+
+@end
+
 @implementation EmulatorView
 
 @synthesize fd = _fd;
+//@synthesize cursorType = _cursorType;
+
 @synthesize emulator = _emulator;
 
 @synthesize foregroundColor = _foregroundColor;
@@ -542,19 +639,6 @@
 
 
 
--(void)cursorTimer: (NSTimer *)timer
-{
-    
-    _screen.lock();
-    
-    _cursorOn = !_cursorOn;
-
-    iRect r(_screen.cursor(), iSize(1,1));
-    
-    [self invalidateIRect: r];
-    
-    _screen.unlock();
-}
 
 
 #if 0
