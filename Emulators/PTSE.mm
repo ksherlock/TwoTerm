@@ -53,10 +53,34 @@ enum  {
     return "proterm-special";
 }
 
+-(void)reset: (Screen *)screen
+{
+    [self reset];
 
+    if (screen)
+    {
+        screen->setFlag(Screen::FlagNormal);
+        screen->setTextPort(_textPort);
+        screen->erase(Screen::EraseAll);
+    }
+    
+    
+}
 -(void)reset
 {
+    struct winsize ws = [self defaultSize];
     _state = StateText;
+
+    _textPort.cursor = iPoint(0, 0);
+    _textPort.frame = iRect(0, 0, ws.ws_col, ws.ws_row);
+    
+    _textPort.scroll = true;
+    _textPort.advanceCursor = true;
+    _textPort.clampX = true;
+    _textPort.clampY = true;
+    _textPort.leftMargin = TextPort::MarginWrap;
+    _textPort.rightMargin = TextPort::MarginWrap;   
+
 }
 
 -(BOOL)resizable
@@ -71,6 +95,11 @@ enum  {
     return ws;
 }
 
+-(id)init
+{
+    [self reset];
+    return self;
+}
 
 -(void)initTerm: (struct termios *)term
 {
@@ -101,36 +130,36 @@ enum  {
                 
             case CTRL('H'):
                 //Move cursor left one character.
-                screen->decrementX();
+                screen->decrementX(&_textPort);
                 break;
             case CTRL('U'):
                 //Move cursor right one character.
-                screen->incrementX();
+                screen->incrementX(&_textPort);
                 break;
             case CTRL('K'):
                 //Move cursor up one line.
-                screen->decrementY();
+                screen->decrementY(&_textPort);
                 break;
             case CTRL('J'):
                 //Move cursor down one line.
                 //screen->incrementY();
-                screen->lineFeed();
+                screen->lineFeed(&_textPort);
                 break;
             case CTRL('I'):
                 //Move cursor to next tab stop (every 8 chars).
-                screen->tabTo((screen->x() + 8) & ~0x07);
+                screen->tabTo(&_textPort, (_textPort.cursor.x + 8) & ~0x07);
                 break;
             case CTRL('A'):
                 //Move cursor to beginning of line.
-                screen->setX(0);
+                screen->setX(&_textPort, 0);
                 break;
             case CTRL('B'):
                 //Move cursor to end of line.
-                screen->setX(screen->width() - 1);
+                screen->setX(&_textPort, _textPort.frame.width() - 1);
                 break;
             case CTRL('X'):
                 //Move cursor to upper-left corner.
-                screen->setCursor(0, 0);
+                screen->setCursor(&_textPort, 0, 0);
                 break;
             case CTRL('^'):
                 // CONTROL-^, X + 32, Y + 32
@@ -140,43 +169,46 @@ enum  {
                 
             case CTRL('M'):
                 //screen->lineFeed();
-                screen->setX(0);
+                screen->setX(&_textPort, 0);
                 break;
                 
                 
             case CTRL('D'):
                 //Delete current character (under cursor).
-                // TODO -- does this shift the rest of the row?
-                screen->deletec();
+                // TODO -- does this shift the rest of the row? Assuming yes.
+                screen->deletec(&_textPort);
                 break;
             case CTRL('F'):
                 //Insert space at cursor.
-                screen->insertc(' ');
+                // TODO -- does this wrap? Assuming no.
+                screen->insertc(&_textPort, ' ');
                 break;
                 
             case CTRL('Z'):
                 //Delete current line.
-                screen->deleteLine(screen->y());
+                // TODO -- textPort
+                screen->deleteLine(&_textPort, _textPort.cursor.y);
                 break;
             case CTRL('V'):
                 //Insert blank like.
                 // TODO -- verify if the line is before or after the current line,
                 // TODO -- verify if x/y change
                 // TODO -- verify scrolling behavior.
-                screen->insertLine(screen->y()); 
+                // TODO -- textPort
+                screen->insertLine(&_textPort, _textPort.cursor.y); 
                 break;
             case CTRL('Y'):
                 //Clear to end of line.
-                screen->eraseLine();
+                screen->erase(&_textPort, Screen::EraseLineAfterCursor);
                 break;
             case CTRL('W'):
                 //Clear to end of screen.
-                screen->eraseScreen();
+                screen->erase(&_textPort, Screen::EraseAfterCursor);
                 break;
             case CTRL('L'):
                 //Clear the screen (and home cursor)
-                screen->setCursor(0, 0);
-                screen->eraseScreen();
+                screen->setCursor(&_textPort, 0, 0);
+                screen->erase(&_textPort, Screen::EraseAll);
                 break;
                 
                 
@@ -228,7 +260,7 @@ enum  {
             default:
                 if (c >= 0x20 && c < 0x7f)
                 {
-                    screen->putc(c);
+                    screen->putc(&_textPort, c);
                 }
                 break;
                 
@@ -246,7 +278,7 @@ enum  {
 
         case StateDCAY:
             _dca.y = c - 32;
-            screen->setCursor(_dca);
+            screen->setCursor(&_textPort, _dca);
             
             _state = StateText;
             break;
@@ -259,7 +291,7 @@ enum  {
         case StateRepeatCount:
             for (unsigned i = 0; i < c; ++i)
             {
-                screen->putc(_repeatChar);
+                screen->putc(&_textPort, _repeatChar);
             }
             _state = StateText;
             break;

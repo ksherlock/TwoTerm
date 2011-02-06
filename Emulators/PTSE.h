@@ -11,6 +11,9 @@
 #import "Emulator.h"
 #include "iGeometry.h"
 
+#ifdef __cplusplus
+#include "Screen.h"
+#endif
 
 @interface PTSE : NSObject <Emulator>
 {
@@ -18,6 +21,10 @@
     
     iPoint _dca;
     uint8_t _repeatChar;
+ 
+#ifdef __cplusplus
+    TextPort _textPort;
+#endif
     
 }
 
