@@ -17,3 +17,5 @@ NSString *kBackgroundColor = @"Background Color";
 NSString *kScanLines = @"Scan Lines";
 
 NSString *kClass = @"Class";
+
+NSString *kContentFilters = @"Content Filters";

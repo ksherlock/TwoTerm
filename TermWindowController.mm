@@ -237,8 +237,16 @@
     [_emulatorView setEmulator: _emulator];
     [_emulatorView setForegroundColor: foregroundColor];
     [_emulatorView setBackgroundColor: backgroundColor];
-    [_emulatorView setScanLines: scanLines];
+    //[_emulatorView setScanLines: scanLines];
     
+    [_curveView setColor: backgroundColor];
+    
+    o = [_parameters objectForKey: kContentFilters];
+    if (o)
+    {
+        [_curveView setWantsLayer: YES];
+        [_curveView setContentFilters: (NSArray *)o];
+    }
     
     //[_curveView initScanLines];
     //[_curveView setColor: [NSColor blueColor]];

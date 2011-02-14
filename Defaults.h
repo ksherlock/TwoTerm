@@ -20,6 +20,8 @@ extern "C" {
     extern NSString *kScanLines;
     extern NSString *kClass;
     
+    extern NSString *kContentFilters;
+    
 
     
 #ifdef __cplusplus

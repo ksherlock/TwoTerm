@@ -21,6 +21,10 @@
     return self;
 }
 
+-(void)awakeFromNib
+{
+    _color = [[NSColor blackColor] retain];
+}
 
 
 #define curveSize 4

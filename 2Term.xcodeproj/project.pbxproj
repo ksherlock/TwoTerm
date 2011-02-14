@@ -33,10 +33,13 @@
 		B61D0D5D125B740C001C713B /* NewTerminal.xib in Resources */ = {isa = PBXBuildFile; fileRef = B61D0D5B125B740C001C713B /* NewTerminal.xib */; };
 		B61D0D60125B7ACA001C713B /* NewTerminalWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = B61D0D5F125B7ACA001C713B /* NewTerminalWindowController.m */; };
 		B61D0D69125B8E06001C713B /* Defaults.m in Sources */ = {isa = PBXBuildFile; fileRef = B61D0D68125B8E06001C713B /* Defaults.m */; };
+		B627333B12E3FF5B00A14C94 /* ChildMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = B627333A12E3FF5B00A14C94 /* ChildMonitor.m */; };
 		B676063B11DEAD3500D6B66C /* TermWindowController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B676063A11DEAD3500D6B66C /* TermWindowController.mm */; };
 		B676065111DEBAE900D6B66C /* TermWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B676065011DEBAE900D6B66C /* TermWindow.xib */; };
 		B67B3CE512B6FA040033AE07 /* a2-charset-40.png in Resources */ = {isa = PBXBuildFile; fileRef = B67B3CE312B6FA040033AE07 /* a2-charset-40.png */; };
 		B67B3CE612B6FA040033AE07 /* a2-charset-80.png in Resources */ = {isa = PBXBuildFile; fileRef = B67B3CE412B6FA040033AE07 /* a2-charset-80.png */; };
+		B6801BD912EB549300B22E9E /* vt100-charset.png in Resources */ = {isa = PBXBuildFile; fileRef = B6801BD812EB549300B22E9E /* vt100-charset.png */; };
+		B68E632A12FF909D00EAFF5F /* ExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = B68E632912FF909C00EAFF5F /* ExampleView.m */; };
 		B6EBE2B511E0EA9100EA0458 /* CharacterGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EBE2B411E0EA9100EA0458 /* CharacterGenerator.m */; };
 /* End PBXBuildFile section */
 
@@ -74,8 +77,8 @@
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		8D1107310486CEB800E47090 /* TwoTerm-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "TwoTerm-Info.plist"; sourceTree = "<group>"; };
-		8D1107320486CEB800E47090 /* 2Term.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 2Term.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8D1107320486CEB800E47090 /* TwoTerm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TwoTerm.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B60EBD1111E8DEEF00C1974F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = /System/Library/Frameworks/QuartzCore.framework; sourceTree = "<absolute>"; };
 		B60EBDE111E90FC300C1974F /* ScanLineFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScanLineFilter.h; sourceTree = "<group>"; };
 		B60EBDE211E90FC300C1974F /* ScanLineFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScanLineFilter.m; sourceTree = "<group>"; };
@@ -113,11 +116,17 @@
 		B61D0D5F125B7ACA001C713B /* NewTerminalWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewTerminalWindowController.m; sourceTree = "<group>"; };
 		B61D0D67125B8E06001C713B /* Defaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Defaults.h; sourceTree = "<group>"; };
 		B61D0D68125B8E06001C713B /* Defaults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Defaults.m; sourceTree = "<group>"; };
+		B627333912E3FF5B00A14C94 /* ChildMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildMonitor.h; sourceTree = "<group>"; };
+		B627333A12E3FF5B00A14C94 /* ChildMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildMonitor.m; sourceTree = "<group>"; };
 		B676063911DEAD3500D6B66C /* TermWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TermWindowController.h; sourceTree = "<group>"; };
 		B676063A11DEAD3500D6B66C /* TermWindowController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TermWindowController.mm; sourceTree = "<group>"; };
 		B676064D11DEBAE300D6B66C /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/TermWindow.xib; sourceTree = "<group>"; };
 		B67B3CE312B6FA040033AE07 /* a2-charset-40.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "a2-charset-40.png"; sourceTree = "<group>"; };
 		B67B3CE412B6FA040033AE07 /* a2-charset-80.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "a2-charset-80.png"; sourceTree = "<group>"; };
+		B6801BD812EB549300B22E9E /* vt100-charset.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vt100-charset.png"; sourceTree = "<group>"; };
+		B68E632812FF909C00EAFF5F /* ExampleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExampleView.h; sourceTree = "<group>"; };
+		B68E632912FF909C00EAFF5F /* ExampleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExampleView.m; sourceTree = "<group>"; };
+		B68E632B130990DD00EAFF5F /* en */ = {isa = PBXFileReference; lastKnownFileType = file; name = en; path = en.lproj/NewTerminal.xib; sourceTree = "<group>"; };
 		B6EBE2B311E0EA9100EA0458 /* CharacterGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CharacterGenerator.h; sourceTree = "<group>"; };
 		B6EBE2B411E0EA9100EA0458 /* CharacterGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CharacterGenerator.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -138,6 +147,8 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				B627333912E3FF5B00A14C94 /* ChildMonitor.h */,
+				B627333A12E3FF5B00A14C94 /* ChildMonitor.m */,
 				B61D0D5E125B7ACA001C713B /* NewTerminalWindowController.h */,
 				B61D0D5F125B7ACA001C713B /* NewTerminalWindowController.m */,
 				256AC3D80F4B6AC300CF3369 /* TwoTermAppDelegate.h */,
@@ -174,7 +185,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D1107320486CEB800E47090 /* 2Term.app */,
+				8D1107320486CEB800E47090 /* TwoTerm.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -210,7 +221,7 @@
 			children = (
 				B60EBDE711E9143F00C1974F /* ScanLineFilter.cikernel */,
 				B66979CE11E6BCAE002ED475 /* images */,
-				8D1107310486CEB800E47090 /* TwoTerm-Info.plist */,
+				8D1107310486CEB800E47090 /* Info.plist */,
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
 				1DDD58140DA1D0A300B32029 /* MainMenu.xib */,
 				B676065011DEBAE900D6B66C /* TermWindow.xib */,
@@ -269,6 +280,8 @@
 		B612F46B12DD5E02005D1B77 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				B68E632812FF909C00EAFF5F /* ExampleView.h */,
+				B68E632912FF909C00EAFF5F /* ExampleView.m */,
 				B612F46C12DD5E02005D1B77 /* CurveView.h */,
 				B612F46D12DD5E02005D1B77 /* CurveView.m */,
 				B612F46E12DD5E02005D1B77 /* EmulatorView.h */,
@@ -280,6 +293,7 @@
 		B66979CE11E6BCAE002ED475 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				B6801BD812EB549300B22E9E /* vt100-charset.png */,
 				B67B3CE312B6FA040033AE07 /* a2-charset-40.png */,
 				B67B3CE412B6FA040033AE07 /* a2-charset-80.png */,
 			);
@@ -306,7 +320,7 @@
 			name = 2Term;
 			productInstallPath = "$(HOME)/Applications";
 			productName = 2Term;
-			productReference = 8D1107320486CEB800E47090 /* 2Term.app */;
+			productReference = 8D1107320486CEB800E47090 /* TwoTerm.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -343,6 +357,7 @@
 				B61D0D5D125B740C001C713B /* NewTerminal.xib in Resources */,
 				B67B3CE512B6FA040033AE07 /* a2-charset-40.png in Resources */,
 				B67B3CE612B6FA040033AE07 /* a2-charset-80.png in Resources */,
+				B6801BD912EB549300B22E9E /* vt100-charset.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -375,6 +390,8 @@
 				B612F47112DD5E02005D1B77 /* EmulatorView.mm in Sources */,
 				B612F47412DDEBA9005D1B77 /* Screen_obsolete.cpp in Sources */,
 				B612F47512DDEBA9005D1B77 /* Screen_TextPort.cpp in Sources */,
+				B627333B12E3FF5B00A14C94 /* ChildMonitor.m in Sources */,
+				B68E632A12FF909D00EAFF5F /* ExampleView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -401,6 +418,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				B61D0D5C125B740C001C713B /* NewTerminal.xib */,
+				B68E632B130990DD00EAFF5F /* en */,
 			);
 			name = NewTerminal.xib;
 			sourceTree = "<group>";
@@ -427,9 +445,9 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = TwoTerm_Prefix.pch;
-				INFOPLIST_FILE = "TwoTerm-Info.plist";
+				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				PRODUCT_NAME = 2Term;
+				PRODUCT_NAME = TwoTerm;
 			};
 			name = Debug;
 		};
@@ -441,9 +459,9 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = _Term_Prefix.pch;
-				INFOPLIST_FILE = "TwoTerm-Info.plist";
+				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
-				PRODUCT_NAME = 2Term;
+				PRODUCT_NAME = TwoTerm;
 			};
 			name = Release;
 		};
@@ -456,7 +474,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				ONLY_ACTIVE_ARCH = YES;
+				ONLY_ACTIVE_ARCH = NO;
 				PREBINDING = NO;
 				SDKROOT = macosx10.6;
 			};
@@ -470,6 +488,7 @@
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				ONLY_ACTIVE_ARCH = YES;
 				PREBINDING = NO;
 				SDKROOT = macosx10.6;
 			};
