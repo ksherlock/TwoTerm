@@ -127,7 +127,8 @@
 @synthesize foregroundColor = _foregroundColor;
 @synthesize backgroundColor = _backgroundColor;
 @synthesize scanLines = _scanLines;
-
+//@synthesize cursorType = _cursorType;
+@dynamic cursorType;
 
 #pragma mark -
 #pragma mark properties

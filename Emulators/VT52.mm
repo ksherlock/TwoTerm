@@ -8,6 +8,7 @@
 
 #include <sys/ttydefaults.h>
 #include <cctype>
+#include <cstdio>
 
 #import "VT52.h"
 #include "OutputChannel.h"

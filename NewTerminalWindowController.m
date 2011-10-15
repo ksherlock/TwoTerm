@@ -167,7 +167,7 @@ enum {
             break;
         
         case kAmberBlack:
-            [_foregroundColorControl setColor: [NSColor orangeColor]];
+            [_foregroundColorControl setColor: [NSColor colorWithDeviceRed: 1.0 green: 0.5 blue: 0.0 alpha: 1.0]];
             [_backgroundColorControl setColor: [NSColor blackColor]];            
             break;
             
