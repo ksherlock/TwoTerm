@@ -260,7 +260,11 @@
                                                    userInfo: nil 
                                                     repeats: YES] retain];
 
-
+    /*
+    [[self window] display];
+    [[self window] setHasShadow: NO];
+    [[self window] setHasShadow: YES];
+    */
 }
 
 -(void)viewDidMoveToSuperview

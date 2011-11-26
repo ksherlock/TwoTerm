@@ -209,8 +209,12 @@
     
     window = [self window];
     
-    // resize in 2.0 he ight increments to prevent jittering the scan lines.
-    [window setResizeIncrements: NSMakeSize(1.0, 2.0)];
+    //[(CurveView *)[window contentView] setColor: [NSColor clearColor]];
+    
+    //[window setContentView: _curveView];
+    
+    // resize in 2.0 height increments to prevent jittering the scan lines.
+    //[window setResizeIncrements: NSMakeSize(1.0, 2.0)];
     
     
     klass = [_parameters objectForKey: kClass];
@@ -244,9 +248,37 @@
     o = [_parameters objectForKey: kContentFilters];
     if (o)
     {
+        //CALayer *layer;
         [_curveView setWantsLayer: YES];
+        
+        /*
+        CGColorRef color;
+        
+        color = CGColorCreateGenericRGB(1.0, 0.0, 0.0, 1.0);
+        
+        layer = [_curveView layer];
+        [layer setCornerRadius: 20.0];
+        [layer setBorderWidth: 4.0];
+        [layer setBorderColor: color];
+        [layer setBackgroundColor: color];
+        
+        [layer setBackgroundFilters: (NSArray *)o];
+        
+        CGColorRelease(color);
+        */
         [_curveView setContentFilters: (NSArray *)o];
     }
+    
+    /*
+    NSShadow *shadow;
+    shadow = [[NSShadow alloc] init];
+    [shadow setShadowColor:[NSColor blackColor]];
+    [shadow setShadowOffset: NSZeroSize];
+    [shadow setShadowBlurRadius: 10.0];
+    
+    [_curveView setShadow: shadow];
+    [shadow release];
+    */
     
     //[_curveView initScanLines];
     //[_curveView setColor: [NSColor blueColor]];
