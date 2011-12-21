@@ -267,6 +267,24 @@
         CGColorRelease(color);
         */
         [_curveView setContentFilters: (NSArray *)o];
+        
+        /*
+        CALayer *layer;
+        CGColorRef color;
+        
+        color = CGColorCreateGenericRGB(1.0, 0.0, 0.0, 1.0);        
+        layer = [CALayer layer];
+        [layer setFrame: CGRectMake(100, 100, 100, 100)];
+        [layer setBackgroundColor: color];
+        [layer setBackgroundFilters: nil];
+        
+        CGColorRelease(color);
+        
+        [[_curveView layer] addSublayer: layer];
+        
+        NSLog(@"%@", [layer backgroundFilters]);
+        NSLog(@"%@", [[_curveView layer] backgroundFilters]);
+        */
     }
     
     /*

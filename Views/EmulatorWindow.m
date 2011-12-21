@@ -46,7 +46,7 @@
 {
     
     if ((self = [super initWithContentRect: contentRect 
-                                 styleMask: NSBorderlessWindowMask 
+                                 styleMask: NSBorderlessWindowMask | NSResizableWindowMask
                                    backing: bufferingType 
                                      defer: flag 
                                     screen: screen]))
@@ -69,6 +69,7 @@
 
 -(void)awakeFromNib
 {
+    [NSApp addWindowsItem: self title: @"Window Title" filename: NO];
     //[self setHasShadow: YES];
 }
 
@@ -78,6 +79,10 @@
 
 -(BOOL)canBecomeMainWindow {
     return YES;
+}
+
+-(BOOL)isExcludedFromWindowsMenu {
+    return NO;
 }
 
 

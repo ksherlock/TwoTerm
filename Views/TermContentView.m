@@ -7,8 +7,10 @@
 //
 
 #import "TermContentView.h"
+#import "TitleBarView.h"
 
 @implementation TermContentView
+@synthesize titleBar = _titleBar;
 
 -(void)createTrackingArea
 {
@@ -25,7 +27,7 @@
     
     bounds = [self bounds];
     
-    rect = NSMakeRect(0, bounds.size.height - 20, bounds.size.width, 20);
+    rect = NSMakeRect(0, bounds.size.height - 24, bounds.size.width, 24);
     
     _trackingArea = [[NSTrackingArea alloc] initWithRect: rect
                                                  options: NSTrackingMouseEnteredAndExited | NSTrackingActiveAlways 
@@ -40,9 +42,7 @@
 -(void)awakeFromNib
 {    
     [super awakeFromNib];
-
     [self createTrackingArea];
-    //[self setWantsLayer: YES];
 
 }
 
@@ -54,21 +54,24 @@
 -(void)dealloc
 {
     [_trackingArea release];
+    [_titleBar release];
     [super dealloc];
 }
 
 
 -(void)mouseEntered:(NSEvent *)theEvent
 {
-    NSLog(@"%s", sel_getName(_cmd));
+    //NSLog(@"%s", sel_getName(_cmd));
     
+    [_titleBar fadeIn];
     // animate title bar in.
 }
 
 -(void)mouseExited:(NSEvent *)theEvent
 {
-    NSLog(@"%s", sel_getName(_cmd));
+    //NSLog(@"%s", sel_getName(_cmd));
     
+    [_titleBar fadeOut];
     // animate title bar out.
 }
 

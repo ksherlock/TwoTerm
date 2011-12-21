@@ -65,7 +65,14 @@ enum {
 
 - (void)windowDidLoad {
     
+    NSWindow *window;
+    
     [super windowDidLoad];
+    
+    window = [self window];
+    
+    //[window setAutorecalculatesContentBorderThickness: NO forEdge: NSMinYEdge];
+    //[window setAutorecalculatesContentBorderThickness: NO forEdge: NSMaxYEdge];
     
     [self setEffectsEnabled: YES];
     

@@ -8,9 +8,14 @@
 
 #import "CurveView.h"
 
+@class TitleBarView;
+
 @interface TermContentView : CurveView
 {
     NSTrackingArea *_trackingArea;
-    
+    TitleBarView *_titleBar;
 }
+
+@property (nonatomic, assign) IBOutlet TitleBarView *titleBar;
+
 @end
