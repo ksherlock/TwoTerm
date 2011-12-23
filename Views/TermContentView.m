@@ -14,6 +14,9 @@
 
 -(void)createTrackingArea
 {
+    
+    return;
+    
     NSRect rect;
     NSRect bounds;
     
@@ -46,10 +49,12 @@
 
 }
 
+
 -(void)updateTrackingAreas
 {
     [self createTrackingArea];
 }
+
 
 -(void)dealloc
 {
@@ -58,7 +63,7 @@
     [super dealloc];
 }
 
-
+/*
 -(void)mouseEntered:(NSEvent *)theEvent
 {
     //NSLog(@"%s", sel_getName(_cmd));
@@ -74,5 +79,6 @@
     [_titleBar fadeOut];
     // animate title bar out.
 }
+*/
 
 @end

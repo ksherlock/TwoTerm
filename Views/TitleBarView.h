@@ -10,14 +10,16 @@
 
 @interface TitleBarView : NSView
 {
+    NSColor *_color;
     NSTextField *_label;
     NSImage *_rightImage;
     NSImage *_leftImage;
     NSImage *_centerImage;
 }
 
-@property (nonatomic, assign) IBOutlet NSTextField *label;
-@property (nonatomic, assign) NSString *title;
+@property (nonatomic, retain) NSColor *color;
+@property (nonatomic, retain) IBOutlet NSTextField *label;
+@property (nonatomic, retain) NSString *title;
 
 -(void)fadeIn;
 -(void)fadeOut;

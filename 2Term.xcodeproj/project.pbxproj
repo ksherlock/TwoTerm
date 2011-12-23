@@ -38,10 +38,11 @@
 		B61EF7C914815AF8008C1891 /* NewTerminal.xib in Resources */ = {isa = PBXBuildFile; fileRef = B61EF7C714815AF8008C1891 /* NewTerminal.xib */; };
 		B61EF7CC14815E07008C1891 /* TitleBarView.m in Sources */ = {isa = PBXBuildFile; fileRef = B61EF7CB14815E07008C1891 /* TitleBarView.m */; };
 		B61EF7CF148163E7008C1891 /* TitleBarView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B61EF7CD148163E7008C1891 /* TitleBarView.xib */; };
-		B61EF7D71482FB6D008C1891 /* titlebar-center.png.png in Resources */ = {isa = PBXBuildFile; fileRef = B61EF7D41482FB6D008C1891 /* titlebar-center.png.png */; };
-		B61EF7D81482FB6D008C1891 /* titlebar-left.png.png in Resources */ = {isa = PBXBuildFile; fileRef = B61EF7D51482FB6D008C1891 /* titlebar-left.png.png */; };
-		B61EF7D91482FB6D008C1891 /* titlebar-right.png.png in Resources */ = {isa = PBXBuildFile; fileRef = B61EF7D61482FB6D008C1891 /* titlebar-right.png.png */; };
+		B61EF7D71482FB6D008C1891 /* titlebar-center.png in Resources */ = {isa = PBXBuildFile; fileRef = B61EF7D41482FB6D008C1891 /* titlebar-center.png */; };
+		B61EF7D81482FB6D008C1891 /* titlebar-left.png in Resources */ = {isa = PBXBuildFile; fileRef = B61EF7D51482FB6D008C1891 /* titlebar-left.png */; };
+		B61EF7D91482FB6D008C1891 /* titlebar-right.png in Resources */ = {isa = PBXBuildFile; fileRef = B61EF7D61482FB6D008C1891 /* titlebar-right.png */; };
 		B627333B12E3FF5B00A14C94 /* ChildMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = B627333A12E3FF5B00A14C94 /* ChildMonitor.m */; };
+		B638188214A179D60027D007 /* ColorView.m in Sources */ = {isa = PBXBuildFile; fileRef = B638188114A179D60027D007 /* ColorView.m */; };
 		B66412391480A070003BC8D3 /* EmulatorWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B66412381480A070003BC8D3 /* EmulatorWindow.m */; };
 		B676063B11DEAD3500D6B66C /* TermWindowController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B676063A11DEAD3500D6B66C /* TermWindowController.mm */; };
 		B676065111DEBAE900D6B66C /* TermWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B676065011DEBAE900D6B66C /* TermWindow.xib */; };
@@ -132,11 +133,13 @@
 		B61EF7CA14815E07008C1891 /* TitleBarView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TitleBarView.h; sourceTree = "<group>"; };
 		B61EF7CB14815E07008C1891 /* TitleBarView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TitleBarView.m; sourceTree = "<group>"; };
 		B61EF7CE148163E7008C1891 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/TitleBarView.xib; sourceTree = "<group>"; };
-		B61EF7D41482FB6D008C1891 /* titlebar-center.png.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titlebar-center.png.png"; sourceTree = "<group>"; };
-		B61EF7D51482FB6D008C1891 /* titlebar-left.png.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titlebar-left.png.png"; sourceTree = "<group>"; };
-		B61EF7D61482FB6D008C1891 /* titlebar-right.png.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titlebar-right.png.png"; sourceTree = "<group>"; };
+		B61EF7D41482FB6D008C1891 /* titlebar-center.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titlebar-center.png"; sourceTree = "<group>"; };
+		B61EF7D51482FB6D008C1891 /* titlebar-left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titlebar-left.png"; sourceTree = "<group>"; };
+		B61EF7D61482FB6D008C1891 /* titlebar-right.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titlebar-right.png"; sourceTree = "<group>"; };
 		B627333912E3FF5B00A14C94 /* ChildMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildMonitor.h; sourceTree = "<group>"; };
 		B627333A12E3FF5B00A14C94 /* ChildMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildMonitor.m; sourceTree = "<group>"; };
+		B638188014A179D60027D007 /* ColorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorView.h; sourceTree = "<group>"; };
+		B638188114A179D60027D007 /* ColorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorView.m; sourceTree = "<group>"; };
 		B66412371480A070003BC8D3 /* EmulatorWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmulatorWindow.h; sourceTree = "<group>"; };
 		B66412381480A070003BC8D3 /* EmulatorWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmulatorWindow.m; sourceTree = "<group>"; };
 		B676063911DEAD3500D6B66C /* TermWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TermWindowController.h; sourceTree = "<group>"; };
@@ -301,9 +304,9 @@
 		B612F46B12DD5E02005D1B77 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				B68E632812FF909C00EAFF5F /* ExampleView.h */,
 				B66412371480A070003BC8D3 /* EmulatorWindow.h */,
 				B66412381480A070003BC8D3 /* EmulatorWindow.m */,
+				B68E632812FF909C00EAFF5F /* ExampleView.h */,
 				B68E632912FF909C00EAFF5F /* ExampleView.m */,
 				B612F46C12DD5E02005D1B77 /* CurveView.h */,
 				B612F46D12DD5E02005D1B77 /* CurveView.m */,
@@ -313,6 +316,8 @@
 				B612870D1480B4F6002E04DF /* TermContentView.m */,
 				B61EF7CA14815E07008C1891 /* TitleBarView.h */,
 				B61EF7CB14815E07008C1891 /* TitleBarView.m */,
+				B638188014A179D60027D007 /* ColorView.h */,
+				B638188114A179D60027D007 /* ColorView.m */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -320,9 +325,9 @@
 		B66979CE11E6BCAE002ED475 /* images */ = {
 			isa = PBXGroup;
 			children = (
-				B61EF7D41482FB6D008C1891 /* titlebar-center.png.png */,
-				B61EF7D51482FB6D008C1891 /* titlebar-left.png.png */,
-				B61EF7D61482FB6D008C1891 /* titlebar-right.png.png */,
+				B61EF7D41482FB6D008C1891 /* titlebar-center.png */,
+				B61EF7D51482FB6D008C1891 /* titlebar-left.png */,
+				B61EF7D61482FB6D008C1891 /* titlebar-right.png */,
 				B61EF7C31481561E008C1891 /* titlebar-corner.png */,
 				B61EF7C41481561E008C1891 /* titlebar-middle.png */,
 				B6801BD812EB549300B22E9E /* vt100-charset.png */,
@@ -396,9 +401,9 @@
 				B61EF7C61481561E008C1891 /* titlebar-middle.png in Resources */,
 				B61EF7C914815AF8008C1891 /* NewTerminal.xib in Resources */,
 				B61EF7CF148163E7008C1891 /* TitleBarView.xib in Resources */,
-				B61EF7D71482FB6D008C1891 /* titlebar-center.png.png in Resources */,
-				B61EF7D81482FB6D008C1891 /* titlebar-left.png.png in Resources */,
-				B61EF7D91482FB6D008C1891 /* titlebar-right.png.png in Resources */,
+				B61EF7D71482FB6D008C1891 /* titlebar-center.png in Resources */,
+				B61EF7D81482FB6D008C1891 /* titlebar-left.png in Resources */,
+				B61EF7D91482FB6D008C1891 /* titlebar-right.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -436,6 +441,7 @@
 				B66412391480A070003BC8D3 /* EmulatorWindow.m in Sources */,
 				B612870E1480B4F6002E04DF /* TermContentView.m in Sources */,
 				B61EF7CC14815E07008C1891 /* TitleBarView.m in Sources */,
+				B638188214A179D60027D007 /* ColorView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

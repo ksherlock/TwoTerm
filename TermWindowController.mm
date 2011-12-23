@@ -237,6 +237,7 @@
     _emulator = [klass new];
     [self didChangeValueForKey: @"emulator"];
 
+    [window setBackgroundColor: backgroundColor];
 
     [_emulatorView setEmulator: _emulator];
     [_emulatorView setForegroundColor: foregroundColor];

@@ -12,19 +12,30 @@
 
 @implementation TitleBarView
 @synthesize label = _label;
+@synthesize color = _color;
+
+-(id)initWithFrame:(NSRect)frameRect
+{
+    if ((self = [super initWithFrame: frameRect]))
+    {
+        [self setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+        [self awakeFromNib];
+    }
+    
+    return self;
+}
 
 -(void)awakeFromNib
-{
-    [_label setTextColor: [NSColor whiteColor]];
-    [self setContentFilters: [NSArray array]];
-    
+{    
     _leftImage = [[NSImage imageNamed: @"titlebar-left.png"] retain];
     _rightImage = [[NSImage imageNamed: @"titlebar-right.png"] retain];
     _centerImage = [[NSImage imageNamed: @"titlebar-center.png"] retain];
     
-    [self setWantsLayer: YES];
-    [[self layer] setOpacity: 0.0];
+
     
+    [_label setStringValue: @""];
+    [_label setBackgroundColor: [NSColor clearColor]];
+    [_label setTextColor: [NSColor whiteColor]];    
 }
 
 -(void)dealloc
@@ -37,7 +48,37 @@
 
 -(void)setTitle:(NSString *)title
 {
-    [_label setStringValue: title];
+    NSAttributedString *as;
+    NSDictionary *attr;
+    NSShadow *shadow;
+    NSMutableParagraphStyle *ps;
+    
+    if (!title)
+    {
+        [_label setStringValue: @""];
+        return;
+    }
+    
+    shadow = [NSShadow new];
+    [shadow setShadowBlurRadius: 1.0];
+    [shadow setShadowColor: [NSColor blackColor]];
+    [shadow setShadowOffset: NSMakeSize(0.0, 1.0)];
+    
+    ps = [NSMutableParagraphStyle new];
+    [ps setAlignment: NSCenterTextAlignment];
+    [ps setLineBreakMode: NSLineBreakByTruncatingMiddle];
+    
+    attr = [NSDictionary dictionaryWithObjectsAndKeys: 
+            shadow, NSShadowAttributeName, 
+            ps, NSParagraphStyleAttributeName,
+            nil];
+    
+    as = [[NSAttributedString alloc] initWithString: title attributes: attr]; 
+    [_label setAttributedStringValue: as];
+
+    
+    [as release];
+    [shadow release];
 }
 
 -(NSString *)title
@@ -45,31 +86,32 @@
     return [_label stringValue];
 }
 
+
+-(BOOL)isFlipped
+{
+    return YES;
+}
+
+
 -(void)drawRect:(NSRect)dirtyRect
 {
     NSRect bounds;
-    NSRect rect;
-    
+
+
     bounds = [self bounds];
     
-    /*
-    NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect: NSMakeRect(0, 0, bounds.size.width, bounds.size.height * 2) 
-                                                         xRadius: 5.0 yRadius: 5.0];
+    
+    NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect: NSMakeRect(0, 0, bounds.size.width, bounds.size.height) 
+                                                         xRadius: 4.0 
+                                                         yRadius: 4.0];
     [path addClip];
-    */
     
-    rect = NSMakeRect(0, 0, 10, 24);
-    if (NSIntersectsRect(rect, dirtyRect))
-        [_leftImage drawInRect: rect fromRect: NSMakeRect(0, 0, 10, 24) operation: NSCompositeSourceOver fraction: 1.0];
+    
+    [_color setFill];
+    NSRectFill(dirtyRect);
+    
+    NSDrawThreePartImage(NSMakeRect(0, 0, bounds.size.width, 24.0),_leftImage, _centerImage, _rightImage, NO, NSCompositeSourceOver, 1.0, YES);
 
-    
-    rect = NSMakeRect(bounds.size.width - 10, 0, 10, 24);
-    if (NSIntersectsRect(rect, dirtyRect))
-        [_rightImage drawInRect: rect fromRect: NSMakeRect(0, 0, 10, 24) operation: NSCompositeSourceOver fraction: 1.0];
-    
-    
-    bounds = NSInsetRect(bounds, 10, 0);
-    [_centerImage drawInRect: bounds fromRect:NSMakeRect(0, 0, 1, 24) operation: NSCompositeSourceOver fraction: 1.0];
 }
 
 -(void)fadeIn

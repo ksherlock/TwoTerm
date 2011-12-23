@@ -7,9 +7,16 @@
 //
 
 #import <AppKit/AppKit.h>
+@class TitleBarView;
 
 @interface EmulatorWindow : NSWindow
 {
+    TitleBarView *_titleBarView;
 }
+
+@property (nonatomic, retain) IBOutlet TitleBarView *titleBarView;
+
+-(void)adjustTitleBar;
+
 
 @end
