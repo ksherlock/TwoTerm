@@ -15,6 +15,12 @@
 #ifdef __cplusplus
 class Screen;
 class OutputChannel;
+
+
+#include <string>
+
+extern "C" unsigned EventCharacters(NSEvent *event, std::u32string &rv);
+
 #else
 #define Screen void
 #define OutputChannel void
