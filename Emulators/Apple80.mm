@@ -269,9 +269,13 @@ enum  {
                 {
                     char c = uc;
                     
-                    if (flags & (NSAlphaShiftKeyMask | NSShiftKeyMask))
-                        c = toupper(c);
+                    NSLog(@"%@", event);
                     
+                    if (flags & NSAlphaShiftKeyMask)
+                    {
+                        c = flags & NSShiftKeyMask  ? tolower(c) : toupper(c);
+                    }
+     
                     if (flags & NSControlKeyMask)
                         c = CTRL(c);
                     
