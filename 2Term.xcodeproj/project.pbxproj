@@ -21,7 +21,7 @@
 		B612F45212DD5DAD005D1B77 /* OutputChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B612F44B12DD5DAD005D1B77 /* OutputChannel.cpp */; };
 		B612F45312DD5DAD005D1B77 /* Screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B612F44D12DD5DAD005D1B77 /* Screen.cpp */; };
 		B612F46412DD5DF1005D1B77 /* Apple80.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F45712DD5DF1005D1B77 /* Apple80.mm */; };
-		B612F46512DD5DF1005D1B77 /* EmulatorManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B612F45912DD5DF1005D1B77 /* EmulatorManager.m */; };
+		B612F46512DD5DF1005D1B77 /* EmulatorManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F45912DD5DF1005D1B77 /* EmulatorManager.mm */; };
 		B612F46612DD5DF1005D1B77 /* GNOConsole.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F45B12DD5DF1005D1B77 /* GNOConsole.mm */; };
 		B612F46712DD5DF1005D1B77 /* PTSE.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F45D12DD5DF1005D1B77 /* PTSE.mm */; };
 		B612F46812DD5DF1005D1B77 /* VT05.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F45F12DD5DF1005D1B77 /* VT05.mm */; };
@@ -106,7 +106,7 @@
 		B612F45612DD5DF1005D1B77 /* Apple80.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Apple80.h; sourceTree = "<group>"; };
 		B612F45712DD5DF1005D1B77 /* Apple80.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Apple80.mm; sourceTree = "<group>"; };
 		B612F45812DD5DF1005D1B77 /* Emulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Emulator.h; sourceTree = "<group>"; };
-		B612F45912DD5DF1005D1B77 /* EmulatorManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmulatorManager.m; sourceTree = "<group>"; };
+		B612F45912DD5DF1005D1B77 /* EmulatorManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EmulatorManager.mm; sourceTree = "<group>"; };
 		B612F45A12DD5DF1005D1B77 /* GNOConsole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GNOConsole.h; sourceTree = "<group>"; };
 		B612F45B12DD5DF1005D1B77 /* GNOConsole.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GNOConsole.mm; sourceTree = "<group>"; };
 		B612F45C12DD5DF1005D1B77 /* PTSE.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTSE.h; sourceTree = "<group>"; };
@@ -286,7 +286,7 @@
 				B612F45612DD5DF1005D1B77 /* Apple80.h */,
 				B612F45712DD5DF1005D1B77 /* Apple80.mm */,
 				B612F45812DD5DF1005D1B77 /* Emulator.h */,
-				B612F45912DD5DF1005D1B77 /* EmulatorManager.m */,
+				B612F45912DD5DF1005D1B77 /* EmulatorManager.mm */,
 				B612F45A12DD5DF1005D1B77 /* GNOConsole.h */,
 				B612F45B12DD5DF1005D1B77 /* GNOConsole.mm */,
 				B612F45C12DD5DF1005D1B77 /* PTSE.h */,
@@ -366,7 +366,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0440;
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "2Term" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -426,7 +426,7 @@
 				B612F45212DD5DAD005D1B77 /* OutputChannel.cpp in Sources */,
 				B612F45312DD5DAD005D1B77 /* Screen.cpp in Sources */,
 				B612F46412DD5DF1005D1B77 /* Apple80.mm in Sources */,
-				B612F46512DD5DF1005D1B77 /* EmulatorManager.m in Sources */,
+				B612F46512DD5DF1005D1B77 /* EmulatorManager.mm in Sources */,
 				B612F46612DD5DF1005D1B77 /* GNOConsole.mm in Sources */,
 				B612F46712DD5DF1005D1B77 /* PTSE.mm in Sources */,
 				B612F46812DD5DF1005D1B77 /* VT05.mm in Sources */,
@@ -495,6 +495,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
@@ -511,6 +512,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
