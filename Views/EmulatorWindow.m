@@ -88,7 +88,7 @@
 {
     NSLog(@"%@", color);
     [super setBackgroundColor: color];
-    [_titleBarView setColor: color];
+    [_titleBarView setBackgroundColor: color];
 }
 
 -(void)awakeFromNib
@@ -124,7 +124,7 @@
     
     NSLog(@"%u", (int)[_titleBarView retainCount]);
  
-    [_titleBarView setColor: [NSColor blackColor]];
+    [_titleBarView setBackgroundColor: [NSColor blackColor]];
     [_titleBarView setFrame: [themeView bounds]];
     [_titleBarView setTitle: [self title]];
     
