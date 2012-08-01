@@ -12,7 +12,7 @@
 
 @implementation TitleBarView
 @synthesize label = _label;
-@synthesize color = _color;
+@synthesize backgroundColor = _backgroundColor;
 
 -(id)initWithFrame:(NSRect)frameRect
 {
@@ -40,29 +40,74 @@
 
 -(void)dealloc
 {
+    [_backgroundColor release];
     [_leftImage release];
     [_rightImage release];
     [_centerImage release];
     [_label release];
+    
+    [super dealloc];
+}
+
+-(void)setBackgroundColor:(NSColor *)backgroundColor
+{
+
+    NSColor *tmp;
+    
+    if (_backgroundColor == backgroundColor) return;
+    
+    [_backgroundColor release];
+    _backgroundColor = [backgroundColor retain];
+    
+    
+    _dark = YES;
+ 
+    tmp = [_backgroundColor colorUsingColorSpaceName: NSCalibratedWhiteColorSpace];
+    if (tmp)
+    {
+        if ([tmp whiteComponent] > 0.5) _dark = NO;
+    }
+    
+    [self updateTitle];
 }
 
 -(void)setTitle:(NSString *)title
+{
+    [_label setStringValue: title];
+    [self updateTitle];
+}
+
+-(NSString *)title
+{
+    return [_label stringValue];
+}
+
+
+-(void)updateTitle
 {
     NSAttributedString *as;
     NSDictionary *attr;
     NSShadow *shadow;
     NSMutableParagraphStyle *ps;
     
-    if (!title)
+    
+    NSString *title;
+    
+    
+    title = [_label stringValue];
+
+    
+    if (![title length])
     {
-        [_label setStringValue: @""];
         return;
     }
-    
+
+    [_label setTextColor: _dark ? [NSColor whiteColor] : [NSColor blackColor]];
+
     shadow = [NSShadow new];
     [shadow setShadowBlurRadius: 1.0];
-    [shadow setShadowColor: [NSColor blackColor]];
-    [shadow setShadowOffset: NSMakeSize(0.0, 1.0)];
+    [shadow setShadowColor: _dark ? [NSColor blackColor] : [NSColor whiteColor]];
+    [shadow setShadowOffset: _dark ? NSMakeSize(0.0, 1.0) : NSMakeSize(0.0, -1.0)];
     
     ps = [NSMutableParagraphStyle new];
     [ps setAlignment: NSCenterTextAlignment];
@@ -75,16 +120,13 @@
     
     as = [[NSAttributedString alloc] initWithString: title attributes: attr]; 
     [_label setAttributedStringValue: as];
-
+    
     
     [as release];
-    [shadow release];
+    [shadow release];    
+    
 }
 
--(NSString *)title
-{
-    return [_label stringValue];
-}
 
 
 -(BOOL)isFlipped
@@ -96,6 +138,7 @@
 -(void)drawRect:(NSRect)dirtyRect
 {
     NSRect bounds;
+    NSRect rect;
 
 
     bounds = [self bounds];
@@ -107,10 +150,12 @@
     [path addClip];
     
     
-    [_color setFill];
+    [_backgroundColor setFill];
     NSRectFill(dirtyRect);
     
-    NSDrawThreePartImage(NSMakeRect(0, 0, bounds.size.width, 24.0),_leftImage, _centerImage, _rightImage, NO, NSCompositeSourceOver, 1.0, YES);
+    rect = NSMakeRect(0, 0, bounds.size.width, 24.0);
+    rect = NSInsetRect(rect, 1, 0);
+    NSDrawThreePartImage(rect, _leftImage, _centerImage, _rightImage, NO, NSCompositeSourceOver, 1.0, YES);
 
 }
 
