@@ -36,7 +36,7 @@
 
         _cursorOn = NO;
         _cursorTimer = [[NSTimer alloc] initWithFireDate: [NSDate date] 
-                                                interval: 0.5 
+                                                interval: 0.5
                                                   target: self
                                                 selector: @selector(cursorTimer:) 
                                                 userInfo: nil 
@@ -166,7 +166,7 @@
     _charGen = [[CharacterGenerator generator] retain];
     
     _cursorImg = [[_charGen imageForCharacter: '_'] retain];
-    
+    _cursorType = Screen::CursorTypeUnderscore;
     
     size  = [_charGen characterSize];
     _charWidth = size.width;
@@ -253,13 +253,8 @@
     [self becomeFirstResponder];
 
     
+    [self startCursorTimer];
     
-    _cursorTimer = [[NSTimer scheduledTimerWithTimeInterval: .5 
-                                                     target: self 
-                                                   selector: @selector(cursorTimer:) 
-                                                   userInfo: nil 
-                                                    repeats: YES] retain];
-
     /*
     [[self window] display];
     [[self window] setHasShadow: NO];
@@ -279,13 +274,14 @@
 
 -(void)drawRect:(NSRect)dirtyRect
 {
+    //NSLog(@"drawRect:");
+    
     //NSRect bounds = [self bounds];
 
     NSRect screenRect = dirtyRect;
 
     unsigned x, y;
     
-
     
     NSColor *currentFront;
     NSColor *currentBack;
@@ -442,7 +438,6 @@
     [_foregroundColor release];
     [_backgroundColor release];
     
-    [_readerThread release];
     
     [_emulator release];
     [_cursorImg release];
@@ -452,6 +447,8 @@
 
 -(void)keyDown:(NSEvent *)theEvent
 {
+    //NSLog(@"keyDown:");
+    
     OutputChannel channel(_fd);
     iRect updateRect; // should be nil but whatever...
     
@@ -489,50 +486,13 @@
 
 
 
--(void)startBackgroundReader
-{
-    return;
-    
-    if (_readerThread) return;
-    
-    _readerThread = [[NSThread alloc] initWithTarget: self selector: @selector(_readerThread) object: nil];
-
-    [_readerThread start];
-}
--(void)_readerThread
-{
-    // I would prefer to poll(2) but it's broken on os x for ptys.
-    
-    int fd = _fd;
-
-    
-    for(;;)
-    {
-        int n;
-        
-        fd_set read_set;
-        fd_set error_set;
-        
-        FD_ZERO(&read_set);
-        FD_SET(fd, &read_set);
-        FD_ZERO(&error_set);
-        FD_SET(fd, &error_set);    
-        
-        
-        n = select(fd + 1, &read_set, NULL, &error_set, NULL);
-        
-        if (n == 0) continue;
-        if (n < 0) break;
-        
-        if (FD_ISSET(fd, &error_set)) break;
-        if (FD_ISSET(fd, &read_set)) [self dataAvailable];
-    }
-    
-}
 
 
 -(void)dataAvailable
 {
+    
+    //NSLog(@"data available");
+    
     typedef void (*ProcessCharFX)(id, SEL, uint8_t, Screen *, OutputChannel *);
     
     ProcessCharFX fx;
@@ -550,11 +510,13 @@
         ssize_t size;
         
         
+        // this should be a non-blocking read.
         size = read(_fd, buffer, sizeof(buffer));
         
         if (size == 0) break;
         if (size < 0)
         {
+            if (errno == EAGAIN) break; // non-blocking, no data available.
             if (errno == EINTR || errno == EAGAIN) continue;
             
             perror("[EmulatorView dataAvailable]");
@@ -578,15 +540,22 @@
         
         updateRect = _screen.endUpdate();    
         
-        [self invalidateIRect: updateRect];
+        dispatch_async(dispatch_get_main_queue(), ^(){
+            
+            [self invalidateIRect: updateRect];
+            
+        });
         
         [pool release];
     }
 }
 
 
+// should be done in the main thread.
 -(void)invalidateIRect: (iRect)updateRect
 {
+    //NSLog(@"invalidateIRect");
+    
     NSRect rect;
     
     if (updateRect.size.width <= 0 || updateRect.size.height <= 0) return;
@@ -604,7 +573,19 @@
     rect.origin.x += _paddingLeft;
     rect.origin.y += _paddingTop;
     
-    [self setNeedsDisplayInRect: rect];    
+    /*
+    dispatch_async(dispatch_get_main_queue(), ^(){
+
+        [self setNeedsDisplayInRect: rect];
+        
+        //[self display];
+        
+    });
+    */
+    
+    [self setNeedsDisplayInRect: rect];
+    //[self display];
+     
     
 }
 
@@ -823,8 +804,40 @@
 
 -(void)childFinished: (ChildMonitor *)monitor
 {
+    // called from other thread.
+
     NSLog(@"[process complete]");
-    // writeline "[process complete]"
+
+    dispatch_async(dispatch_get_main_queue(), ^(){
+
+        iRect updateRect;
+        
+        [self setCursorType: Screen::CursorTypeNone];
+        //[self stopCursorTimer];
+        //_screen.setCursorType(Screen::CursorTypeNone);
+        
+        _screen.beginUpdate();
+        
+        _screen.setX(0);
+        _screen.incrementY();
+        
+        for (const char *cp = "[Process completed]"; *cp; ++cp)
+        {
+            _screen.putc(*cp);
+        }
+        
+
+        updateRect = _screen.endUpdate();
+        
+
+        [self invalidateIRect: updateRect];
+        
+        //[_emulator writeLine: @"[Process completed]"];
+        
+    });
+    
+
+    
 }
     
 @end

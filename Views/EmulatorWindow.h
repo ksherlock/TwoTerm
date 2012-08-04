@@ -18,5 +18,6 @@
 
 -(void)adjustTitleBar;
 
+-(void)setTitleTextColor: (NSColor *)color;
 
 @end

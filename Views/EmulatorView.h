@@ -47,9 +47,7 @@ private:
     int _fd;
     
     NSObject<Emulator> *_emulator;
-    
-    NSThread *_readerThread;
-    
+        
     CharacterGenerator *_charGen;
     
     NSColor *_backgroundColor;
@@ -91,7 +89,6 @@ private:
 
 //@property (nonatomic, assign) iPoint cursor;
 
--(void)startBackgroundReader;
 -(void)dataAvailable;
 -(void)invalidateIRect: (iRect)rect;
 
