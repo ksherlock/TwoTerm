@@ -70,8 +70,10 @@
         tm.tv_sec = 10;
         tm.tv_usec = 0;
         
+        errno = 0;
         n = select(fd + 1, &read_set, NULL, &error_set, &tm);
         
+        //NSLog(@"select: %d %d", n, errno);
         if (n == 0) continue;
         if (n < 0) break;
         
@@ -86,10 +88,8 @@
         if ([self wait]) break;
         
     }
-
+    
     if (!_childFinished) [self wait];
-
-
 }
 
 
