@@ -74,7 +74,7 @@
     int fd;
     struct termios term;
     struct winsize ws = [_emulator defaultSize];
-    //int flags;
+    int flags;
     
     memset(&term, 0, sizeof(term));
     
@@ -153,10 +153,11 @@
         // child
     }
 
-    /*
+    
+    // non-blocking io.
     if (fcntl(fd, F_GETFL, &flags) < 0) flags = 0;
     fcntl(fd, F_SETFL, flags | O_NONBLOCK);
-    */
+    
     
     [_emulatorView resizeTo: iSize(ws.ws_col, ws.ws_row) animated: NO];
 
