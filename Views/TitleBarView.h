@@ -11,6 +11,7 @@
 @interface TitleBarView : NSView
 {
     NSColor *_backgroundColor;
+    NSColor *_textColor;
     NSTextField *_label;
     NSImage *_rightImage;
     NSImage *_leftImage;
@@ -20,6 +21,7 @@
 }
 
 @property (nonatomic, retain) NSColor *backgroundColor;
+@property (nonatomic, retain) NSColor *textColor;
 @property (nonatomic, retain) IBOutlet NSTextField *label;
 @property (nonatomic, retain) NSString *title;
 

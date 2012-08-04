@@ -13,6 +13,7 @@
 @implementation TitleBarView
 @synthesize label = _label;
 @synthesize backgroundColor = _backgroundColor;
+@synthesize textColor = _textColor;
 
 -(id)initWithFrame:(NSRect)frameRect
 {
@@ -27,9 +28,9 @@
 
 -(void)awakeFromNib
 {    
-    _leftImage = [[NSImage imageNamed: @"titlebar-left.png"] retain];
-    _rightImage = [[NSImage imageNamed: @"titlebar-right.png"] retain];
-    _centerImage = [[NSImage imageNamed: @"titlebar-center.png"] retain];
+    _leftImage = [[NSImage imageNamed: @"titlebar-left"] retain];
+    _rightImage = [[NSImage imageNamed: @"titlebar-right"] retain];
+    _centerImage = [[NSImage imageNamed: @"titlebar-center"] retain];
     
 
     
@@ -41,6 +42,7 @@
 -(void)dealloc
 {
     [_backgroundColor release];
+    [_textColor release];
     [_leftImage release];
     [_rightImage release];
     [_centerImage release];
@@ -69,6 +71,16 @@
     }
     
     [self updateTitle];
+}
+
+-(void)setTextColor: (NSColor *)textColor
+{
+    if (_textColor == textColor) return;
+    [_textColor release];
+    _textColor = [textColor retain];
+    
+    [_label setTextColor: _textColor];
+    //[self updateTitle];
 }
 
 -(void)setTitle:(NSString *)title
@@ -102,7 +114,7 @@
         return;
     }
 
-    [_label setTextColor: _dark ? [NSColor whiteColor] : [NSColor blackColor]];
+    //[_label setTextColor: _dark ? [NSColor whiteColor] : [NSColor blackColor]];
 
     shadow = [NSShadow new];
     [shadow setShadowBlurRadius: 1.0];
@@ -123,6 +135,7 @@
     
     
     [as release];
+    [ps release];
     [shadow release];    
     
 }
@@ -144,7 +157,8 @@
     bounds = [self bounds];
     
     
-    NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect: NSMakeRect(0, 0, bounds.size.width, bounds.size.height) 
+    rect = NSMakeRect(0, 0, bounds.size.width, bounds.size.height);
+    NSBezierPath *path = [NSBezierPath bezierPathWithRoundedRect: rect
                                                          xRadius: 4.0 
                                                          yRadius: 4.0];
     [path addClip];
@@ -155,7 +169,14 @@
     
     rect = NSMakeRect(0, 0, bounds.size.width, 24.0);
     rect = NSInsetRect(rect, 1, 0);
-    NSDrawThreePartImage(rect, _leftImage, _centerImage, _rightImage, NO, NSCompositeSourceOver, 1.0, YES);
+    NSDrawThreePartImage(rect,
+                         _leftImage,
+                         _centerImage,
+                         _rightImage,
+                         NO,
+                         NSCompositeSourceOver /*NSCompositeDestinationOver*/,
+                         1.0,
+                         YES);
 
 }
 
