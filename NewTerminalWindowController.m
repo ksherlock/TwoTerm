@@ -133,9 +133,9 @@ enum {
 {
     
     NSMenuItem *item = [_terminalTypeButton selectedItem];
-    unsigned tag = [item tag];
+    NSUInteger tag = [item tag];
     
-    Class klass = [EmulatorManager emulatorForTag: tag];
+    Class klass = [EmulatorManager emulatorForTag: (unsigned)tag];
     
     if (klass)
     {
