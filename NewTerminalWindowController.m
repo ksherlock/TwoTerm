@@ -31,6 +31,7 @@
 enum {
     kCustom = 0,
     kGreenBlack,
+    kBlueBlack,
     kWhiteBlue,
     kAmberBlack
 };
@@ -94,6 +95,12 @@ enum {
     [item setTitle: @"Green Black"];
     [item setTag: kGreenBlack];
     [menu addItem: item];
+
+    item = [[NSMenuItem new] autorelease];
+    [item setTitle: @"Blue Black"];
+    [item setTag: kBlueBlack];
+    [menu addItem: item];
+    
     
     item = [[NSMenuItem new] autorelease];
     [item setTitle: @"White Blue"];
@@ -167,7 +174,13 @@ enum {
             [_foregroundColorControl setColor: [NSColor greenColor]];
             [_backgroundColorControl setColor: [NSColor blackColor]];
             break;
-        
+            
+        case kBlueBlack:
+            [_foregroundColorControl setColor: [NSColor colorWithCalibratedRed:0.0 green: 0.5 blue: 1.0 alpha: 1.0]];
+            [_backgroundColorControl setColor: [NSColor blackColor]];
+            break;
+
+            
         case kWhiteBlue:
             [_foregroundColorControl setColor: [NSColor whiteColor]];
             [_backgroundColorControl setColor: [NSColor blueColor]];
