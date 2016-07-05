@@ -12,9 +12,9 @@
 
 unsigned EventCharacters(NSEvent *event, std::u32string &rv)
 {
-    unsigned flags = [event modifierFlags];
+    NSEventModifierFlags flags = [event modifierFlags];
     NSString *chars = [event charactersIgnoringModifiers];
-    unsigned length = [chars length];
+    NSUInteger length = [chars length];
     
     rv.reserve(length);
     
@@ -37,7 +37,7 @@ unsigned EventCharacters(NSEvent *event, std::u32string &rv)
         rv.push_back(c);
     }
     
-    return length;
+    return (unsigned)length;
 }
 
 

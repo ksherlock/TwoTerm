@@ -799,7 +799,7 @@ enum {
 
 
 
-static void vt100ModeKey(unichar uc, unsigned flags, Screen *screen, OutputChannel *output, struct __vt100flags vt100flags)
+static void vt100ModeKey(unichar uc, NSEventModifierFlags flags, Screen *screen, OutputChannel *output, struct __vt100flags vt100flags)
 {
     const char *str = NULL;
 
@@ -926,7 +926,7 @@ static void vt100ModeKey(unichar uc, unsigned flags, Screen *screen, OutputChann
 }
 
 
-static void vt52ModeKey(unichar uc, unsigned flags, Screen * screen, OutputChannel *output, struct __vt100flags vt100flags)
+static void vt52ModeKey(unichar uc, NSEventModifierFlags flags, Screen * screen, OutputChannel *output, struct __vt100flags vt100flags)
 {
     const char *str = NULL;
     
@@ -1043,9 +1043,9 @@ static void vt52ModeKey(unichar uc, unsigned flags, Screen * screen, OutputChann
 
 -(void)keyDown:(NSEvent *)event screen:(Screen *)screen output:(OutputChannel *)output
 {
-    unsigned flags = [event modifierFlags];
+    NSEventModifierFlags flags = [event modifierFlags];
     NSString *chars = [event charactersIgnoringModifiers];
-    unsigned length = [chars length];
+    NSUInteger length = [chars length];
     
     for (unsigned i = 0; i < length; ++i)
     {

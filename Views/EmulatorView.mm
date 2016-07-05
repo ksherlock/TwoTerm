@@ -238,7 +238,7 @@
     }
     else
     {
-        [self setContentFilters: nil];
+        [self setContentFilters: @[]];
     }
 }
 
@@ -471,7 +471,7 @@
     
     NSData *data = [text dataUsingEncoding: NSASCIIStringEncoding allowLossyConversion: YES];
 
-    unsigned length = [data length];
+    NSUInteger length = [data length];
     
     OutputChannel channel(_fd);
     
