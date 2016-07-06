@@ -16,7 +16,7 @@
 {
     
     return;
-    
+#if 0
     NSRect rect;
     NSRect bounds;
     
@@ -39,7 +39,7 @@
     
     
     [self addTrackingArea: _trackingArea];    
-    
+#endif 
 }
 
 -(void)awakeFromNib

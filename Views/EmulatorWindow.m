@@ -28,6 +28,8 @@
         [self setOpaque: NO];
         [self setAlphaValue: 1.0];
         
+        [self setTitleVisibility: NSWindowTitleVisible];
+        
         // resize in 2.0 height increments to prevent jittering the scan lines.
         [self setResizeIncrements: NSMakeSize(1.0, 2.0)];
         [self setMovableByWindowBackground: YES];
@@ -56,6 +58,9 @@
                                      defer: flag 
                                     screen: screen]))
     {
+
+        [self setTitleVisibility: NSWindowTitleVisible];
+
         
         [self setOpaque: NO];
         [self setAlphaValue: 1.0];
@@ -98,8 +103,11 @@
 
 -(void)awakeFromNib
 {
-    [self adjustTitleBar];
-
+    //[self adjustTitleBar];
+    [self setAppearance: [NSAppearance appearanceNamed: NSAppearanceNameVibrantDark]];
+    [self setTitleVisibility: NSWindowTitleVisible];
+    [self setTitlebarAppearsTransparent: YES];
+    
     //[NSApp addWindowsItem: self title: @"Window Title" filename: NO];
     //[self setHasShadow: YES];
 }

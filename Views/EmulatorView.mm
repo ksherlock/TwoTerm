@@ -149,7 +149,7 @@
     _charHeight = 16;
     
     _paddingLeft = 8;
-    _paddingTop = 8;
+    _paddingTop = 24;
     
     
     //_foregroundColor = [[NSColor greenColor] retain];
