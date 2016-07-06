@@ -26,16 +26,27 @@
     _color = [[NSColor blackColor] retain];
 }
 
+/*
+-(BOOL)acceptsFirstMouse:(NSEvent *)theEvent
+{
+    return YES;
+}
+*/
 
-#define curveSize 4
+#define curveSize 5
 
 - (void)drawRect:(NSRect)dirtyRect {
 
-    NSGraphicsContext *nsgc = [NSGraphicsContext currentContext];
-    CGContextRef ctx = [nsgc graphicsPort];
-    
-    
+    //NSGraphicsContext *nsgc = [NSGraphicsContext currentContext];
+    //CGContextRef ctx = [nsgc graphicsPort];
     NSRect bounds = [self bounds];
+        
+    //[super drawRect: dirtyRect];
+    
+#if 0
+    
+    [[NSColor clearColor] setFill];
+    NSRectFill(dirtyRect);
     
     [_color setFill];
     
@@ -58,6 +69,25 @@
     CGContextAddQuadCurveToPoint(ctx, 0, 0, 0, curveSize);
         
     CGContextFillPath(ctx);
+#else
+    
+    NSBezierPath *path;
+
+    
+    [[NSColor clearColor] set];
+    NSRectFill(dirtyRect);
+    
+    
+    path = [NSBezierPath bezierPathWithRoundedRect:bounds xRadius: curveSize yRadius: curveSize];
+    [path addClip];
+    //path = [NSBezierPath bezierPathWithRect: dirtyRect];
+    //[path addClip];
+    
+
+    [_color set];
+    NSRectFill(dirtyRect);
+    
+#endif
     
 }
 
@@ -72,5 +102,6 @@
 -(void)dealloc
 {
     [_color release];
+    [super dealloc];
 }
 @end

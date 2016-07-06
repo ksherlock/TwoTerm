@@ -36,7 +36,7 @@
 
         _cursorOn = NO;
         _cursorTimer = [[NSTimer alloc] initWithFireDate: [NSDate date] 
-                                                interval: 0.5 
+                                                interval: 0.5
                                                   target: self
                                                 selector: @selector(cursorTimer:) 
                                                 userInfo: nil 
@@ -133,6 +133,10 @@
 #pragma mark -
 #pragma mark properties
 
+-(int)fd {
+    return _fd;
+}
+
 -(void)setFd: (int)fd
 {
     _fd = fd;
@@ -149,7 +153,7 @@
     _charHeight = 16;
     
     _paddingLeft = 8;
-    _paddingTop = 8;
+    _paddingTop = 24;
     
     
     //_foregroundColor = [[NSColor greenColor] retain];
@@ -166,7 +170,7 @@
     _charGen = [[CharacterGenerator generator] retain];
     
     _cursorImg = [[_charGen imageForCharacter: '_'] retain];
-    
+    _cursorType = Screen::CursorTypeUnderscore;
     
     size  = [_charGen characterSize];
     _charWidth = size.width;
@@ -238,7 +242,7 @@
     }
     else
     {
-        [self setContentFilters: nil];
+        [self setContentFilters: @[]];
     }
 }
 
@@ -253,14 +257,13 @@
     [self becomeFirstResponder];
 
     
+    [self startCursorTimer];
     
-    _cursorTimer = [[NSTimer scheduledTimerWithTimeInterval: .5 
-                                                     target: self 
-                                                   selector: @selector(cursorTimer:) 
-                                                   userInfo: nil 
-                                                    repeats: YES] retain];
-
-
+    /*
+    [[self window] display];
+    [[self window] setHasShadow: NO];
+    [[self window] setHasShadow: YES];
+    */
 }
 
 -(void)viewDidMoveToSuperview
@@ -275,13 +278,14 @@
 
 -(void)drawRect:(NSRect)dirtyRect
 {
+    //NSLog(@"drawRect:");
+    
     //NSRect bounds = [self bounds];
 
     NSRect screenRect = dirtyRect;
 
     unsigned x, y;
     
-
     
     NSColor *currentFront;
     NSColor *currentBack;
@@ -317,8 +321,8 @@
     
     [_foregroundColor setFill];
 
-    currentFront = _foregroundColor;
-    currentBack = _backgroundColor;
+    //currentFront = _foregroundColor;
+    //currentBack = _backgroundColor;
     
     _screen.lock();
     
@@ -438,7 +442,6 @@
     [_foregroundColor release];
     [_backgroundColor release];
     
-    [_readerThread release];
     
     [_emulator release];
     [_cursorImg release];
@@ -448,9 +451,13 @@
 
 -(void)keyDown:(NSEvent *)theEvent
 {
+    //NSLog(@"keyDown:");
+    if (_fd < 0) return;
+
     OutputChannel channel(_fd);
     iRect updateRect; // should be nil but whatever...
     
+    // todo -- after _fd closes, need to block further activity.
     
     
     [NSCursor setHiddenUntilMouseMoves: YES];
@@ -468,9 +475,11 @@
 -(void)autoTypeText:(NSString *)text
 {
     
+    if (_fd < 0) return;
+
     NSData *data = [text dataUsingEncoding: NSASCIIStringEncoding allowLossyConversion: YES];
 
-    unsigned length = [data length];
+    NSUInteger length = [data length];
     
     OutputChannel channel(_fd);
     
@@ -483,52 +492,83 @@
 }
 
 
-
-
--(void)startBackgroundReader
-{
-    return;
+-(void)childFinished:(int)status {
     
-    if (_readerThread) return;
+    // called from other thread.
     
-    _readerThread = [[NSThread alloc] initWithTarget: self selector: @selector(_readerThread) object: nil];
-
-    [_readerThread start];
+    NSLog(@"[process complete]");
+    
+    dispatch_async(dispatch_get_main_queue(), ^(){
+        
+        iRect updateRect;
+        
+        [self setCursorType: Screen::CursorTypeNone];
+        //[self stopCursorTimer];
+        //_screen.setCursorType(Screen::CursorTypeNone);
+        
+        _screen.beginUpdate();
+        
+        _screen.setX(0);
+        _screen.incrementY();
+        
+        for (const char *cp = "[Process completed]"; *cp; ++cp)
+        {
+            _screen.putc(*cp);
+        }
+        
+        
+        updateRect = _screen.endUpdate();
+        
+        
+        [self invalidateIRect: updateRect];
+        
+        //[_emulator writeLine: @"[Process completed]"];
+        
+    });
+    
+    
+    
 }
--(void)_readerThread
-{
-    // I would prefer to poll(2) but it's broken on os x for ptys.
-    
-    int fd = _fd;
 
+-(void)processData:(const uint8_t *)buffer size:(size_t)size {
+
+    typedef void (*ProcessCharFX)(id, SEL, uint8_t, Screen *, OutputChannel *);
     
-    for(;;)
+    ProcessCharFX fx;
+    SEL cmd;
+    OutputChannel channel(_fd);
+    iRect updateRect;
+
+    cmd  =  @selector(processCharacter: screen: output:);
+    fx = (ProcessCharFX)[_emulator methodForSelector: cmd];
+
+    NSAutoreleasePool *pool;
+    pool = [NSAutoreleasePool new];
+    _screen.beginUpdate();
+    
+    
+    for (unsigned i = 0; i < size; ++i)
     {
-        int n;
-        
-        fd_set read_set;
-        fd_set error_set;
-        
-        FD_ZERO(&read_set);
-        FD_SET(fd, &read_set);
-        FD_ZERO(&error_set);
-        FD_SET(fd, &error_set);    
-        
-        
-        n = select(fd + 1, &read_set, NULL, &error_set, NULL);
-        
-        if (n == 0) continue;
-        if (n < 0) break;
-        
-        if (FD_ISSET(fd, &error_set)) break;
-        if (FD_ISSET(fd, &read_set)) [self dataAvailable];
+        fx(_emulator,cmd, buffer[i], &_screen, &channel);
     }
     
+    updateRect = _screen.endUpdate();
+    
+    dispatch_async(dispatch_get_main_queue(), ^(){
+        
+        [self invalidateIRect: updateRect];
+        
+    });
+    
+    [pool release];
 }
 
 
 -(void)dataAvailable
 {
+    
+    //NSLog(@"data available");
+    
     typedef void (*ProcessCharFX)(id, SEL, uint8_t, Screen *, OutputChannel *);
     
     ProcessCharFX fx;
@@ -546,11 +586,13 @@
         ssize_t size;
         
         
+        // this should be a non-blocking read.
         size = read(_fd, buffer, sizeof(buffer));
         
         if (size == 0) break;
         if (size < 0)
         {
+            if (errno == EAGAIN) break; // non-blocking, no data available.
             if (errno == EINTR || errno == EAGAIN) continue;
             
             perror("[EmulatorView dataAvailable]");
@@ -574,15 +616,22 @@
         
         updateRect = _screen.endUpdate();    
         
-        [self invalidateIRect: updateRect];
+        dispatch_async(dispatch_get_main_queue(), ^(){
+            
+            [self invalidateIRect: updateRect];
+            
+        });
         
         [pool release];
     }
 }
 
 
+// should be done in the main thread.
 -(void)invalidateIRect: (iRect)updateRect
 {
+    //NSLog(@"invalidateIRect");
+    
     NSRect rect;
     
     if (updateRect.size.width <= 0 || updateRect.size.height <= 0) return;
@@ -600,7 +649,19 @@
     rect.origin.x += _paddingLeft;
     rect.origin.y += _paddingTop;
     
-    [self setNeedsDisplayInRect: rect];    
+    /*
+    dispatch_async(dispatch_get_main_queue(), ^(){
+
+        [self setNeedsDisplayInRect: rect];
+        
+        //[self display];
+        
+    });
+    */
+    
+    [self setNeedsDisplayInRect: rect];
+    //[self display];
+     
     
 }
 
@@ -698,21 +759,33 @@
 #pragma mark -
 #pragma mark IBActions
 
-
+-(BOOL)validateUserInterfaceItem: (id <NSValidatedUserInterfaceItem>)anItem {
+    
+    SEL cmd = [anItem action];
+    if (cmd == @selector(paste:)) {
+        return _fd >= 1;
+    }
+    if (cmd == @selector(copy:)) return NO;
+    
+    return NO;
+    //return [super validateUserInterfaceItem: anItem];
+}
+//-(BOOL)validateUserInterfaceItem:
 -(IBAction)paste: (id)sender
 {
     NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
     NSArray *classArray = [NSArray arrayWithObject:[NSString class]];
     NSDictionary *options = [NSDictionary dictionary];
 
-    
+    if (_fd < 0) return;
+
     BOOL ok = [pasteboard canReadObjectForClasses:classArray options:options];
 
     if (ok)
     {
         NSArray *objectsToPaste = [pasteboard readObjectsForClasses:classArray options:options];
         NSString *string = [objectsToPaste objectAtIndex: 0];
-        NSLog(@"%@", objectsToPaste);
+        //NSLog(@"%@", objectsToPaste);
         
         [self autoTypeText: string];
         
@@ -754,6 +827,8 @@
     pboard = [sender draggingPasteboard];
  
     
+    if (_fd < 0) return NO;
+
     types = [pboard types];
     
 
@@ -809,6 +884,7 @@
 @end
 
 
+#if 0
 @implementation EmulatorView (ChildMonitor)
 
 -(void)childDataAvailable: (ChildMonitor *)monitor
@@ -819,12 +895,44 @@
 
 -(void)childFinished: (ChildMonitor *)monitor
 {
+    // called from other thread.
+
     NSLog(@"[process complete]");
-    // writeline "[process complete]"
+
+    dispatch_async(dispatch_get_main_queue(), ^(){
+
+        iRect updateRect;
+        
+        [self setCursorType: Screen::CursorTypeNone];
+        //[self stopCursorTimer];
+        //_screen.setCursorType(Screen::CursorTypeNone);
+        
+        _screen.beginUpdate();
+        
+        _screen.setX(0);
+        _screen.incrementY();
+        
+        for (const char *cp = "[Process completed]"; *cp; ++cp)
+        {
+            _screen.putc(*cp);
+        }
+        
+
+        updateRect = _screen.endUpdate();
+        
+
+        [self invalidateIRect: updateRect];
+        
+        //[_emulator writeLine: @"[Process completed]"];
+        
+    });
+    
+
+    
 }
     
 @end
-
+#endif
 
 
 void ViewScreen::setSize(unsigned width, unsigned height)

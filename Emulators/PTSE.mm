@@ -314,10 +314,10 @@ enum  {
 
 -(void)keyDown:(NSEvent *)event screen:(Screen *)screen output:(OutputChannel *)output
 {
-    unsigned flags = [event modifierFlags];
+    NSEventModifierFlags flags = [event modifierFlags];
     NSString *chars = [event charactersIgnoringModifiers];
     
-    unsigned length = [chars length];
+    NSUInteger length = [chars length];
     
     for (unsigned i = 0; i < length; ++i)
     {

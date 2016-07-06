@@ -30,6 +30,12 @@
     
     int _child;
     
+    int _fd;
+    pid_t _pid;
+    
+    dispatch_source_t _read_source;
+    dispatch_source_t _wait_source;
+    
 }
 
 @property (nonatomic, retain) NSDictionary *parameters;
