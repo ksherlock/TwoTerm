@@ -88,7 +88,6 @@ private:
 
 //@property (nonatomic, assign) iPoint cursor;
 
--(void)dataAvailable;
 -(void)invalidateIRect: (iRect)rect;
 
 //-(void)resizeTo: (iSize)size;

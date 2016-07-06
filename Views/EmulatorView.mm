@@ -154,6 +154,7 @@
     
     _paddingLeft = 8;
     _paddingTop = 24;
+    _paddingBottom = 8;
     
     
     //_foregroundColor = [[NSColor greenColor] retain];
@@ -542,6 +543,13 @@
     cmd  =  @selector(processCharacter: screen: output:);
     fx = (ProcessCharFX)[_emulator methodForSelector: cmd];
 
+#if 0
+    FILE *debug = fopen("/tmp/debug.txt", "a");
+    fwrite(buffer, 1, size, debug);
+    fflush(debug);
+    fclose(debug);
+#endif
+
     NSAutoreleasePool *pool;
     pool = [NSAutoreleasePool new];
     _screen.beginUpdate();
@@ -563,68 +571,6 @@
     [pool release];
 }
 
-
--(void)dataAvailable
-{
-    
-    //NSLog(@"data available");
-    
-    typedef void (*ProcessCharFX)(id, SEL, uint8_t, Screen *, OutputChannel *);
-    
-    ProcessCharFX fx;
-    SEL cmd;
-    OutputChannel channel(_fd);
-    
-    cmd  =  @selector(processCharacter: screen: output:);
-    fx = (ProcessCharFX)[_emulator methodForSelector: cmd];
-    
-    for(;;)
-    {
-        NSAutoreleasePool *pool;
-        iRect updateRect;
-        uint8_t buffer[512];
-        ssize_t size;
-        
-        
-        // this should be a non-blocking read.
-        size = read(_fd, buffer, sizeof(buffer));
-        
-        if (size == 0) break;
-        if (size < 0)
-        {
-            if (errno == EAGAIN) break; // non-blocking, no data available.
-            if (errno == EINTR || errno == EAGAIN) continue;
-            
-            perror("[EmulatorView dataAvailable]");
-            break;
-        }
-
-#if 0
-        FILE *debug = fopen("/tmp/debug.txt", "a");
-        fwrite(buffer, 1, size, debug);
-        fflush(debug);
-        fclose(debug);
-#endif
-        pool = [NSAutoreleasePool new];
-        _screen.beginUpdate();
-
-        
-        for (unsigned i = 0; i < size; ++i)
-        {
-            fx(_emulator,cmd, buffer[i], &_screen, &channel);
-        }
-        
-        updateRect = _screen.endUpdate();    
-        
-        dispatch_async(dispatch_get_main_queue(), ^(){
-            
-            [self invalidateIRect: updateRect];
-            
-        });
-        
-        [pool release];
-    }
-}
 
 
 // should be done in the main thread.
@@ -676,7 +622,7 @@
     
     // TODO -- left/right padding...
     newSize.width = size.width * _charWidth + _paddingLeft * 2;
-    newSize.height = size.height * _charHeight + _paddingTop * 2;
+    newSize.height = size.height * _charHeight + _paddingTop + _paddingBottom;
     
     // best case -- no change.
     if (NSEqualSizes(newSize,  bounds.size)) return;
@@ -744,7 +690,7 @@
         // user is resizing window.
         // or zoom.
         unsigned width = floor((frameRect.size.width - _paddingLeft * 2) / _charWidth);
-        unsigned height = floor((frameRect.size.height - _paddingTop * 2) / _charHeight);
+        unsigned height = floor((frameRect.size.height - _paddingTop - _paddingBottom) / _charHeight);
         
         _screen.lock();
         _screen.setSize(width, height, false);
@@ -884,55 +830,7 @@
 @end
 
 
-#if 0
-@implementation EmulatorView (ChildMonitor)
 
--(void)childDataAvailable: (ChildMonitor *)monitor
-{
-    // this is called from a separate thread.
-    [self dataAvailable];
-}
-
--(void)childFinished: (ChildMonitor *)monitor
-{
-    // called from other thread.
-
-    NSLog(@"[process complete]");
-
-    dispatch_async(dispatch_get_main_queue(), ^(){
-
-        iRect updateRect;
-        
-        [self setCursorType: Screen::CursorTypeNone];
-        //[self stopCursorTimer];
-        //_screen.setCursorType(Screen::CursorTypeNone);
-        
-        _screen.beginUpdate();
-        
-        _screen.setX(0);
-        _screen.incrementY();
-        
-        for (const char *cp = "[Process completed]"; *cp; ++cp)
-        {
-            _screen.putc(*cp);
-        }
-        
-
-        updateRect = _screen.endUpdate();
-        
-
-        [self invalidateIRect: updateRect];
-        
-        //[_emulator writeLine: @"[Process completed]"];
-        
-    });
-    
-
-    
-}
-    
-@end
-#endif
 
 
 void ViewScreen::setSize(unsigned width, unsigned height)

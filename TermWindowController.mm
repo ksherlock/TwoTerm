@@ -35,9 +35,6 @@
 
 @synthesize parameters = _parameters;
 
-@synthesize childMonitor = _childMonitor;
-
-
 +(id)new
 {
     return [[self alloc] initWithWindowNibName: @"TermWindow"];
@@ -45,9 +42,6 @@
 
 -(void)dealloc
 {
-
-    [_childMonitor release];
-    
     [_emulator release];
     [_emulatorView release];
     [_curveView release];
@@ -224,7 +218,7 @@
         dispatch_source_set_event_handler(_read_source, ^{
 
             static uint8_t sbuffer[1024];
-            size_t estimated = dispatch_source_get_data(_read_source) + 1;
+            size_t estimated = dispatch_source_get_data(_read_source);
 
             
             uint8_t *buffer = estimated > sizeof(sbuffer) ? (uint8_t *)malloc(estimated) : sbuffer;
