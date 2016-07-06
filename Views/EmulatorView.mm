@@ -133,6 +133,10 @@
 #pragma mark -
 #pragma mark properties
 
+-(int)fd {
+    return _fd;
+}
+
 -(void)setFd: (int)fd
 {
     _fd = fd;

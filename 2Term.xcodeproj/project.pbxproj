@@ -41,7 +41,6 @@
 		B61EF7D71482FB6D008C1891 /* titlebar-center.png in Resources */ = {isa = PBXBuildFile; fileRef = B61EF7D41482FB6D008C1891 /* titlebar-center.png */; };
 		B61EF7D81482FB6D008C1891 /* titlebar-left.png in Resources */ = {isa = PBXBuildFile; fileRef = B61EF7D51482FB6D008C1891 /* titlebar-left.png */; };
 		B61EF7D91482FB6D008C1891 /* titlebar-right.png in Resources */ = {isa = PBXBuildFile; fileRef = B61EF7D61482FB6D008C1891 /* titlebar-right.png */; };
-		B627333B12E3FF5B00A14C94 /* ChildMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = B627333A12E3FF5B00A14C94 /* ChildMonitor.m */; };
 		B638188214A179D60027D007 /* ColorView.m in Sources */ = {isa = PBXBuildFile; fileRef = B638188114A179D60027D007 /* ColorView.m */; };
 		B66412391480A070003BC8D3 /* EmulatorWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B66412381480A070003BC8D3 /* EmulatorWindow.m */; };
 		B676063B11DEAD3500D6B66C /* TermWindowController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B676063A11DEAD3500D6B66C /* TermWindowController.mm */; };
@@ -139,8 +138,6 @@
 		B61EF7D41482FB6D008C1891 /* titlebar-center.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titlebar-center.png"; sourceTree = "<group>"; };
 		B61EF7D51482FB6D008C1891 /* titlebar-left.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titlebar-left.png"; sourceTree = "<group>"; };
 		B61EF7D61482FB6D008C1891 /* titlebar-right.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titlebar-right.png"; sourceTree = "<group>"; };
-		B627333912E3FF5B00A14C94 /* ChildMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChildMonitor.h; sourceTree = "<group>"; };
-		B627333A12E3FF5B00A14C94 /* ChildMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChildMonitor.m; sourceTree = "<group>"; };
 		B638188014A179D60027D007 /* ColorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ColorView.h; sourceTree = "<group>"; };
 		B638188114A179D60027D007 /* ColorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ColorView.m; sourceTree = "<group>"; };
 		B66412371480A070003BC8D3 /* EmulatorWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmulatorWindow.h; sourceTree = "<group>"; };
@@ -176,8 +173,6 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
-				B627333912E3FF5B00A14C94 /* ChildMonitor.h */,
-				B627333A12E3FF5B00A14C94 /* ChildMonitor.m */,
 				B61D0D5E125B7ACA001C713B /* NewTerminalWindowController.h */,
 				B61D0D5F125B7ACA001C713B /* NewTerminalWindowController.m */,
 				256AC3D80F4B6AC300CF3369 /* TwoTermAppDelegate.h */,
@@ -448,7 +443,6 @@
 				B612F47112DD5E02005D1B77 /* EmulatorView.mm in Sources */,
 				B612F47412DDEBA9005D1B77 /* Screen_obsolete.cpp in Sources */,
 				B612F47512DDEBA9005D1B77 /* Screen_TextPort.cpp in Sources */,
-				B627333B12E3FF5B00A14C94 /* ChildMonitor.m in Sources */,
 				B68E632A12FF909D00EAFF5F /* ExampleView.m in Sources */,
 				B66412391480A070003BC8D3 /* EmulatorWindow.m in Sources */,
 				B612870E1480B4F6002E04DF /* TermContentView.m in Sources */,

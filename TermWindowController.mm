@@ -10,9 +10,6 @@
 #import "EmulatorView.h"
 #import "CurveView.h"
 
-#import "ChildMonitor.h"
-
-
 #import "VT52.h"
 #import "PTSE.h"
 
@@ -203,7 +200,7 @@
         dispatch_source_set_event_handler(_wait_source, ^{
             
             int status = 0;
-            int ok = waitpid(pid, &status, WNOHANG);
+            waitpid(pid, &status, WNOHANG);
             
             _pid = 0;
             //dispatch_async(dispatch_get_main_queue(), ^(){

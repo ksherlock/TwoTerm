@@ -9,7 +9,6 @@
 #import <Cocoa/Cocoa.h>
 
 #include "Emulator.h"
-#include "ChildMonitor.h"
 
 #include "iGeometry.h"
 
