@@ -470,7 +470,7 @@ enum {
                 {
                     // 0 = line
                     // 1 = column
-                    screen->setCursor(std::max(_parms[1], 1) - 1, std::max(_parms[1],1) - 1);
+                    screen->setCursor(std::max(_parms[1], 1) - 1, std::max(_parms[0],1) - 1);
                 }
                 else screen->setCursor(0, 0);
                 _state = StateText;
