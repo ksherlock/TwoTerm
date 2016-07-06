@@ -471,6 +471,8 @@
 -(void)autoTypeText:(NSString *)text
 {
     
+    if (_fd < 0) return;
+
     NSData *data = [text dataUsingEncoding: NSASCIIStringEncoding allowLossyConversion: YES];
 
     NSUInteger length = [data length];
@@ -753,21 +755,33 @@
 #pragma mark -
 #pragma mark IBActions
 
-
+-(BOOL)validateUserInterfaceItem: (id <NSValidatedUserInterfaceItem>)anItem {
+    
+    SEL cmd = [anItem action];
+    if (cmd == @selector(paste:)) {
+        return _fd >= 1;
+    }
+    if (cmd == @selector(copy:)) return NO;
+    
+    return NO;
+    //return [super validateUserInterfaceItem: anItem];
+}
+//-(BOOL)validateUserInterfaceItem:
 -(IBAction)paste: (id)sender
 {
     NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
     NSArray *classArray = [NSArray arrayWithObject:[NSString class]];
     NSDictionary *options = [NSDictionary dictionary];
 
-    
+    if (_fd < 0) return;
+
     BOOL ok = [pasteboard canReadObjectForClasses:classArray options:options];
 
     if (ok)
     {
         NSArray *objectsToPaste = [pasteboard readObjectsForClasses:classArray options:options];
         NSString *string = [objectsToPaste objectAtIndex: 0];
-        NSLog(@"%@", objectsToPaste);
+        //NSLog(@"%@", objectsToPaste);
         
         [self autoTypeText: string];
         
@@ -809,6 +823,8 @@
     pboard = [sender draggingPasteboard];
  
     
+    if (_fd < 0) return NO;
+
     types = [pboard types];
     
 
