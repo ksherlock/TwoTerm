@@ -389,7 +389,7 @@ enum  {
         
         case StateSetPort3:
             // right
-            _vp[1] = c - 32;
+            _vp[1] = c - 32 + 1;
             _state++;
             break;
         
@@ -402,10 +402,11 @@ enum  {
             // bottom
             // and validation.
             
-            _vp[3] = c - 32;
+            _vp[3] = c - 32 + 1;
             
             _vp[0] = std::max(0, _vp[0]);
             _vp[2] = std::max(0, _vp[2]);
+            
             
             _vp[1] = std::min(80, _vp[1]);
             _vp[3] = std::min(24, _vp[3]);
