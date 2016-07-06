@@ -269,7 +269,7 @@ enum  {
                 {
                     char c = uc;
                     
-                    NSLog(@"%@", event);
+                    //NSLog(@"%@", event);
                     
                     if (flags & NSAlphaShiftKeyMask)
                     {
