@@ -70,11 +70,8 @@
 
 -(void)initPTY
 {
-    int pid;
-    int fd;
     struct termios term;
     struct winsize ws = [_emulator defaultSize];
-    int flags;
     
     memset(&term, 0, sizeof(term));
     
@@ -95,16 +92,16 @@
         [_emulator initTerm: &term];
     
     
-    pid = forkpty(&fd, NULL, &term, &ws);
+    _pid = forkpty(&_fd, NULL, &term, &ws);
     
-    if (pid < 0)
+    if (_pid < 0)
     {
         fprintf(stderr, "forkpty failed\n");
         fflush(stderr);
         
         return;
     }
-    if (pid == 0)
+    if (_pid == 0)
     {
         
         std::vector<const char *> environ;
@@ -153,19 +150,16 @@
         // child
     }
 
-    
-    // non-blocking io.
-    if (fcntl(fd, F_GETFL, &flags) < 0) flags = 0;
-    fcntl(fd, F_SETFL, flags | O_NONBLOCK);
-    
+
     
     [_emulatorView resizeTo: iSize(ws.ws_col, ws.ws_row) animated: NO];
 
-    
+
+    NSWindow *window = [self window];
+
     if (![_emulator resizable])
     {
         
-        NSWindow *window = [self window];
         NSUInteger mask = [window styleMask];
         
         
@@ -173,24 +167,108 @@
         
         [window setStyleMask: mask & ~NSResizableWindowMask];
     }
-    
-    
+
+    [window setMinSize: [window frame].size];
+
+    [_emulatorView setFd: _fd];
+    [self monitor];
+ 
+    /*
     if (!_childMonitor)
     {
         _childMonitor = [ChildMonitor new];
         [_childMonitor setDelegate: _emulatorView];
     }
-    
-    [_childMonitor setChildPID: pid];
-    [_childMonitor setFd: fd];
-    
-    _child = pid;
-    
-    [_emulatorView setFd: fd];
-    //[_emulatorView startBackgroundReader];
-    [_childMonitor start];
+    */
 }
 
+-(void)monitor {
+
+    int fd = _fd;
+    int pid = _pid;
+
+    int flags;
+    // non-blocking io.
+    if (fcntl(_fd, F_GETFL, &flags) < 0) flags = 0;
+    fcntl(_fd, F_SETFL, flags | O_NONBLOCK);
+    
+
+    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+
+    _wait_source = dispatch_source_create(DISPATCH_SOURCE_TYPE_PROC,
+                                              pid, DISPATCH_PROC_EXIT, queue);
+    if (_wait_source)
+    {
+        
+        dispatch_source_set_event_handler(_wait_source, ^{
+            
+            int status = 0;
+            int ok = waitpid(pid, &status, WNOHANG);
+            
+            _pid = 0;
+            //dispatch_async(dispatch_get_main_queue(), ^(){
+            [_emulatorView childFinished: status];
+            //});
+            
+            dispatch_source_cancel(_wait_source);
+            dispatch_release(_wait_source);
+            _wait_source = nullptr;
+        });
+            
+        dispatch_resume(_wait_source);
+    }
+
+    
+    _read_source = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ,
+                                                          fd, 0, queue);
+    if (_read_source)
+    {
+        // Install the event handler
+        dispatch_source_set_event_handler(_read_source, ^{
+
+            static uint8_t sbuffer[1024];
+            size_t estimated = dispatch_source_get_data(_read_source) + 1;
+
+            
+            uint8_t *buffer = estimated > sizeof(sbuffer) ? (uint8_t *)malloc(estimated) : sbuffer;
+            if (buffer)
+            {
+                ssize_t actual;
+                
+                for (;;) {
+                    actual = read(fd, buffer, (estimated));
+                    if (actual < 0) {
+                        if (errno == EINTR || errno == EAGAIN) return;
+                        NSLog(@"read: %s", strerror(errno));
+                        dispatch_source_cancel(_read_source);
+                        dispatch_release(_read_source);
+                        _read_source = nullptr;
+                    }
+                    break;
+                }
+
+                if (actual > 0) [_emulatorView processData: buffer size: actual];
+
+                if (buffer != sbuffer) free(buffer);
+
+                if (actual == 0 && _pid == 0) {
+                    dispatch_source_cancel(_read_source);
+                    dispatch_release(_read_source);
+                    _read_source = nullptr;
+                }
+            }
+        });
+
+        
+        dispatch_source_set_cancel_handler(_read_source, ^{
+            _fd = -1;
+            [_emulatorView setFd: -1];
+            close(fd);
+        });
+        
+        dispatch_resume(_read_source);
+    }
+}
 
 #pragma mark -
 #pragma mark NSWindowDelegate
@@ -305,15 +383,26 @@
 
     [self initPTY];
     
-    [window setMinSize: [window frame].size];
 }
 
 -(void)windowWillClose:(NSNotification *)notification
 {
-    [_childMonitor setDelegate: nil];
-    [_childMonitor cancel];
+    if (_wait_source) {
+        dispatch_source_cancel(_wait_source);
+        dispatch_release(_wait_source);
+    }
     
+    if (_read_source) {
+        dispatch_source_cancel(_read_source);
+        dispatch_release(_read_source);
+    }
+    
+    if (_pid) kill(_pid, 9);
+
     [self autorelease];
 }
 
 @end
+
+
+

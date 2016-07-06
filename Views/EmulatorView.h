@@ -80,7 +80,7 @@ private:
 }
 
 @property (nonatomic, assign) BOOL scanLines;
-@property (nonatomic, assign) int fd;
+@property (atomic, assign) int fd;
 @property (nonatomic, assign) unsigned cursorType;
 
 @property (nonatomic, retain) NSColor *foregroundColor;
@@ -103,12 +103,11 @@ private:
 -(IBAction)copy: (id)sender;
 
 
+-(void)processData: (const uint8_t *)data size: (size_t)size;
+-(void)childFinished: (int)status;
 @end
 
 
-@interface EmulatorView (ChildMonitor) <ChildMonitorDelegate> 
-
-@end
 
 
 @interface EmulatorView (Cursor)

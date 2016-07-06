@@ -448,10 +448,12 @@
 -(void)keyDown:(NSEvent *)theEvent
 {
     //NSLog(@"keyDown:");
-    
+    if (_fd < 0) return;
+
     OutputChannel channel(_fd);
     iRect updateRect; // should be nil but whatever...
     
+    // todo -- after _fd closes, need to block further activity.
     
     
     [NSCursor setHiddenUntilMouseMoves: YES];
@@ -484,8 +486,76 @@
 }
 
 
+-(void)childFinished:(int)status {
+    
+    // called from other thread.
+    
+    NSLog(@"[process complete]");
+    
+    dispatch_async(dispatch_get_main_queue(), ^(){
+        
+        iRect updateRect;
+        
+        [self setCursorType: Screen::CursorTypeNone];
+        //[self stopCursorTimer];
+        //_screen.setCursorType(Screen::CursorTypeNone);
+        
+        _screen.beginUpdate();
+        
+        _screen.setX(0);
+        _screen.incrementY();
+        
+        for (const char *cp = "[Process completed]"; *cp; ++cp)
+        {
+            _screen.putc(*cp);
+        }
+        
+        
+        updateRect = _screen.endUpdate();
+        
+        
+        [self invalidateIRect: updateRect];
+        
+        //[_emulator writeLine: @"[Process completed]"];
+        
+    });
+    
+    
+    
+}
 
+-(void)processData:(const uint8_t *)buffer size:(size_t)size {
 
+    typedef void (*ProcessCharFX)(id, SEL, uint8_t, Screen *, OutputChannel *);
+    
+    ProcessCharFX fx;
+    SEL cmd;
+    OutputChannel channel(_fd);
+    iRect updateRect;
+
+    cmd  =  @selector(processCharacter: screen: output:);
+    fx = (ProcessCharFX)[_emulator methodForSelector: cmd];
+
+    NSAutoreleasePool *pool;
+    pool = [NSAutoreleasePool new];
+    _screen.beginUpdate();
+    
+    
+    for (unsigned i = 0; i < size; ++i)
+    {
+        fx(_emulator,cmd, buffer[i], &_screen, &channel);
+    }
+    
+    updateRect = _screen.endUpdate();
+    
+    dispatch_async(dispatch_get_main_queue(), ^(){
+        
+        [self invalidateIRect: updateRect];
+        
+    });
+    
+    [pool release];
+}
 
 
 -(void)dataAvailable
@@ -794,6 +864,7 @@
 @end
 
 
+#if 0
 @implementation EmulatorView (ChildMonitor)
 
 -(void)childDataAvailable: (ChildMonitor *)monitor
@@ -841,7 +912,7 @@
 }
     
 @end
-
+#endif
 
 
 void ViewScreen::setSize(unsigned width, unsigned height)
