@@ -317,8 +317,8 @@
     
     [_foregroundColor setFill];
 
-    currentFront = _foregroundColor;
-    currentBack = _backgroundColor;
+    //currentFront = _foregroundColor;
+    //currentBack = _backgroundColor;
     
     _screen.lock();
     
