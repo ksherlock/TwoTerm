@@ -147,7 +147,7 @@
     return YES;
 }
 
-
+#if 0
 -(void)drawRect:(NSRect)dirtyRect
 {
     NSRect bounds;
@@ -179,6 +179,7 @@
                          YES);
 
 }
+#endif
 
 -(void)fadeIn
 {

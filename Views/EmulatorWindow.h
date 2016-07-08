@@ -7,16 +7,13 @@
 //
 
 #import <AppKit/AppKit.h>
-@class TitleBarView;
+@class TextLabel;
 
 @interface EmulatorWindow : NSWindow
 {
-    TitleBarView *_titleBarView;
 }
 
-@property (nonatomic, retain) IBOutlet TitleBarView *titleBarView;
-
--(void)adjustTitleBar;
+@property (assign) IBOutlet TextLabel *textLabel;
 
 -(void)setTitleTextColor: (NSColor *)color;
 

@@ -11,18 +11,23 @@
 #define __IGEOMETRY_H__
 
 
-
+#ifdef __cplusplus
+#define equal_zero = 0
+#else
+#define equal_zero
+#endif
 
 typedef struct iSize {
     
-    int width;
-    int height;
+    int width equal_zero;
+    int height equal_zero;
     
 #ifdef __cplusplus
-    iSize() : width(0), height(0) {}
-    iSize(const iSize &aSize) : width(aSize.width), height(aSize.height) {}
+    iSize() = default;
+    iSize(const iSize &) = default;
     iSize(int w, int h) : width(w), height(h) {} 
     
+    iSize &operator=(const iSize &) = default;
 
     bool operator==(const iSize &aSize)
     { return width == aSize.width && height == aSize.height; }
@@ -36,13 +41,15 @@ typedef struct iSize {
 
 typedef struct iPoint {
     
-    int x;
-    int y;
+    int x equal_zero;
+    int y equal_zero;
     
 #ifdef __cplusplus
-    iPoint() : x(0), y(0) {}
-    iPoint(const iPoint &aPoint) : x(aPoint.x), y(aPoint.y) {}
+    iPoint() = default;
+    iPoint(const iPoint &aPoint) = default;
     iPoint(int xx, int yy) : x(xx), y(yy) {} 
+    
+    iPoint &operator=(const iPoint &) = default;
     
     bool operator==(const iPoint &aPoint)
     { return x == aPoint.x && y == aPoint.y; }
@@ -67,10 +74,12 @@ typedef struct iRect {
     iSize size;
     
 #ifdef __cplusplus
-    iRect() {}
-    iRect(const iRect &aRect) : origin(aRect.origin), size(aRect.size) {}
+    iRect() = default;
+    iRect(const iRect &aRect) = default;
     iRect(const iPoint &aPoint, const iSize &aSize) : origin(aPoint), size(aSize) {}
     iRect(int x, int y, int width, int height) : origin(iPoint(x, y)), size(iSize(width, height)) {}
+    
+    iRect &operator=(const iRect &) = default;
     
     bool contains(const iPoint aPoint) const;
     bool contains(const iRect aRect) const;
@@ -100,5 +109,7 @@ typedef struct iRect {
 #endif
     
 } iRect;
+
+#undef equal_zero
 
 #endif

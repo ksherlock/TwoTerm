@@ -9,6 +9,7 @@
 #import "TermWindowController.h"
 #import "EmulatorView.h"
 #import "CurveView.h"
+#import "EmulatorWindow.h"
 
 #import "VT52.h"
 #import "PTSE.h"
@@ -31,7 +32,7 @@
 
 @synthesize emulator = _emulator;
 @synthesize emulatorView = _emulatorView;
-@synthesize curveView = _curveView;
+@synthesize colorView = _colorView;
 
 @synthesize parameters = _parameters;
 
@@ -44,7 +45,7 @@
 {
     [_emulator release];
     [_emulatorView release];
-    [_curveView release];
+    [_colorView release];
 
     [_parameters release];
 
@@ -61,6 +62,8 @@
 
 -(void)initPTY
 {
+    static std::string username;
+
     struct termios term;
     struct winsize ws = [_emulator defaultSize];
     
@@ -83,6 +86,11 @@
         [_emulator initTerm: &term];
     
     
+    // getlogin() sometimes returns crap.
+    if (username.empty()) {
+        username = [NSUserName() UTF8String];
+    }
+    //NSLog(@"%@ %s %s", NSUserName(), getlogin(), getpwent()->pw_name);
     _pid = forkpty(&_fd, NULL, &term, &ws);
     
     if (_pid < 0)
@@ -131,9 +139,9 @@
         
         
         // TODO -- option for localhost, telnet, ssh, etc.
-        execle("/usr/bin/login", "login", "-pf", getlogin(), NULL, &environ[0]);
+        execle("/usr/bin/login", "login", "-pf", username.c_str(), NULL, &environ[0]);
         
-        fprintf(stderr, "execle failed\n");
+        fprintf(stderr, "execle failed: %s\n", strerror(errno));
         fflush(stderr);
         
         // should not call exit.
@@ -194,8 +202,13 @@
         dispatch_source_set_event_handler(_wait_source, ^{
             
             int status = 0;
-            waitpid(pid, &status, WNOHANG);
-            
+            int ok;
+            for(;;) {
+                ok = waitpid(pid, &status, WNOHANG);
+                if (ok >= 0) break;
+                if (errno == EINTR) continue;
+                break;
+            }
             _pid = 0;
             //dispatch_async(dispatch_get_main_queue(), ^(){
             [_emulatorView childFinished: status];
@@ -229,7 +242,13 @@
                 for (;;) {
                     actual = read(fd, buffer, (estimated));
                     if (actual < 0) {
-                        if (errno == EINTR || errno == EAGAIN) return;
+                        if (errno == EINTR) continue;
+
+                        if (errno == EAGAIN) {
+                            if (buffer != sbuffer) free(buffer);
+                            return;
+                        }
+
                         NSLog(@"read: %s", strerror(errno));
                         dispatch_source_cancel(_read_source);
                         dispatch_release(_read_source);
@@ -242,7 +261,8 @@
 
                 if (buffer != sbuffer) free(buffer);
 
-                if (actual == 0 && _pid == 0) {
+                if (actual == 0) {
+                    NSLog(@"closing fd");
                     dispatch_source_cancel(_read_source);
                     dispatch_release(_read_source);
                     _read_source = nullptr;
@@ -308,69 +328,21 @@
     [self didChangeValueForKey: @"emulator"];
 
     [window setBackgroundColor: backgroundColor];
+    [(EmulatorWindow *)window setTitleTextColor: foregroundColor];
 
     [_emulatorView setEmulator: _emulator];
     [_emulatorView setForegroundColor: foregroundColor];
     [_emulatorView setBackgroundColor: backgroundColor];
     //[_emulatorView setScanLines: scanLines];
     
-    [_curveView setColor: backgroundColor];
+    [_colorView setColor: backgroundColor];
     
     o = [_parameters objectForKey: kContentFilters];
     if (o)
     {
-        //CALayer *layer;
-        [_curveView setWantsLayer: YES];
-        
-        /*
-        CGColorRef color;
-        
-        color = CGColorCreateGenericRGB(1.0, 0.0, 0.0, 1.0);
-        
-        layer = [_curveView layer];
-        [layer setCornerRadius: 20.0];
-        [layer setBorderWidth: 4.0];
-        [layer setBorderColor: color];
-        [layer setBackgroundColor: color];
-        
-        [layer setBackgroundFilters: (NSArray *)o];
-        
-        CGColorRelease(color);
-        */
-        [_curveView setContentFilters: (NSArray *)o];
-        
-        /*
-        CALayer *layer;
-        CGColorRef color;
-        
-        color = CGColorCreateGenericRGB(1.0, 0.0, 0.0, 1.0);        
-        layer = [CALayer layer];
-        [layer setFrame: CGRectMake(100, 100, 100, 100)];
-        [layer setBackgroundColor: color];
-        [layer setBackgroundFilters: nil];
-        
-        CGColorRelease(color);
-        
-        [[_curveView layer] addSublayer: layer];
-        
-        NSLog(@"%@", [layer backgroundFilters]);
-        NSLog(@"%@", [[_curveView layer] backgroundFilters]);
-        */
+        [_colorView setWantsLayer: YES];
+        [_colorView setContentFilters: (NSArray *)o];
     }
-    
-    /*
-    NSShadow *shadow;
-    shadow = [[NSShadow alloc] init];
-    [shadow setShadowColor:[NSColor blackColor]];
-    [shadow setShadowOffset: NSZeroSize];
-    [shadow setShadowBlurRadius: 10.0];
-    
-    [_curveView setShadow: shadow];
-    [shadow release];
-    */
-    
-    //[_curveView initScanLines];
-    //[_curveView setColor: [NSColor blueColor]];
 
     [self initPTY];
     
@@ -378,6 +350,8 @@
 
 -(void)windowWillClose:(NSNotification *)notification
 {
+
+
     if (_wait_source) {
         dispatch_source_cancel(_wait_source);
         dispatch_release(_wait_source);
@@ -388,7 +362,18 @@
         dispatch_release(_read_source);
     }
     
-    if (_pid) kill(_pid, 9);
+    int status;
+    int ok;
+    if (_pid) {
+        kill(_pid, 9);
+        for(;;) {
+            ok = waitpid(_pid, &status, 0);
+            if (ok >= 0) break;
+            if (errno == EINTR) continue;
+            perror("waitpid: ");
+            break;
+        }
+    }
 
     [self autorelease];
 }

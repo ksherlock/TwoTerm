@@ -153,7 +153,7 @@
     _charHeight = 16;
     
     _paddingLeft = 8;
-    _paddingTop = 24;
+    _paddingTop = 8;
     _paddingBottom = 8;
     
     
@@ -252,6 +252,9 @@
     return YES;
 }
 
+-(BOOL)isOpaque {
+    return NO;
+}
 
 -(void)viewDidMoveToWindow
 {
@@ -497,7 +500,7 @@
     
     // called from other thread.
     
-    NSLog(@"[process complete]");
+    //NSLog(@"[process complete]");
     
     dispatch_async(dispatch_get_main_queue(), ^(){
         

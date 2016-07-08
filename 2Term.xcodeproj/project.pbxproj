@@ -53,6 +53,7 @@
 		B6C704F015CCC64100CC0401 /* titlebar-left@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C704ED15CCC64100CC0401 /* titlebar-left@2x.png */; };
 		B6C704F115CCC64100CC0401 /* titlebar-right@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C704EE15CCC64100CC0401 /* titlebar-right@2x.png */; };
 		B6EBE2B511E0EA9100EA0458 /* CharacterGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EBE2B411E0EA9100EA0458 /* CharacterGenerator.m */; };
+		B6ECFF271D2EEA2B00871A81 /* TextLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = B6ECFF261D2EEA2B00871A81 /* TextLabel.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXBuildRule section */
@@ -155,6 +156,8 @@
 		B6C704EE15CCC64100CC0401 /* titlebar-right@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titlebar-right@2x.png"; sourceTree = "<group>"; };
 		B6EBE2B311E0EA9100EA0458 /* CharacterGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CharacterGenerator.h; sourceTree = "<group>"; };
 		B6EBE2B411E0EA9100EA0458 /* CharacterGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CharacterGenerator.m; sourceTree = "<group>"; };
+		B6ECFF251D2EEA2B00871A81 /* TextLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextLabel.h; sourceTree = "<group>"; };
+		B6ECFF261D2EEA2B00871A81 /* TextLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextLabel.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -317,6 +320,8 @@
 				B612870D1480B4F6002E04DF /* TermContentView.m */,
 				B61EF7CA14815E07008C1891 /* TitleBarView.h */,
 				B61EF7CB14815E07008C1891 /* TitleBarView.m */,
+				B6ECFF251D2EEA2B00871A81 /* TextLabel.h */,
+				B6ECFF261D2EEA2B00871A81 /* TextLabel.m */,
 				B638188014A179D60027D007 /* ColorView.h */,
 				B638188114A179D60027D007 /* ColorView.m */,
 			);
@@ -428,6 +433,7 @@
 				B60EBDE311E90FC300C1974F /* ScanLineFilter.m in Sources */,
 				B61D0D60125B7ACA001C713B /* NewTerminalWindowController.m in Sources */,
 				B61D0D69125B8E06001C713B /* Defaults.m in Sources */,
+				B6ECFF271D2EEA2B00871A81 /* TextLabel.m in Sources */,
 				B612F45012DD5DAD005D1B77 /* iGeometry.cpp in Sources */,
 				B612F45112DD5DAD005D1B77 /* Lock.cpp in Sources */,
 				B612F45212DD5DAD005D1B77 /* OutputChannel.cpp in Sources */,

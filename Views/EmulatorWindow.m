@@ -7,13 +7,26 @@
 //
 
 #import "EmulatorWindow.h"
-#import "TitleBarView.h"
+#import "TextLabel.h"
 
 @implementation EmulatorWindow
 
-@synthesize titleBarView = _titleBarView;
+@synthesize textLabel = _textLabel;
 
--(id)initWithContentRect:(NSRect)contentRect 
+-(void)commonInit {
+    
+    [self setTitleVisibility: NSWindowTitleHidden];
+    [self setTitlebarAppearsTransparent: YES];
+    
+    [self setOpaque: NO];
+    [self setAlphaValue: 1.0];
+    
+    // resize in 2.0 height increments to prevent jittering the scan lines.
+    [self setResizeIncrements: NSMakeSize(1.0, 2.0)];
+    [self setMovableByWindowBackground: YES];
+}
+
+-(id)initWithContentRect:(NSRect)contentRect
                styleMask:(NSUInteger)styleMask 
                  backing:(NSBackingStoreType)bufferingType 
                    defer:(BOOL)flag
@@ -24,21 +37,7 @@
                                    backing: bufferingType 
                                      defer: flag]))
     {
-        
-        [self setOpaque: NO];
-        [self setAlphaValue: 1.0];
-        
-        [self setTitleVisibility: NSWindowTitleVisible];
-        
-        // resize in 2.0 height increments to prevent jittering the scan lines.
-        [self setResizeIncrements: NSMakeSize(1.0, 2.0)];
-        [self setMovableByWindowBackground: YES];
-
-        
-        //[self setBackgroundColor: [NSColor clearColor]];
-        //[self setHasShadow: NO];
-        //[self setHasShadow: YES];
-        
+        [self commonInit];
     }
     
     return self;
@@ -58,19 +57,7 @@
                                      defer: flag 
                                     screen: screen]))
     {
-
-        [self setTitleVisibility: NSWindowTitleVisible];
-
-        
-        [self setOpaque: NO];
-        [self setAlphaValue: 1.0];
-        [self setResizeIncrements: NSMakeSize(1.0, 2.0)];
-        [self setMovableByWindowBackground: YES];
-
-        //[self setBackgroundColor: [NSColor clearColor]];
-        //[self setHasShadow: NO];
-        //[self setHasShadow: YES];
-        
+        [self commonInit];
     }
     
     return self;
@@ -79,83 +66,29 @@
 
 -(void)dealloc
 {
-    [_titleBarView release];
     [super dealloc];
 }
 
 -(void)setTitle:(NSString *)aString
 {
     [super setTitle: aString];
-    [_titleBarView setTitle: aString];
+    [_textLabel setText: aString];
+
 }
 
 -(void)setTitleTextColor: (NSColor *)color
 {
-    [_titleBarView setTextColor: color];
+    [_textLabel setColor: color];
 }
 -(void)setBackgroundColor:(NSColor *)color
 {
-    //NSLog(@"%@", color);
     [super setBackgroundColor: color];
-    [_titleBarView setBackgroundColor: color];
-    [_titleBarView setTextColor: [NSColor greenColor]];
 }
 
 -(void)awakeFromNib
 {
-    //[self adjustTitleBar];
-    [self setAppearance: [NSAppearance appearanceNamed: NSAppearanceNameVibrantDark]];
-    [self setTitleVisibility: NSWindowTitleVisible];
-    [self setTitlebarAppearsTransparent: YES];
     
-    //[NSApp addWindowsItem: self title: @"Window Title" filename: NO];
-    //[self setHasShadow: YES];
-}
-/*
--(BOOL)canBecomeKeyWindow {
-    return YES;
-}
-
--(BOOL)canBecomeMainWindow {
-    return YES;
-}
-
--(BOOL)isExcludedFromWindowsMenu {
-    return NO;
-}
-*/
-
--(void)adjustTitleBar
-{
-        
-    NSView *themeView;
-    NSArray *array;
-    
-    themeView = [[self contentView] superview];
-    
-    NSLog(@"%@", themeView);
-    
-    NSLog(@"%u", (int)[_titleBarView retainCount]);
- 
-    [_titleBarView setBackgroundColor: [NSColor blackColor]];
-    
-    [_titleBarView setFrame: [themeView bounds]];
-    [_titleBarView setTitle: [self title]];
-    
-    NSLog(@"%@", [self title]);
-    
-    array = [themeView subviews];
-    
-    NSLog(@"%@", array);
-    
-    [themeView addSubview: _titleBarView 
-               positioned: NSWindowBelow 
-               relativeTo: [array objectAtIndex: 0]];
-    
-
-    array = [themeView subviews];
-    
-    NSLog(@"%@", array);
+    [_textLabel setText: [self title]];
 
 }
 

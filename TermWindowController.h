@@ -10,7 +10,7 @@
 
 
 @class EmulatorView;
-@class CurveView;
+@class ColorView;
 
 @protocol  Emulator;
     
@@ -19,13 +19,11 @@
     NSDictionary *_parameters;
     
     EmulatorView *_emulatorView;
-    CurveView *_curveView;
+    ColorView *_colorView;
     
     
     
     NSObject <Emulator> *_emulator;
-    
-    int _child;
     
     int _fd;
     pid_t _pid;
@@ -38,7 +36,7 @@
 @property (nonatomic, retain) NSDictionary *parameters;
 
 @property (nonatomic, retain) IBOutlet EmulatorView *emulatorView;
-@property (nonatomic, retain) IBOutlet CurveView *curveView;
+@property (nonatomic, retain) IBOutlet ColorView *colorView;
 
 @property (nonatomic, retain) NSObject<Emulator> *emulator;
 
