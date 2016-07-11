@@ -39,7 +39,12 @@ extern "C" unsigned EventCharacters(NSEvent *event, std::u32string &rv);
 
 @protocol Emulator
 
+@optional
 -(void)processCharacter: (uint8_t)c screen: (Screen *)screen output: (OutputChannel *)output;
+-(void)processData: (const uint8_t *)data length: (size_t)length screen: (Screen *)screen output: (OutputChannel *)output;
+
+@required
+
 -(void)keyDown: (NSEvent *)event screen: (Screen *)screen output: (OutputChannel *)output;
 
 -(void)reset;

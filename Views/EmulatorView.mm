@@ -538,40 +538,59 @@
 
     typedef void (*ProcessCharFX)(id, SEL, uint8_t, Screen *, OutputChannel *);
     
-    ProcessCharFX fx;
-    SEL cmd;
     OutputChannel channel(_fd);
     iRect updateRect;
 
-    cmd  =  @selector(processCharacter: screen: output:);
-    fx = (ProcessCharFX)[_emulator methodForSelector: cmd];
-
+    
 #if 0
     FILE *debug = fopen("/tmp/debug.txt", "a");
     fwrite(buffer, 1, size, debug);
     fflush(debug);
     fclose(debug);
 #endif
-
-    NSAutoreleasePool *pool;
-    pool = [NSAutoreleasePool new];
-    _screen.beginUpdate();
     
     
-    for (unsigned i = 0; i < size; ++i)
-    {
-        fx(_emulator,cmd, buffer[i], &_screen, &channel);
+    
+    if ([_emulator respondsToSelector: @selector(processData:length:screen:output:)]) {
+        
+        @autoreleasepool {
+            
+            _screen.beginUpdate();
+            [_emulator processData: buffer length: size screen: &_screen output: &channel];
+            updateRect = _screen.endUpdate();
+            
+            dispatch_async(dispatch_get_main_queue(), ^(){
+                
+                [self invalidateIRect: updateRect];
+                
+            });
+        
+        }
+        return;
     }
     
-    updateRect = _screen.endUpdate();
-    
-    dispatch_async(dispatch_get_main_queue(), ^(){
+    @autoreleasepool {
         
-        [self invalidateIRect: updateRect];
+        SEL cmd  =  @selector(processCharacter: screen: output:);
+        ProcessCharFX fx = (ProcessCharFX)[_emulator methodForSelector: cmd];
         
-    });
-    
-    [pool release];
+        _screen.beginUpdate();
+        
+        
+        for (unsigned i = 0; i < size; ++i)
+        {
+            fx(_emulator, cmd, buffer[i], &_screen, &channel);
+        }
+        
+        updateRect = _screen.endUpdate();
+        
+        dispatch_async(dispatch_get_main_queue(), ^(){
+            
+            [self invalidateIRect: updateRect];
+            
+        });
+
+    }
 }
 
 
