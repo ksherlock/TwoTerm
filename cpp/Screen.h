@@ -19,11 +19,11 @@
 
 typedef struct CharInfo {
     
-    CharInfo() : c(0), flag(0) {}
+    CharInfo() = default;
     CharInfo(uint8_t cc, uint8_t ff) : c(cc), flag(ff) {}
     
-    uint8_t c;
-    uint8_t flag;
+    uint8_t c = 0;
+    uint8_t flag = 0;
     
 } CharInfo;
 
@@ -42,15 +42,15 @@ typedef struct TextPort {
     iPoint cursor;
 
 
-    MarginBehavior leftMargin;
-    MarginBehavior rightMargin;
+    MarginBehavior leftMargin = MarginTruncate;
+    MarginBehavior rightMargin = MarginTruncate;
     
-    bool advanceCursor;
-    bool scroll;
+    bool advanceCursor = true;
+    bool scroll = true;
     
     // clamp setCursor calls.
-    bool clampX;
-    bool clampY;
+    bool clampX = true;
+    bool clampY = true;
     
     
     iPoint absoluteCursor() const;
@@ -141,6 +141,7 @@ public:
     
     void putc(uint8_t c, bool incrementX = true);
     void putc(TextPort *textPort, uint8_t c);
+    void putc(TextPort *textPort, uint8_t c, uint8_t flags);
     
     
     CharInfo getc(int x, int y) const;
@@ -282,7 +283,7 @@ inline void Screen::unlock()
 
 inline CharInfo Screen::getc(int x, int y) const
 {
-    if (x < 0 || y < 0) return CharInfo(0,0);
+    if (x < 0 || y < 0) return CharInfo();
     if (x >= width() || y >= height()) return CharInfo(0,0);
     
     return _screen[y][x];

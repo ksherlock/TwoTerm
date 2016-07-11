@@ -99,9 +99,12 @@ void Screen::clearFlagBit(uint8_t bit)
 
 
 
-
-
 void Screen::putc(TextPort *textPort, uint8_t c)
+{
+    putc(textPort, c, _flag);
+}
+
+void Screen::putc(TextPort *textPort, uint8_t c, uint8_t flag)
 {
     /*
      * textport must be valid.
@@ -119,14 +122,14 @@ void Screen::putc(TextPort *textPort, uint8_t c)
         if (textPort->rightMargin == TextPort::MarginOverwrite)
         {
             _updates.push_back(cursor);
-            _screen[cursor.y][cursor.x] = CharInfo(c, _flag);
+            _screen[cursor.y][cursor.x] = CharInfo(c, flag);
             return;
         }
         //if (textPort->rightMargin == TextPort::MarginWrap)
     }
 
     _updates.push_back(cursor);
-    _screen[cursor.y][cursor.x] = CharInfo(c, _flag);
+    _screen[cursor.y][cursor.x] = CharInfo(c, flag);
         
     if (textPort->advanceCursor)
     {
