@@ -1,0 +1,408 @@
+//
+//  GSOSConsole.m
+//  2Term
+//
+//  Created by Kelvin Sherlock on 7/9/2016.
+//
+//
+
+#import "GSOSConsole.h"
+
+#include "OutputChannel.h"
+#include "Screen.h"
+
+%%{
+    machine console;
+    alphtype unsigned int;
+    
+    action nop {}
+    
+    arg1 = any ${ _scratch[0] = (fc - 32) & 0xff; };
+    arg2 = any ${ _scratch[1] = (fc - 32) & 0xff; };
+    arg3 = any ${ _scratch[2] = (fc - 32) & 0xff; };
+    arg4 = any ${ _scratch[3] = (fc - 32) & 0xff; };
+    
+    main := (
+               0x00 $nop
+             | 0x01 ${
+                 /* save current textport and reset text port to default. */
+                 
+                 _tpStack.push_back(_textPort);
+                 // todo -- consLF, consDLE?
+                 _textPort = TextPort();
+             
+             }
+
+             | 0x02 arg1 arg2 arg3 arg4 ${
+                 /* set the current text port */
+
+                 // left, top, right, bottom
+
+                 _scratch[0] = std::max(_scratch[0], 0u);
+                 _scratch[1] = std::max(_scratch[1], 0u);
+
+                 _scratch[2] = std::max(_scratch[2]+1, 80u);
+                 _scratch[3] = std::max(_scratch[3]+1, 24u);
+
+                 
+                 
+                 iRect r(_scratch[0],
+                         _scratch[1],
+                         _scratch[2] - _scratch[0],
+                         _scratch[3] - _scratch[1]
+                         );
+
+                 _textPort.frame = r;
+
+                 screen->setCursor(&_textPort, _scratch[0], _scratch[1]);
+             }
+
+             | 0x03 ${
+                 /* clear from beginning of line */
+                 // todo -- should also include the cursor.
+                 screen->erase(&_textPort, Screen::EraseLineBeforeCursor);
+             }
+
+             | 0x04 ${
+                 /* pop text port */
+             
+                 if (!_tpStack.empty()) {
+                     _textPort = _tpStack.back();
+                     _tpStack.pop_back();
+                 } else {
+                     _textPort = TextPort();
+                 }
+             
+             }
+
+             | 0x05 any ${
+                 /* horizontal scroll */
+                 int8_t n = fc;
+                 // ....
+             }
+
+             | 0x06 any ${
+                 /* set vertical position */
+                 unsigned n = fc - 32;
+                 screen->setY(&_textPort, n);
+             }
+
+             | 0x07 ${
+                 NSBeep();
+             }
+
+             | 0x08 ${
+                 /* back space */
+                 screen->decrementX(&_textPort);
+             }
+
+             | 0x09 $nop
+
+             | 0x0a ${
+                 /* line feed */
+                 screen->lineFeed(&_textPort);
+             }
+
+             | 0x0b ${
+                 /* clear to end of text port */
+                 /* actually sets them to consFill */
+                 screen->erase(&_textPort, Screen::EraseAfterCursor);
+             }
+
+             
+             | 0x0c ${
+                 /* clear text port and home */
+                 screen->erase(&_textPort, Screen::EraseAll);
+                 screen->setCursor(&_textPort, 0, 0);
+             }
+
+             | 0x0d ${
+                 /* carriage return */
+                 screen->setX(&_textPort, 0);
+                 
+                 if (_consLF) {
+                     screen->lineFeed(&_textPort);
+                 }
+                
+             }
+
+             | 0x0e ${
+                 /* set normal display */
+                 screen->clearFlagBit(Screen::FlagInverse);
+             }
+             
+             | 0x0f ${
+                 /* set inverse display */
+                 screen->setFlagBit(Screen::FlagInverse);
+             }
+
+             | 0x10 any ${
+                /* DLE expansion */
+                if (_consDLE) {
+                    unsigned count = (fc - 0x20) & 0xff;
+                    while (count--) screen->putc(&_textPort, ' ');
+                }
+                else { fhold; }
+            }
+
+             | 0x11 ${ /* 40 column mode */ }
+             | 0x12 ${ /* 80 column mode */ }
+
+             | 0x13 ${
+                 /* clear from beginning of text port */
+                 screen->erase(&_textPort, Screen::EraseBeforeCursor);
+                 // todo -- clears up to and including cursor location!
+             }
+
+             | 0x14 any ${
+                 /* set horizontal position */
+                 screen->setX(&_textPort, fc - 0x20);
+             }
+             
+             | 0x15 any ${
+                 /* set cursor movement */
+                 unsigned flags = fc;
+                 _textPort.advanceCursor = flags & 0x01;
+                 _consLF = flags & 0x02;
+                 if (flags & 0x04) {
+                     _textPort.leftMargin = TextPort::MarginWrap;
+                     _textPort.rightMargin = TextPort::MarginWrap;
+                 } else {
+                     _textPort.leftMargin = TextPort::MarginTruncate;
+                     _textPort.rightMargin = TextPort::MarginTruncate;
+                 }
+                 _textPort.scroll = flags & 0x08;
+
+                 _consDLE = flags & 0x10;
+             }
+
+             | 0x16 ${ /* scroll down 1 line */ }
+
+             | 0x17 ${ /* scroll up one line */ }
+
+             | 0x18 ${
+                 /* disable mouse text */
+                 screen->clearFlagBit(Screen::FlagMouseText);
+             }
+
+             | 0x19 ${
+                 /* home cursor */
+                 screen->setCursor(&_textPort, 0, 0);
+             }
+
+             | 0x1a ${
+                 /* clear line */
+                 screen->erase(&_textPort, Screen::EraseLineAll);
+                 screen->setX(&_textPort, 0);
+             }
+
+             | 0x1b ${
+                 /* enable mouse text mapping */
+                 screen->setFlagBit(Screen::FlagMouseText);
+             }
+
+             | 0x1c ${
+                 /* move cursor right */
+                 screen->incrementX(&_textPort);
+             }
+
+             | 0x1d ${
+                 /* clear to end of line */
+                 screen->erase(&_textPort, Screen::EraseLineAfterCursor);
+             }
+
+             | 0x1e arg1 arg2
+                ${ /* goto x y */
+                    iPoint dca;
+                    dca.x = _scratch[0];
+                    dca.y = _scratch[1];
+                    screen->setCursor(&_textPort, dca);
+                }
+
+             | 0x1f ${
+                 /* move cursor up */
+                 screen->reverseLineFeed(&_textPort);
+             }
+
+             | 0x20 .. 0x7f ${
+                 screen->putc(&_textPort, fc);
+             }
+
+             | 0x80 .. 0x9f ${
+                 /* uppercase inverse/normal */
+                 uint8_t flag = ~(screen->flag() & Screen::FlagInverse);
+                 screen->putc(&_textPort, fc - 0x40, flag);
+             }
+
+             | 0xa0 .. 0xbf ${
+                 /* special inverse/normal */
+                 uint8_t flag = ~(screen->flag() & Screen::FlagInverse);
+                 screen->putc(&_textPort, fc - 0x80, flag);
+             }
+
+             | 0xc0 .. 0xdf ${
+                 /* uppercase normal / mouse text. */
+                 uint8_t flag = ~(screen->flag() & Screen::FlagInverse);
+                 if (flag) flag |= Screen::FlagMouseText;
+                 screen->putc(&_textPort, fc - 0x80, flag);
+             }
+
+             | 0xe0 .. 0xff ${
+                 /* special inverse/normal */
+                 uint8_t flag = ~(screen->flag() & Screen::FlagInverse);
+                 screen->putc(&_textPort, fc - 0x80, flag);
+             }
+             
+    )* $err{ fgoto main; };
+    
+    write data;
+}%%
+
+@implementation GSOSConsole
+
++(void)load
+{
+    [EmulatorManager registerClass: self];
+}
+
++(NSString *)name
+{
+    return @"GS/OS Console";
+}
+
+-(NSString *)name
+{
+    return @"GS/OS Console";
+}
+
+-(const char *)termName
+{
+    return "gsos-console";
+}
+
+
+
+-(BOOL)resizable
+{
+    return NO;
+}
+
+-(struct winsize)defaultSize
+{
+    struct winsize ws = { 24, 80, 0, 0 };
+    
+    return ws;
+}
+
+-(void)initTerm: (struct termios *)term
+{
+    // Control-U is used by the up-arrow key.
+    term->c_cc[VKILL] = CTRL('X');
+}
+
+-(id)init
+{
+    if ((self = [super init]))
+    {
+        [self reset];
+    }
+    
+    return self;
+}
+
+-(void)reset
+{
+    
+    %%write init;
+    
+    _textPort.frame = iRect(0, 0, 80, 24);
+    _textPort.cursor = iPoint(0,0);
+    
+    _textPort.scroll = true;
+    _textPort.advanceCursor = true;
+    _textPort.leftMargin = TextPort::MarginWrap;
+    _textPort.rightMargin = TextPort::MarginWrap;
+    
+    _cursorType = Screen::CursorTypeUnderscore;
+    _consLF = true;
+    _consDLE = true;
+    
+    // set flags to plain text.
+}
+
+-(void)processData:(const uint8_t *)data length: (size_t)length screen:(Screen *)screen output:(OutputChannel *)output
+{
+ 
+    const uint8_t *eof = nullptr;
+    const uint8_t *p = data;
+    const uint8_t *pe = data + length;
+
+    %%write exec;
+
+}
+
+-(void)keyDown:(NSEvent *)event screen:(Screen *)screen output:(OutputChannel *)output
+{
+    NSEventModifierFlags flags = [event modifierFlags];
+    NSString *chars = [event charactersIgnoringModifiers];
+    
+    NSUInteger length = [chars length];
+    
+    for (unsigned i = 0; i < length; ++i)
+    {
+        unichar uc = [chars characterAtIndex: i];
+        
+        switch (uc)
+        {
+            case NSEnterCharacter:
+                output->write(CTRL('M'));
+                break;
+                
+            // todo -- verify...
+#if 0
+             case NSDeleteCharacter:
+                 output->write(0x7f);
+                 break;
+#endif
+                
+                // todo -- verify...
+            case NSBackspaceCharacter:
+                output->write(0x7f);
+                break;
+                
+            case NSLeftArrowFunctionKey:
+                output->write(CTRL('H'));
+                break;
+                
+            case NSRightArrowFunctionKey:
+                output->write(CTRL('U'));
+                break;
+                
+            case NSUpArrowFunctionKey:
+                output->write(CTRL('K'));
+                break;
+                
+            case NSDownArrowFunctionKey:
+                output->write(CTRL('J'));
+                break;
+                
+                
+            default:
+                if (uc <= 0x7f)
+                {
+                    char c = uc;
+                    if (flags & (NSShiftKeyMask | NSAlphaShiftKeyMask))
+                    {
+                        c = toupper(c);
+                    }
+                    if (flags & NSControlKeyMask)
+                        c = CTRL(c);
+                    
+                    output->write(c);
+                }
+                break;
+        }
+    }
+}
+
+@end
