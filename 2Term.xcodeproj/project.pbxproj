@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1DDD58140DA1D0A300B32029 /* MainMenu.xib */; };
-		256AC3DA0F4B6AC300CF3369 /* TwoTermAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 256AC3D90F4B6AC300CF3369 /* TwoTermAppDelegate.m */; };
+		256AC3DA0F4B6AC300CF3369 /* TwoTermAppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 256AC3D90F4B6AC300CF3369 /* TwoTermAppDelegate.mm */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -31,7 +31,7 @@
 		B612F47112DD5E02005D1B77 /* EmulatorView.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F46F12DD5E02005D1B77 /* EmulatorView.mm */; };
 		B612F47412DDEBA9005D1B77 /* Screen_obsolete.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B612F47212DDEBA9005D1B77 /* Screen_obsolete.cpp */; };
 		B612F47512DDEBA9005D1B77 /* Screen_TextPort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B612F47312DDEBA9005D1B77 /* Screen_TextPort.cpp */; };
-		B61D0D60125B7ACA001C713B /* NewTerminalWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = B61D0D5F125B7ACA001C713B /* NewTerminalWindowController.m */; };
+		B61D0D60125B7ACA001C713B /* NewTerminalWindowController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B61D0D5F125B7ACA001C713B /* NewTerminalWindowController.mm */; };
 		B61D0D69125B8E06001C713B /* Defaults.m in Sources */ = {isa = PBXBuildFile; fileRef = B61D0D68125B8E06001C713B /* Defaults.m */; };
 		B61EF7C51481561E008C1891 /* titlebar-corner.png in Resources */ = {isa = PBXBuildFile; fileRef = B61EF7C31481561E008C1891 /* titlebar-corner.png */; };
 		B61EF7C61481561E008C1891 /* titlebar-middle.png in Resources */ = {isa = PBXBuildFile; fileRef = B61EF7C41481561E008C1891 /* titlebar-middle.png */; };
@@ -49,10 +49,11 @@
 		B67B3CE612B6FA040033AE07 /* a2-charset-80.png in Resources */ = {isa = PBXBuildFile; fileRef = B67B3CE412B6FA040033AE07 /* a2-charset-80.png */; };
 		B6801BD912EB549300B22E9E /* vt100-charset.png in Resources */ = {isa = PBXBuildFile; fileRef = B6801BD812EB549300B22E9E /* vt100-charset.png */; };
 		B68E632A12FF909D00EAFF5F /* ExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = B68E632912FF909C00EAFF5F /* ExampleView.m */; };
+		B6C173921D31D2B80024E360 /* GSOSConsole.mm.ragel in Sources */ = {isa = PBXBuildFile; fileRef = B6C173911D31D2B80024E360 /* GSOSConsole.mm.ragel */; };
 		B6C704EF15CCC64100CC0401 /* titlebar-center@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C704EC15CCC64100CC0401 /* titlebar-center@2x.png */; };
 		B6C704F015CCC64100CC0401 /* titlebar-left@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C704ED15CCC64100CC0401 /* titlebar-left@2x.png */; };
 		B6C704F115CCC64100CC0401 /* titlebar-right@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C704EE15CCC64100CC0401 /* titlebar-right@2x.png */; };
-		B6EBE2B511E0EA9100EA0458 /* CharacterGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = B6EBE2B411E0EA9100EA0458 /* CharacterGenerator.m */; };
+		B6EBE2B511E0EA9100EA0458 /* CharacterGenerator.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6EBE2B411E0EA9100EA0458 /* CharacterGenerator.mm */; };
 		B6ECFF271D2EEA2B00871A81 /* TextLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = B6ECFF261D2EEA2B00871A81 /* TextLabel.m */; };
 /* End PBXBuildFile section */
 
@@ -64,6 +65,17 @@
 			isEditable = 1;
 			outputFiles = (
 			);
+		};
+		B6C173931D32A8840024E360 /* PBXBuildRule */ = {
+			isa = PBXBuildRule;
+			compilerSpec = com.apple.compilers.proxy.script;
+			filePatterns = "*.mm.ragel";
+			fileType = pattern.proxy;
+			isEditable = 1;
+			outputFiles = (
+				"$(DERIVED_SOURCES_DIR)/$(INPUT_FILE_BASE)",
+			);
+			script = "ragel -G1 -o \"$DERIVED_SOURCES_DIR/$INPUT_FILE_BASE\" \"$INPUT_FILE_DIR/$INPUT_FILE_NAME\"";
 		};
 /* End PBXBuildRule section */
 
@@ -85,7 +97,7 @@
 		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		1DDD58150DA1D0A300B32029 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		256AC3D80F4B6AC300CF3369 /* TwoTermAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TwoTermAppDelegate.h; sourceTree = "<group>"; };
-		256AC3D90F4B6AC300CF3369 /* TwoTermAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TwoTermAppDelegate.m; sourceTree = "<group>"; };
+		256AC3D90F4B6AC300CF3369 /* TwoTermAppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = TwoTermAppDelegate.mm; sourceTree = "<group>"; };
 		256AC3F00F4B6AF500CF3369 /* TwoTerm_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TwoTerm_Prefix.pch; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
@@ -127,7 +139,7 @@
 		B612F47212DDEBA9005D1B77 /* Screen_obsolete.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Screen_obsolete.cpp; sourceTree = "<group>"; };
 		B612F47312DDEBA9005D1B77 /* Screen_TextPort.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Screen_TextPort.cpp; sourceTree = "<group>"; };
 		B61D0D5E125B7ACA001C713B /* NewTerminalWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewTerminalWindowController.h; sourceTree = "<group>"; };
-		B61D0D5F125B7ACA001C713B /* NewTerminalWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewTerminalWindowController.m; sourceTree = "<group>"; };
+		B61D0D5F125B7ACA001C713B /* NewTerminalWindowController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NewTerminalWindowController.mm; sourceTree = "<group>"; };
 		B61D0D67125B8E06001C713B /* Defaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Defaults.h; sourceTree = "<group>"; };
 		B61D0D68125B8E06001C713B /* Defaults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Defaults.m; sourceTree = "<group>"; };
 		B61EF7C31481561E008C1891 /* titlebar-corner.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titlebar-corner.png"; sourceTree = "<group>"; };
@@ -151,11 +163,13 @@
 		B6801BD812EB549300B22E9E /* vt100-charset.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vt100-charset.png"; sourceTree = "<group>"; };
 		B68E632812FF909C00EAFF5F /* ExampleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExampleView.h; sourceTree = "<group>"; };
 		B68E632912FF909C00EAFF5F /* ExampleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExampleView.m; sourceTree = "<group>"; };
+		B6C173901D31D2B80024E360 /* GSOSConsole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSOSConsole.h; sourceTree = "<group>"; };
+		B6C173911D31D2B80024E360 /* GSOSConsole.mm.ragel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = GSOSConsole.mm.ragel; sourceTree = "<group>"; };
 		B6C704EC15CCC64100CC0401 /* titlebar-center@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titlebar-center@2x.png"; sourceTree = "<group>"; };
 		B6C704ED15CCC64100CC0401 /* titlebar-left@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titlebar-left@2x.png"; sourceTree = "<group>"; };
 		B6C704EE15CCC64100CC0401 /* titlebar-right@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titlebar-right@2x.png"; sourceTree = "<group>"; };
 		B6EBE2B311E0EA9100EA0458 /* CharacterGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CharacterGenerator.h; sourceTree = "<group>"; };
-		B6EBE2B411E0EA9100EA0458 /* CharacterGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CharacterGenerator.m; sourceTree = "<group>"; };
+		B6EBE2B411E0EA9100EA0458 /* CharacterGenerator.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CharacterGenerator.mm; sourceTree = "<group>"; };
 		B6ECFF251D2EEA2B00871A81 /* TextLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextLabel.h; sourceTree = "<group>"; };
 		B6ECFF261D2EEA2B00871A81 /* TextLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TextLabel.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -177,13 +191,13 @@
 			isa = PBXGroup;
 			children = (
 				B61D0D5E125B7ACA001C713B /* NewTerminalWindowController.h */,
-				B61D0D5F125B7ACA001C713B /* NewTerminalWindowController.m */,
+				B61D0D5F125B7ACA001C713B /* NewTerminalWindowController.mm */,
 				256AC3D80F4B6AC300CF3369 /* TwoTermAppDelegate.h */,
-				256AC3D90F4B6AC300CF3369 /* TwoTermAppDelegate.m */,
+				256AC3D90F4B6AC300CF3369 /* TwoTermAppDelegate.mm */,
 				B676063911DEAD3500D6B66C /* TermWindowController.h */,
 				B676063A11DEAD3500D6B66C /* TermWindowController.mm */,
 				B6EBE2B311E0EA9100EA0458 /* CharacterGenerator.h */,
-				B6EBE2B411E0EA9100EA0458 /* CharacterGenerator.m */,
+				B6EBE2B411E0EA9100EA0458 /* CharacterGenerator.mm */,
 				B60EBDE111E90FC300C1974F /* ScanLineFilter.h */,
 				B60EBDE211E90FC300C1974F /* ScanLineFilter.m */,
 			);
@@ -293,6 +307,8 @@
 				B612F45912DD5DF1005D1B77 /* EmulatorManager.mm */,
 				B612F45A12DD5DF1005D1B77 /* GNOConsole.h */,
 				B612F45B12DD5DF1005D1B77 /* GNOConsole.mm */,
+				B6C173901D31D2B80024E360 /* GSOSConsole.h */,
+				B6C173911D31D2B80024E360 /* GSOSConsole.mm.ragel */,
 				B612F45C12DD5DF1005D1B77 /* PTSE.h */,
 				B612F45D12DD5DF1005D1B77 /* PTSE.mm */,
 				B612F45E12DD5DF1005D1B77 /* VT05.h */,
@@ -359,6 +375,7 @@
 				B61D0D57125B728D001C713B /* CopyFiles */,
 			);
 			buildRules = (
+				B6C173931D32A8840024E360 /* PBXBuildRule */,
 				B60EBE2311E9182E00C1974F /* PBXBuildRule */,
 			);
 			dependencies = (
@@ -426,12 +443,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6C173921D31D2B80024E360 /* GSOSConsole.mm.ragel in Sources */,
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
-				256AC3DA0F4B6AC300CF3369 /* TwoTermAppDelegate.m in Sources */,
+				256AC3DA0F4B6AC300CF3369 /* TwoTermAppDelegate.mm in Sources */,
 				B676063B11DEAD3500D6B66C /* TermWindowController.mm in Sources */,
-				B6EBE2B511E0EA9100EA0458 /* CharacterGenerator.m in Sources */,
+				B6EBE2B511E0EA9100EA0458 /* CharacterGenerator.mm in Sources */,
 				B60EBDE311E90FC300C1974F /* ScanLineFilter.m in Sources */,
-				B61D0D60125B7ACA001C713B /* NewTerminalWindowController.m in Sources */,
+				B61D0D60125B7ACA001C713B /* NewTerminalWindowController.mm in Sources */,
 				B61D0D69125B8E06001C713B /* Defaults.m in Sources */,
 				B6ECFF271D2EEA2B00871A81 /* TextLabel.m in Sources */,
 				B612F45012DD5DAD005D1B77 /* iGeometry.cpp in Sources */,
