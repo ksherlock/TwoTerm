@@ -207,7 +207,7 @@ enum  {
             case CTRL('A'):
                 // set cursor to flashing block.
                 _cursorType = Screen::CursorTypeBlock;
-                screen->setCursorType((Screen::CursorType)_cursorType);
+                screen->setCursorType(_cursorType);
                 break;
             case CTRL('B'):
                 _cursorType = Screen::CursorTypeUnderscore;
@@ -222,7 +222,7 @@ enum  {
             
             case CTRL('E'):
                 // cursor on
-                screen->setCursorType((Screen::CursorType)_cursorType);                
+                screen->setCursorType(_cursorType);
                 break;
             
             case CTRL('F'):

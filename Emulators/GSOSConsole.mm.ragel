@@ -11,16 +11,18 @@
 #include "OutputChannel.h"
 #include "Screen.h"
 
+#include "algorithm.h"
+
 %%{
     machine console;
     alphtype unsigned int;
     
     action nop {}
     
-    arg1 = any ${ _scratch[0] = (fc - 32) & 0xff; };
-    arg2 = any ${ _scratch[1] = (fc - 32) & 0xff; };
-    arg3 = any ${ _scratch[2] = (fc - 32) & 0xff; };
-    arg4 = any ${ _scratch[3] = (fc - 32) & 0xff; };
+    arg1 = any ${ _scratch[0] = (fc - 32); };
+    arg2 = any ${ _scratch[1] = (fc - 32); };
+    arg3 = any ${ _scratch[2] = (fc - 32); };
+    arg4 = any ${ _scratch[3] = (fc - 32); };
     
     main := (
                0x00 $nop
@@ -38,12 +40,11 @@
 
                  // left, top, right, bottom
 
-                 _scratch[0] = std::max(_scratch[0], 0u);
-                 _scratch[1] = std::max(_scratch[1], 0u);
+                 _scratch[0] = clamp(_scratch[0], 0, 80-1);
+                 _scratch[1] = clamp(_scratch[1], 0, 24-1);
 
-                 _scratch[2] = std::max(_scratch[2]+1, 80u);
-                 _scratch[3] = std::max(_scratch[3]+1, 24u);
-
+                 _scratch[2] = clamp(_scratch[2], 0, 80-1)+1;
+                 _scratch[3] = clamp(_scratch[3], 0, 24-1)+1;
                  
                  
                  iRect r(_scratch[0],
@@ -54,7 +55,7 @@
 
                  _textPort.frame = r;
 
-                 screen->setCursor(&_textPort, _scratch[0], _scratch[1]);
+                 screen->setCursor(&_textPort, 0, 0);
              }
 
              | 0x03 ${
@@ -83,7 +84,7 @@
 
              | 0x06 any ${
                  /* set vertical position */
-                 unsigned n = fc - 32;
+                 unsigned n = clamp(fc - 32, 0, 24-1);
                  screen->setY(&_textPort, n);
              }
 
@@ -139,7 +140,7 @@
              | 0x10 any ${
                 /* DLE expansion */
                 if (_consDLE) {
-                    unsigned count = (fc - 0x20) & 0xff;
+                    unsigned count = (fc - 32) & 0xff;
                     while (count--) screen->putc(&_textPort, ' ');
                 }
                 else { fhold; }
@@ -156,7 +157,8 @@
 
              | 0x14 any ${
                  /* set horizontal position */
-                 screen->setX(&_textPort, fc - 0x20);
+                 unsigned n = clamp(fc - 32, 0, 80 - 1);
+                 screen->setX(&_textPort, n);
              }
              
              | 0x15 any ${
@@ -214,8 +216,8 @@
              | 0x1e arg1 arg2
                 ${ /* goto x y */
                     iPoint dca;
-                    dca.x = _scratch[0];
-                    dca.y = _scratch[1];
+                    dca.x = clamp(_scratch[0], 0, 80 - 1);
+                    dca.y = clamp(_scratch[1], 0, 24 - 1);
                     screen->setCursor(&_textPort, dca);
                 }
 

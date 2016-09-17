@@ -19,7 +19,7 @@
     
     std::vector<TextPort> _tpStack;
     
-    unsigned _scratch[4];
+    int _scratch[4];
     
     int _cursorType;
     bool _consLF;

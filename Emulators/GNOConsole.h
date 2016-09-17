@@ -24,7 +24,7 @@
 
     int _vp[4];
     
-    int _cursorType;
+    Screen::CursorType _cursorType;
 
 }
 
