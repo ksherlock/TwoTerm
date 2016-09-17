@@ -38,6 +38,12 @@
     return NO;
 }
 
+-(void)dealloc {
+    
+    [_text release];
+    [_color release];
+    [super dealloc];
+}
 
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
