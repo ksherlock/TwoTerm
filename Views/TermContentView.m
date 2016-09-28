@@ -59,7 +59,6 @@
 -(void)dealloc
 {
     [_trackingArea release];
-    [_titleBar release];
     [super dealloc];
 }
 

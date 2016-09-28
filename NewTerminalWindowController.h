@@ -33,19 +33,21 @@
     
 }
 
-@property (nonatomic, retain) IBOutlet ExampleView *exampleView;
+@property (nonatomic, assign) IBOutlet ExampleView *exampleView;
 
-@property (nonatomic, retain) IBOutlet NSPopUpButton *terminalTypeButton;
-@property (nonatomic, retain) IBOutlet NSPopUpButton *colorSchemeButton;
+@property (nonatomic, assign) IBOutlet NSPopUpButton *terminalTypeButton;
+@property (nonatomic, assign) IBOutlet NSPopUpButton *colorSchemeButton;
 
 
-@property (nonatomic, retain) IBOutlet NSColorWell *foregroundColorControl;
-@property (nonatomic, retain) IBOutlet NSColorWell *backgroundColorControl;
+@property (nonatomic, assign) IBOutlet NSColorWell *foregroundColorControl;
+@property (nonatomic, assign) IBOutlet NSColorWell *backgroundColorControl;
 
-@property (nonatomic, retain) IBOutlet NSButton *effectsButton;
-@property (nonatomic, retain) IBOutlet NSSlider *blurSlider;
-@property (nonatomic, retain) IBOutlet NSSlider *lightenSlider;
-@property (nonatomic, retain) IBOutlet NSSlider *darkenSlider;
+@property (nonatomic, assign) IBOutlet NSButton *effectsButton;
+@property (nonatomic, assign) IBOutlet NSSlider *blurSlider;
+@property (nonatomic, assign) IBOutlet NSSlider *lightenSlider;
+@property (nonatomic, assign) IBOutlet NSSlider *darkenSlider;
+@property (nonatomic, assign) IBOutlet NSSlider *bloomSlider;
+@property (nonatomic, assign) IBOutlet NSSlider *vignetteSlider;
 
 @property (nonatomic, assign) BOOL effectsEnabled;
 
@@ -60,5 +62,7 @@
 -(IBAction)filterParameterChanged: (id)sender;
 
 -(NSMenu *)colorMenu;
+
+-(NSColor *)recalcBackground;
 
 @end

@@ -26,6 +26,7 @@
 @synthesize lightenSlider = _lightenSlider;
 @synthesize darkenSlider = _darkenSlider;
 
+
 @synthesize effectsEnabled = _effectsEnabled;
 // colors
 enum {
@@ -45,21 +46,6 @@ enum {
 
 - (void)dealloc {
     // Clean-up code here.
-    
-    [_terminalTypeButton release];
-    [_colorSchemeButton release];
-    
-    
-    [_foregroundColorControl release];
-    [_backgroundColorControl release];
-    
-    
-    [_effectsButton release];
-    [_blurSlider release];
-    [_lightenSlider release];
-    [_darkenSlider release];
-    
-    [_exampleView release];
     
     [super dealloc];
 }
@@ -144,7 +130,7 @@ enum {
         
         [userInfo setObject: klass forKey: kClass];
         [userInfo setObject: [_foregroundColorControl color] forKey: kForegroundColor];
-        [userInfo setObject: [_backgroundColorControl color] forKey: kBackgroundColor];
+        [userInfo setObject: [self recalcBackground] forKey: kBackgroundColor];
         
         if (_effectsEnabled)
         {
@@ -204,19 +190,24 @@ enum {
 {
     
     [_exampleView setForegroundColor: [_foregroundColorControl color]];
-    [_exampleView setColor: [_backgroundColorControl color]];
+    [_exampleView setColor: [self recalcBackground]];
     
     if (_effectsEnabled)
     {
         [_exampleView setBlur: [_blurSlider floatValue]];
-        [_exampleView setLighten: [_lightenSlider floatValue]];
+        //[_exampleView setLighten: [_lightenSlider floatValue]];
         [_exampleView setDarken: [_darkenSlider floatValue]];
+        [_exampleView setBloom: [_bloomSlider floatValue]];
+        [_exampleView setVignette: [_vignetteSlider floatValue]];
+
     }
     else
     {
         [_exampleView setBlur: 0.0];
-        [_exampleView setLighten: 0.0];
+        //[_exampleView setLighten: 0.0];
         [_exampleView setDarken: 0.0];
+        [_exampleView setBloom: 0.0];
+        [_exampleView setVignette: 0.0];
     }
     
     [_exampleView updateEffects];
@@ -239,5 +230,18 @@ enum {
     
     [self autorelease];
 }
+
+-(NSColor *)recalcBackground {
+    
+    NSColor *bg = [_backgroundColorControl color];
+    NSColor *fg = [_foregroundColorControl color];
+    CGFloat value = [_lightenSlider doubleValue];
+    
+    if (_effectsEnabled) {
+        bg = [bg blendedColorWithFraction: value ofColor: fg];
+    }
+    return bg;
+}
+
 
 @end
