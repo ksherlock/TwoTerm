@@ -16,6 +16,9 @@
 @synthesize lighten = _lighten;
 @synthesize darken = _darken;
 @synthesize blur = _blur;
+@synthesize vignette = _vignette;
+@synthesize bloom = _bloom;
+
 @synthesize foregroundColor = _foregroundColor;
 
 
@@ -77,25 +80,47 @@
     NSMutableArray *filters;
     CIFilter *filter;
 
-    filters = [NSMutableArray arrayWithCapacity: 3];
-        
-        
-    //add the scanlines
+    filters = [NSMutableArray arrayWithCapacity: 5];
     
-    filter = [[ScanLineFilter new] autorelease];
-    [filter setValue: [NSNumber numberWithFloat: _darken] forKey: @"inputDarken"];
-    [filter setValue: [NSNumber numberWithFloat: _lighten] forKey: @"inputLighten"];
-    [filters addObject: filter];  
-    
-    //blur it a bit...
-    
-    filter = [CIFilter filterWithName: @"CIGaussianBlur"];
+    // vignette effect
+    filter = [CIFilter filterWithName: @"CIVignette"];
     [filter setDefaults];
-    [filter setValue: [NSNumber numberWithFloat: _blur] forKey: @"inputRadius"];
+    [filter setValue: @(_vignette) forKey: @"inputIntensity"];
+    [filter setValue: @(1.0) forKey: @"inputRadius"];
     
     [filters addObject: filter];
     
     
+    
+        
+    //add the scanlines
+    
+    filter = [[ScanLineFilter new] autorelease];
+    [filter setValue: @(_darken) forKey: @"inputDarken"];
+    [filter setValue: @(_lighten) forKey: @"inputLighten"];
+    [filters addObject: filter];  
+    
+    
+    // bloom it...
+    
+    filter = [CIFilter filterWithName: @"CIBloom"];
+    [filter setDefaults];
+    [filter setValue: @2.0 forKey: @"inputRadius"];
+    [filter setValue: @(_bloom) forKey: @"inputIntensity"];
+
+    [filters addObject: filter];
+    
+#if 0
+    //blur it a bit...
+    
+    filter = [CIFilter filterWithName: @"CIGaussianBlur"];
+    [filter setDefaults];
+    [filter setValue: @(_blur) forKey: @"inputRadius"];
+    
+    [filters addObject: filter];
+#endif
+    
+
     
     [self setContentFilters: filters];   
 

@@ -11,7 +11,8 @@
 #import "TermWindowController.h"
 #import "NewTerminalWindowController.h"
 #import "Defaults.h"
-#import "VT52.h"
+//#import "VT52.h"
+#import "GNOConsole.h"
 
 #import "ScanLineFilter.h"
 
@@ -35,26 +36,49 @@
     [nc addObserver: self selector: @selector(newTerminal:) name: kNotificationNewTerminal object: nil];
 
     
-    filters = [NSMutableArray arrayWithCapacity: 3];
+    filters = [NSMutableArray arrayWithCapacity: 5];
+
+
+    // vignette effect
+    filter = [CIFilter filterWithName: @"CIVignette"];
+    [filter setDefaults];
+    [filter setValue: @(1.0) forKey: @"inputIntensity"];
+    [filter setValue: @(1.0) forKey: @"inputRadius"];
+    [filters addObject: filter];
+
+#if 0
+    //blur it a bit...
+    filter = [CIFilter filterWithName: @"CIGaussianBlur"];
+    [filter setDefaults];
+    [filter setValue: @(.33) forKey: @"inputRadius"];
     
+    [filters addObject: filter];
+#endif
     
     //add the scanlines
     
     filter = [[ScanLineFilter new] autorelease];
-    [filter setValue: [NSNumber numberWithFloat: .5] forKey: @"inputDarken"];
-    [filter setValue: [NSNumber numberWithFloat: .02] forKey: @"inputLighten"];
+    [filter setValue: @(0.5) forKey: @"inputDarken"];
+    //[filter setValue: @(0.02) forKey: @"inputLighten"];
     [filters addObject: filter];  
     
-    //blur it a bit...
+
     
-    filter = [CIFilter filterWithName: @"CIGaussianBlur"];
+    filter = [CIFilter filterWithName: @"CIBloom"];
     [filter setDefaults];
-    [filter setValue: [NSNumber numberWithFloat: .33] forKey: @"inputRadius"];
+    [filter setValue: @2.0 forKey: @"inputRadius"];
+    [filter setValue: @(0.75) forKey: @"inputIntensity"];
     
-    [filters addObject: filter];
+
+
     
-    parameters = [NSDictionary dictionaryWithObject: filters forKey: kContentFilters];
-    
+    parameters = @{
+                   kClass: [GNOConsole class],
+                   kContentFilters: filters,
+                   kForegroundColor: [NSColor colorWithRed: 0.0 green: 1.0 blue: 0.6 alpha: 1.0],
+                   kBackgroundColor: [NSColor colorWithRed: 0.0 green: .25 blue: .15 alpha: 1.0]
+                   };
+
     controller = [TermWindowController new];
     [controller setParameters: parameters];
     [controller showWindow: nil];

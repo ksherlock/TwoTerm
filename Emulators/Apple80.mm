@@ -6,6 +6,13 @@
 //  Copyright 2010 __MyCompanyName__. All rights reserved.
 //
 
+/*
+ * See Apple IIe Tech Ref page 273.
+ * See Apple IIgs Firmware Reference page 77
+ *
+ *
+ */
+
 #import "Apple80.h"
 
 #include <sys/ttydefaults.h>
@@ -130,8 +137,16 @@ enum  {
                 screen->setFlagBit(Screen::FlagInverse);
                 break;
 
+            case CTRL('Q'):
+                // 40 column mode.
+                break;
+                
             case CTRL('R'):
                 // 80 column mode
+                break;
+
+            case CTRL('S'):
+                // stop listing until another key pressed.
                 break;
                 
             case CTRL('U'):
@@ -157,11 +172,16 @@ enum  {
                 // cursor home
                 screen->setCursor(0, 0, true, true);
                 break;
+
             case CTRL('Z'):
                 // clear entire line
                 screen->erase(Screen::EraseLineAll);
                 break;
-                
+
+            case CTRL('['):
+                // mouse text on
+                screen->setFlagBit(Screen::FlagMouseText);
+                break;
 
                 
             case CTRL('\\'):

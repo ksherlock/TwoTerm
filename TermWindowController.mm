@@ -287,7 +287,6 @@
 - (void)windowDidLoad
 {
     
-    BOOL scanLines;
     NSColor *foregroundColor;
     NSColor *backgroundColor;
     Class klass;
@@ -312,9 +311,6 @@
     {
         klass = [VT52 class];
     }
-    
-    o = [_parameters objectForKey: kScanLines];
-    scanLines = o ? [(NSNumber *)o boolValue] : YES;
     
     o = [_parameters objectForKey: kForegroundColor];
     foregroundColor = o ? (NSColor *)o : [NSColor greenColor];
