@@ -316,7 +316,7 @@ int Screen::decrementY(TextPort *textPort)
     if (!textPort) textPort = &_port;
     
     if (textPort->scroll) 
-        return lineFeed(textPort);
+        return reverseLineFeed(textPort);
     
     
     if (textPort->cursor.y > 0)
