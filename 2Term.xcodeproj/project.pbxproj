@@ -169,6 +169,7 @@
 		B6C704EC15CCC64100CC0401 /* titlebar-center@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titlebar-center@2x.png"; sourceTree = "<group>"; };
 		B6C704ED15CCC64100CC0401 /* titlebar-left@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titlebar-left@2x.png"; sourceTree = "<group>"; };
 		B6C704EE15CCC64100CC0401 /* titlebar-right@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titlebar-right@2x.png"; sourceTree = "<group>"; };
+		B6D5A0831E3996BD004FC1AC /* ring_buffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ring_buffer.h; sourceTree = "<group>"; };
 		B6EBE2B311E0EA9100EA0458 /* CharacterGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CharacterGenerator.h; sourceTree = "<group>"; };
 		B6EBE2B411E0EA9100EA0458 /* CharacterGenerator.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CharacterGenerator.mm; sourceTree = "<group>"; };
 		B6ECFF251D2EEA2B00871A81 /* TextLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextLabel.h; sourceTree = "<group>"; };
@@ -286,6 +287,7 @@
 			isa = PBXGroup;
 			children = (
 				B612F44712DD5DAD005D1B77 /* iGeometry.cpp */,
+				B6D5A0831E3996BD004FC1AC /* ring_buffer.h */,
 				B6C173941D35546A0024E360 /* algorithm.h */,
 				B612F44812DD5DAD005D1B77 /* iGeometry.h */,
 				B612F44912DD5DAD005D1B77 /* Lock.cpp */,
