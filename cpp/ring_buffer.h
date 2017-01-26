@@ -85,6 +85,10 @@ public:
         return rv;
     }
     
+    size_t max_size() const {
+        return Size;
+    }
+
     size_t size() const {
         return Size - _capacity;
     }
