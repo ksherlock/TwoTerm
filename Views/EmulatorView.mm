@@ -538,7 +538,7 @@
     
 }
 
--(IBAction)clearDebugData:(id)sender:(id)sender {
+-(IBAction)clearDebugData:(id)sender {
     _debug_buffer.clear();
 }
 
