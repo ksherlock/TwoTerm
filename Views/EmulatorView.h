@@ -16,6 +16,8 @@
 
 #include "Screen.h"
 
+#include "ring_buffer.h"
+
 @class EmulatorView;
 
 class ViewScreen: public Screen
@@ -73,6 +75,7 @@ private:
         
 #ifdef __cplusplus
     
+    ring_buffer<256> _debug_buffer;
     ViewScreen _screen;
     
 #endif
@@ -99,6 +102,8 @@ private:
 
 -(IBAction)paste: (id)sender;
 -(IBAction)copy: (id)sender;
+-(IBAction)copyDebugData:(id)sender;
+-(IBAction)clearDebugData:(id)sender;
 
 
 -(void)processData: (const uint8_t *)data size: (size_t)size;

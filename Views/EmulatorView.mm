@@ -280,6 +280,10 @@
     return YES;
 }
 
+-(BOOL)resignFirstResponder {
+    return [super resignFirstResponder];
+}
+
 -(void)drawRect:(NSRect)dirtyRect
 {
     //NSLog(@"drawRect:");
@@ -534,6 +538,56 @@
     
 }
 
+-(IBAction)clearDebugData:(id)sender:(id)sender {
+    _debug_buffer.clear();
+}
+
+
+-(IBAction)copyDebugData:(id)sender {
+    
+    /* copy _debug_data to clipboard */
+    
+    std::vector<uint8_t> bytes = _debug_buffer.read();
+    
+    std::string ascii;
+    std::string hex;
+    ascii.reserve(bytes.size());
+    hex.reserve(bytes.size()*3);
+    
+    std::transform(bytes.begin(), bytes.end(), std::back_inserter(ascii), [](uint8_t c){
+        if (isascii(c) && isprint(c)) return (char)c;
+        return (char)'.';
+    });
+    
+    for (uint8_t c : bytes) {
+        constexpr const static char hh[] = "0123456789abcdef";
+        hex.push_back(hh[c >> 4]);
+        hex.push_back(hh[c & 0x0f]);
+        hex.push_back(' ');
+    }
+    
+    
+    std::string rv;
+    int offset = 0;
+    while (offset < bytes.size()) {
+        int max = bytes.size() - offset;
+        if (max > 16) max = 16;
+        
+        rv.append(hex.data() + offset * 3, max * 3);
+        if (max < 16) rv.append((16 - max) * 3, ' ');
+        rv.push_back(' ');
+        rv.append(ascii.data() + offset, max);
+        rv.push_back('\n');
+        
+        offset += max;
+    }
+
+    NSPasteboard *pb;
+    pb = [NSPasteboard generalPasteboard];
+    [pb clearContents];
+    [pb setData: [NSData dataWithBytes: rv.data() length: rv.length()] forType: NSStringPboardType];
+}
+
 -(void)processData:(const uint8_t *)buffer size:(size_t)size {
 
     typedef void (*ProcessCharFX)(id, SEL, uint8_t, Screen *, OutputChannel *);
@@ -550,6 +604,7 @@
 #endif
     
     
+    _debug_buffer.write(buffer, size);
     
     if ([_emulator respondsToSelector: @selector(processData:length:screen:output:)]) {
         
@@ -734,6 +789,8 @@
         return _fd >= 1;
     }
     if (cmd == @selector(copy:)) return NO;
+    if (cmd == @selector(copyDebugData:)) return YES;
+    if (cmd == @selector(clearDebugData:)) return YES;
     
     return NO;
     //return [super validateUserInterfaceItem: anItem];
