@@ -23,7 +23,7 @@ public:
     
     void write(uint8_t x) {
         _buffer[_ptr] = x;
-        _ptr = (_ptr + 1) & ~(Size-1);
+        _ptr = (_ptr + 1) & (Size-1);
         if (_capacity) --_capacity;
     }
     
@@ -41,8 +41,8 @@ public:
         
         // simple append.
         if (_capacity >= dsize) {
-            memcpy(_buffer + _ptr, data, _capacity);
-            _ptr += dsize;
+            memcpy(_buffer + _ptr, data, dsize);
+            _ptr = (_ptr + dsize) & (Size - 1);
             _capacity -= dsize;
 
             assert(_redzone == 0);
@@ -52,26 +52,24 @@ public:
         // no capacity left.. overwrite.
         // dsize < Size.
         
+        
         _capacity = 0;
-        int amt = Size - _ptr;
-
-        if (amt > dsize) {
-            memcpy(_buffer + _ptr, data, dsize);
-            _ptr += dsize;
-
-            assert(_redzone == 0);
-            return;
+        // fill up the end, then wrap around to start.
+        if (_ptr + dsize > Size) {
+            int amt = Size - _ptr;
+            memcpy(_buffer + _ptr, data, amt);
+            _ptr = 0;
+            dsize -= amt;
+            data += amt;
         }
         
-        //amt = dsize;
-        memcpy(_buffer + _ptr, data, amt);
-        data += amt;
-        dsize -= amt;
-        memcpy(_buffer, data, dsize);
-        _ptr = dsize;
-        _capacity = 0;
-        
+
+        if (dsize) {
+            memcpy(_buffer + _ptr, data, dsize);
+            _ptr = (_ptr + dsize) & (Size - 1);
+        }
         assert(_redzone == 0);
+
     }
     
     
