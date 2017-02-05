@@ -358,51 +358,51 @@ enum  {
     switch (_state)
     {
         case StateDCAX:
-            _dca.x = c - 32;
+            _dca.x = (c & 0x7f) - 32;
             _state = StateDCAY;
             break;
 
         case StateDCAY:
-            _dca.y = c - 32;
-            screen->setCursor(&_textPort, _dca);
+            _dca.y = (c  & 0x7f) - 32;
+            // goto xy does not respect the text window.
             
+            if (_dca.x >= 80) _dca.x = 0;
+            if (_dca.y >= 24) _dca.y = 0;
+            screen->setCursor(&_textPort, _dca);
+            //screen->setCursor(_dca);
             _state = StateText;
             break;
     
         case StateSetPort1:
             // [
             if (c == '[')
-            {
                 _state++;
-            }
             else
-            {
                 _state = StateText;
-            }
             break;
         
         case StateSetPort2:
             // left
-            _vp[0] = c - 32;
+            _vp[0] = (c & 0x7f) - 32;
             _state++;
             break;
         
         case StateSetPort3:
             // right
-            _vp[1] = c - 32 + 1;
+            _vp[1] = (c & 0x7f) - 32 + 1;
             _state++;
             break;
         
         case StateSetPort4:
             // top
-            _vp[2] = c - 32;
+            _vp[2] = (c & 0x7f) - 32;
             _state++;
             break;
         case StateSetPort5:
             // bottom
             // and validation.
             
-            _vp[3] = c - 32 + 1;
+            _vp[3] = (c & 0x7f) - 32 + 1;
             
             _vp[0] = std::max(0, _vp[0]);
             _vp[2] = std::max(0, _vp[2]);

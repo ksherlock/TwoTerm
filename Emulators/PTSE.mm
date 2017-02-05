@@ -190,7 +190,7 @@ enum  {
                 screen->deleteLine(&_textPort, _textPort.cursor.y);
                 break;
             case CTRL('V'):
-                //Insert blank like.
+                //Insert blank line.
                 // TODO -- verify if the line is before or after the current line,
                 // TODO -- verify if x/y change
                 // TODO -- verify scrolling behavior.

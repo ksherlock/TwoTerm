@@ -75,7 +75,7 @@ private:
         
 #ifdef __cplusplus
     
-    ring_buffer<256> _debug_buffer;
+    ring_buffer<1024> _debug_buffer;
     ViewScreen _screen;
     
 #endif

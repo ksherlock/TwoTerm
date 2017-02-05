@@ -117,7 +117,7 @@
         s.append([_emulator termName]);
         
         s.append(1, (char)0); 
-        s.append(1, (char )0);
+        s.append(1, (char)0);
         
         for (std::string::size_type index = 0;;)
         {
