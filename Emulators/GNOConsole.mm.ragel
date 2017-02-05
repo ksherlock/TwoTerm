@@ -116,20 +116,234 @@
 
  */
 
+
+%%{
+    machine console;
+    alphtype unsigned int;
+    
+    action nop {}
+    
+    arg1 = any ${ _scratch[0] = ((fc & 0x7f) - 32); };
+    arg2 = any ${ _scratch[1] = ((fc & 0x7f) - 32); };
+    arg3 = any ${ _scratch[2] = ((fc & 0x7f) - 32); };
+    arg4 = any ${ _scratch[3] = ((fc & 0x7f) - 32); };
+    
+    main := (
+               0x00 $nop
+             | 0x01 ${
+                 // CTRL(A)
+                 // set cursor to flashing block.
+                 _cursorType = Screen::CursorTypeBlock;
+                 screen->setCursorType(_cursorType);
+             }
+
+             | 0x02 ${
+                // CTRL('B')
+                 // set cursor to flashing underscore.
+                 _cursorType = Screen::CursorTypeUnderscore;
+                 screen->setCursorType((Screen::CursorType)_cursorType);
+             }
+
+             | 0x03 '[' arg1 arg2 arg3 arg4 ${
+                 // CTRL('C'):
+
+                 
+                 _scratch[0] = std::max(0, _scratch[0]);
+                 _scratch[2] = std::max(0, _scratch[2]);
+                 
+                 
+                 _scratch[1] = std::min(80, _scratch[1]);
+                 _scratch[3] = std::min(24, _scratch[3]);
+                 
+                 
+                 if (_scratch[1] <= _scratch[0]) _scratch[1] = 80;
+                 if (_scratch[3] <= _scratch[2]) _scratch[3] = 24;
+                 
+                 
+                 _textPort.frame = iRect(_scratch[0], _scratch[2], _scratch[1] - _scratch[0], _scratch[3] - _scratch[2]);
+                 
+                 
+                 // move the cursor to the top left
+                 // gnome clamps the horizontal, doesn't adjust the vertical.
+                 screen->setCursor(&_textPort, iPoint(0,0));
+                 
+             }
+
+             | 0x04 $nop
+
+             | 0x05 ${
+                 // CTRL('E'):
+                 // cursor on
+                 screen->setCursorType(_cursorType);
+             }
+             
+             | 0x06 ${
+                 //CTRL('F'):
+                 //cursor off
+                 screen->setCursorType(Screen::CursorTypeNone);
+             }
+             
+             | 0x07 ${
+                 //CTRL('G'):
+                 NSBeep();
+             }
+             
+            | 0x08 ${
+             // CTRL('H'):
+             screen->decrementX(&_textPort);
+             //screen->decrementX(true);
+             }
+             
+             | 0x09 ${
+                 // CTRL('I'):
+                 // tab
+                 screen->tabTo(&_textPort, (_textPort.cursor.x + 8) & ~0x07);
+                 //screen->tabTo((screen->x() + 8) & ~0x07);
+             }
+             
+             | 0x0a ${
+                 // CTRL('J'):
+                 // down 1 line.
+                 screen->lineFeed(&_textPort);
+             }
+             
+             | 0x0b ${
+                 // CTRL('K'):
+                 // clear to end of screen
+                 screen->erase(&_textPort, Screen::EraseAfterCursor);
+             }
+             
+             | 0x0c ${
+                 // CTRL('L'):
+                 // clear screen, go home.
+                 screen->erase(&_textPort, Screen::EraseAll);
+                 screen->setCursor(&_textPort, 0, 0);
+             }
+             
+             | 0x0d ${
+                 // CTRL('M'):
+                 // move to left edge.
+                 screen->setX(&_textPort, 0);
+             }
+             
+             | 0x0e ${
+                 // CTRL('N'):
+                 // normal text.
+                 screen->clearFlagBit(Screen::FlagInverse);
+             }
+             
+             | 0x0f ${
+                 // CTRL('O'):
+                 // inverse text.
+                 screen->setFlagBit(Screen::FlagInverse);
+             }
+
+             | 0x10 $nop
+             
+             | 0x11 ${
+                 // CTRL('Q'):
+                 // insert line.
+                 // TODO -- verify textPort
+                 screen->insertLine(&_textPort, _textPort.cursor.y);
+             }
+             
+             | 0x12 ${
+                 // CTRL('R'):
+                 // delete line
+                 // TODO -- verify textPort
+                 screen->deleteLine(&_textPort, _textPort.cursor.y);
+             }
+             
+             | 0x13 $nop
+             | 0x14 $nop
+
+             | 0x15 ${
+                 // CTRL('U'):
+                 // right arrow.
+                 screen->incrementX(&_textPort);
+             }
+             
+             | 0x16 ${
+                 // CTRL('V'):
+                 // scroll down 1 line.
+                 screen->insertLine(&_textPort, 0);
+             }
+
+             | 0x17 ${
+                 // CTRL('W'):
+                 // scroll up 1 line.
+                 screen->deleteLine(&_textPort, 0);
+             }
+             
+             | 0x18 ${
+                 // CTRL('X'):
+                 //mouse text off
+                 screen->clearFlagBit(Screen::FlagMouseText);
+             }
+             
+             | 0x19 ${
+                 // CTRL('Y'):
+                 // cursor home
+                 screen->setCursor(&_textPort, 0, 0);
+             }
+             
+             | 0x1a ${
+                 // CTRL('Z'):
+                 // clear entire line
+                 screen->erase(&_textPort, Screen::EraseLineAll);
+             }
+             
+             | 0x1b ${
+                 // CTRL('['):
+                 // mouse text on
+                 // inverse must also be on.
+                 screen->setFlagBit(Screen::FlagMouseText);
+             }
+             
+             | 0x1c ${
+                 // CTRL('\\'):
+                 // move cursor 1 character to the right
+                 screen->incrementX(&_textPort);
+             }
+             
+             | 0x1d ${
+                 // CTRL(']'):
+                 // clear to end of line.
+                 screen->erase(&_textPort, Screen::EraseLineAfterCursor);
+             }
+             
+             | 0x1e arg1 arg2 ${
+                // CTRL('^'):
+                // goto x y
+                // goto xy does not respect the text window.
+                if (_scratch[0] >= 80) _scratch[0] = 0;
+                if (_scratch[1] >= 24) _scratch[1] = 0;
+                iPoint dca(_scratch[0], _scratch[1]);
+                screen->setCursor(&_textPort, dca);
+             }
+             
+             | 0x1f ${
+                 // CTRL('_'):
+                 // move up 1 line
+                 screen->decrementY(&_textPort);
+             }
+             
+             
+             
+             | 0x20 .. 0x7f ${
+                 screen->putc(&_textPort, fc);
+             }
+             | 0x80 .. 0xff $nop
+    )* $err{ fgoto main; };
+    
+    write data;
+}%%
+
 @implementation GNOConsole
 
-enum  {
-    StateText,
-    
-    StateDCAX,
-    StateDCAY,
 
-    StateSetPort1,
-    StateSetPort2,
-    StateSetPort3,
-    StateSetPort4, 
-    StateSetPort5
-};
+
+
 
 +(void)load
 {
@@ -154,7 +368,8 @@ enum  {
 
 -(void)reset
 {
-    _state = StateText;
+
+    %%write init;
 
     _textPort.frame = iRect(0, 0, 80, 24);
     _textPort.cursor = iPoint(0,0);
@@ -197,239 +412,15 @@ enum  {
     return self;
 }
 
--(void)processCharacter:(uint8_t)c screen:(Screen *)screen output:(OutputChannel *)output
+-(void)processData:(const uint8_t *)data length: (size_t)length screen:(Screen *)screen output:(OutputChannel *)output
 {
+ 
+    const uint8_t *eof = nullptr;
+    const uint8_t *p = data;
+    const uint8_t *pe = data + length;
 
-    if (_state == StateText)
-    {
-        switch (c)
-        {
-            case CTRL('A'):
-                // set cursor to flashing block.
-                _cursorType = Screen::CursorTypeBlock;
-                screen->setCursorType(_cursorType);
-                break;
-            case CTRL('B'):
-                _cursorType = Screen::CursorTypeUnderscore;
-                screen->setCursorType((Screen::CursorType)_cursorType);
-                // set cursor to flashing underscore.
-                break;
-            
-            case CTRL('C'):
-                // begin set text window sequence
-                _state = StateSetPort1;
-                break;
-            
-            case CTRL('E'):
-                // cursor on
-                screen->setCursorType(_cursorType);
-                break;
-            
-            case CTRL('F'):
-                //cursor off
-                screen->setCursorType(Screen::CursorTypeNone);
-                break;
-                
-            case CTRL('G'):
-                NSBeep();
-                break;
-                
-            case CTRL('H'):
-                screen->decrementX(&_textPort);
-                //screen->decrementX(true);
-                break;
-                
-            case CTRL('I'):
-                // tab
-                screen->tabTo(&_textPort, (_textPort.cursor.x + 8) & ~0x07);
-                //screen->tabTo((screen->x() + 8) & ~0x07);
-                break;
-            
-            case CTRL('J'):
-                // down 1 line.
-                screen->lineFeed(&_textPort);
-                break;
-            
-            case CTRL('K'):
-                // clear to end of screen
-                screen->erase(&_textPort, Screen::EraseAfterCursor);
-                break;
-                
-            case CTRL('L'):
-                // clear screen, go home.
-                screen->erase(&_textPort, Screen::EraseAll);
-                screen->setCursor(&_textPort, 0, 0);
-                break;
-                
-            case CTRL('M'):
-                // move to left edge.
-                screen->setX(&_textPort, 0);
-                break;
-                
-            case CTRL('N'):
-                // normal text.
-                screen->clearFlagBit(Screen::FlagInverse);
-                break;
-            
-            case CTRL('O'):
-                // inverse text.
-                screen->setFlagBit(Screen::FlagInverse);
-                break;
-                
-            case CTRL('Q'):
-                // insert line.
-                // TODO -- verify textPort
-                screen->insertLine(&_textPort, _textPort.cursor.y);
-                break;
-                
-            case CTRL('R'):
-                // delete line
-                // TODO -- verify textPort
-                screen->deleteLine(&_textPort, _textPort.cursor.y);
-                break;
-                
-            case CTRL('U'):
-                // right arrow.
-                screen->incrementX(&_textPort);
-                break;
-            
-            case CTRL('V'):
-                // scroll down 1 line.
-                screen->insertLine(&_textPort, 0);
-                break;
-            case CTRL('W'):
-                // scroll up 1 line.
-                screen->deleteLine(&_textPort, 0);
-                break;
-            
-            case CTRL('X'):
-                //mouse text off
-                screen->clearFlagBit(Screen::FlagMouseText);
-                break;
-            
-            case CTRL('Y'):
-                // cursor home
-                screen->setCursor(&_textPort, 0, 0);
-                break;
-                
-            case CTRL('Z'):
-                // clear entire line
-                screen->erase(&_textPort, Screen::EraseLineAll);
-                break;
-            
-            case CTRL('['):
-                // mouse text on
-                // inverse must also be on.
-                screen->setFlagBit(Screen::FlagMouseText);
-                break;
-            
-            case CTRL('\\'):
-                // move cursor 1 character to the right
-                screen->incrementX(&_textPort);
-                break;
-                
-            case CTRL(']'):
-                // clear to end of line.
-                screen->erase(&_textPort, Screen::EraseLineAfterCursor);
-                break;
-            
-            case CTRL('^'):
-                // goto x y
-                _state = StateDCAX;
-                break;
-            
-            case CTRL('_'):
-                // move up 1 line
-                screen->decrementY(&_textPort);
-                break;
-                
-            default:
-                if (c >= 0x20 && c < 0x7f)
-                {
-                    screen->putc(&_textPort, c);
-                }
-                break;
-                
-        }
-        
-        return;
-    }
-    
-    switch (_state)
-    {
-        case StateDCAX:
-            _dca.x = (c & 0x7f) - 32;
-            _state = StateDCAY;
-            break;
+    %%write exec;
 
-        case StateDCAY:
-            _dca.y = (c  & 0x7f) - 32;
-            // goto xy does not respect the text window.
-            
-            if (_dca.x >= 80) _dca.x = 0;
-            if (_dca.y >= 24) _dca.y = 0;
-            screen->setCursor(&_textPort, _dca);
-            //screen->setCursor(_dca);
-            _state = StateText;
-            break;
-    
-        case StateSetPort1:
-            // [
-            if (c == '[')
-                _state++;
-            else
-                _state = StateText;
-            break;
-        
-        case StateSetPort2:
-            // left
-            _vp[0] = (c & 0x7f) - 32;
-            _state++;
-            break;
-        
-        case StateSetPort3:
-            // right
-            _vp[1] = (c & 0x7f) - 32 + 1;
-            _state++;
-            break;
-        
-        case StateSetPort4:
-            // top
-            _vp[2] = (c & 0x7f) - 32;
-            _state++;
-            break;
-        case StateSetPort5:
-            // bottom
-            // and validation.
-            
-            _vp[3] = (c & 0x7f) - 32 + 1;
-            
-            _vp[0] = std::max(0, _vp[0]);
-            _vp[2] = std::max(0, _vp[2]);
-            
-            
-            _vp[1] = std::min(80, _vp[1]);
-            _vp[3] = std::min(24, _vp[3]);
-            
-
-            if (_vp[1] <= _vp[0]) _vp[1] = 80;
-            if (_vp[3] <= _vp[2]) _vp[3] = 24;
-            
-
-            _textPort.frame = iRect(_vp[0], _vp[2], _vp[1] - _vp[0], _vp[3] - _vp[2]);
-            
-
-            
-            // move the cursor to the top left
-            // gnome clamps the horizontal, doesn't adjust the vertical.
-            screen->setCursor(&_textPort, iPoint(0,0));
-
-            
-            _state = StateText;
-            
-    }
-    
-    
 }
 
 

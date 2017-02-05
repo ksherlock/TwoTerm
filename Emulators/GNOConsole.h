@@ -15,17 +15,11 @@
 
 @interface GNOConsole : NSObject <Emulator>
 {
-    unsigned _state;
-
+    unsigned cs;
     TextPort _textPort;
-
-    
-    iPoint _dca;
-
-    int _vp[4];
-    
     Screen::CursorType _cursorType;
 
+    int _scratch[4];
 }
 
 
