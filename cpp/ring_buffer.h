@@ -56,7 +56,7 @@ public:
         _capacity = 0;
         // fill up the end, then wrap around to start.
         if (_ptr + dsize > Size) {
-            int amt = Size - _ptr;
+            size_t amt = Size - _ptr;
             memcpy(_buffer + _ptr, data, amt);
             _ptr = 0;
             dsize -= amt;
