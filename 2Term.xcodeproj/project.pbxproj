@@ -22,7 +22,7 @@
 		B612F45312DD5DAD005D1B77 /* Screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B612F44D12DD5DAD005D1B77 /* Screen.cpp */; };
 		B612F46412DD5DF1005D1B77 /* Apple80.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F45712DD5DF1005D1B77 /* Apple80.mm */; };
 		B612F46512DD5DF1005D1B77 /* EmulatorManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F45912DD5DF1005D1B77 /* EmulatorManager.mm */; };
-		B612F46612DD5DF1005D1B77 /* GNOConsole.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F45B12DD5DF1005D1B77 /* GNOConsole.mm */; };
+		B612F46612DD5DF1005D1B77 /* GNOConsole.mm.ragel in Sources */ = {isa = PBXBuildFile; fileRef = B612F45B12DD5DF1005D1B77 /* GNOConsole.mm.ragel */; };
 		B612F46712DD5DF1005D1B77 /* PTSE.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F45D12DD5DF1005D1B77 /* PTSE.mm */; };
 		B612F46812DD5DF1005D1B77 /* VT05.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F45F12DD5DF1005D1B77 /* VT05.mm */; };
 		B612F46912DD5DF1005D1B77 /* VT100.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F46112DD5DF1005D1B77 /* VT100.mm */; };
@@ -123,7 +123,7 @@
 		B612F45812DD5DF1005D1B77 /* Emulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Emulator.h; sourceTree = "<group>"; };
 		B612F45912DD5DF1005D1B77 /* EmulatorManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EmulatorManager.mm; sourceTree = "<group>"; };
 		B612F45A12DD5DF1005D1B77 /* GNOConsole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GNOConsole.h; sourceTree = "<group>"; };
-		B612F45B12DD5DF1005D1B77 /* GNOConsole.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GNOConsole.mm; sourceTree = "<group>"; };
+		B612F45B12DD5DF1005D1B77 /* GNOConsole.mm.ragel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = GNOConsole.mm.ragel; sourceTree = "<group>"; };
 		B612F45C12DD5DF1005D1B77 /* PTSE.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTSE.h; sourceTree = "<group>"; };
 		B612F45D12DD5DF1005D1B77 /* PTSE.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PTSE.mm; sourceTree = "<group>"; };
 		B612F45E12DD5DF1005D1B77 /* VT05.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VT05.h; sourceTree = "<group>"; };
@@ -310,7 +310,7 @@
 				B612F45812DD5DF1005D1B77 /* Emulator.h */,
 				B612F45912DD5DF1005D1B77 /* EmulatorManager.mm */,
 				B612F45A12DD5DF1005D1B77 /* GNOConsole.h */,
-				B612F45B12DD5DF1005D1B77 /* GNOConsole.mm */,
+				B612F45B12DD5DF1005D1B77 /* GNOConsole.mm.ragel */,
 				B6C173901D31D2B80024E360 /* GSOSConsole.h */,
 				B6C173911D31D2B80024E360 /* GSOSConsole.mm.ragel */,
 				B612F45C12DD5DF1005D1B77 /* PTSE.h */,
@@ -462,7 +462,7 @@
 				B612F45312DD5DAD005D1B77 /* Screen.cpp in Sources */,
 				B612F46412DD5DF1005D1B77 /* Apple80.mm in Sources */,
 				B612F46512DD5DF1005D1B77 /* EmulatorManager.mm in Sources */,
-				B612F46612DD5DF1005D1B77 /* GNOConsole.mm in Sources */,
+				B612F46612DD5DF1005D1B77 /* GNOConsole.mm.ragel in Sources */,
 				B612F46712DD5DF1005D1B77 /* PTSE.mm in Sources */,
 				B612F46812DD5DF1005D1B77 /* VT05.mm in Sources */,
 				B612F46912DD5DF1005D1B77 /* VT100.mm in Sources */,
