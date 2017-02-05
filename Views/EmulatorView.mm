@@ -570,7 +570,7 @@
     std::string rv;
     int offset = 0;
     while (offset < bytes.size()) {
-        int max = bytes.size() - offset;
+        size_t max = bytes.size() - offset;
         if (max > 16) max = 16;
         
         rv.append(hex.data() + offset * 3, max * 3);
