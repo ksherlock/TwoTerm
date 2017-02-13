@@ -146,6 +146,7 @@
 
              | 0x03 '[' arg1 arg2 arg3 arg4 ${
                  // CTRL('C'):
+                 // '[' left right top bottom
 
                  
                  _scratch[0] = std::max(0, _scratch[0]);
@@ -160,13 +161,20 @@
                  if (_scratch[3] <= _scratch[2]) _scratch[3] = 24;
                  
                  
-                 _textPort.frame = iRect(_scratch[0], _scratch[2], _scratch[1] - _scratch[0], _scratch[3] - _scratch[2]);
-                 
-                 
+                  _textPort.frame = iRect(
+                    iPoint(_scratch[0], _scratch[2]),
+                    iPoint(_scratch[1], _scratch[3])
+                );
+
+                                  
                  // move the cursor to the top left
                  // gnome clamps the horizontal, doesn't adjust the vertical.
-                 screen->setCursor(&_textPort, iPoint(0,0));
+                 //screen->setCursor(&_textPort, iPoint(0,0));
+                 int x = screen->x();
+                 if (x < _scratch[0]) x = _scratch[0];
+                 if (x >= _scratch[1]) x = _scratch[1] - 1;
                  
+                 screen->setX(x);
              }
 
              | 0x04 $nop
@@ -189,9 +197,11 @@
              }
              
             | 0x08 ${
-             // CTRL('H'):
-             screen->decrementX(&_textPort);
-             //screen->decrementX(true);
+                // CTRL('H'):
+                int x = screen->x();
+                if (x != 0 && x != _textPort.frame.minX())
+                    screen->decrementX(&_textPort);
+                //screen->decrementX(true);
              }
              
              | 0x09 ${
