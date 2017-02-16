@@ -10,10 +10,14 @@
 
 #import "Emulator.h"
 #include "iGeometry.h"
+#include "Screen.h"
 
 @interface Apple80 : NSObject <Emulator> {
 
-    _context ctx;
+    unsigned cs;
+    int _scratch[4];
+
+    context _context;
 }
 
 @end

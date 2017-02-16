@@ -35,8 +35,8 @@
 		B638188214A179D60027D007 /* ColorView.m in Sources */ = {isa = PBXBuildFile; fileRef = B638188114A179D60027D007 /* ColorView.m */; };
 		B66412391480A070003BC8D3 /* EmulatorWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B66412381480A070003BC8D3 /* EmulatorWindow.m */; };
 		B675F4A81E540394004B0D9C /* Screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B612F44D12DD5DAD005D1B77 /* Screen.cpp */; };
-		B675F4A91E561D20004B0D9C /* Apple80.mm.ragel in Resources */ = {isa = PBXBuildFile; fileRef = B612F45712DD5DF1005D1B77 /* Apple80.mm.ragel */; };
-		B675F4AA1E562159004B0D9C /* GNOConsole.mm.ragel in Resources */ = {isa = PBXBuildFile; fileRef = B612F45B12DD5DF1005D1B77 /* GNOConsole.mm.ragel */; };
+		B675F4A91E561D20004B0D9C /* Apple80.mm.ragel in Sources */ = {isa = PBXBuildFile; fileRef = B612F45712DD5DF1005D1B77 /* Apple80.mm.ragel */; };
+		B675F4AA1E562159004B0D9C /* GNOConsole.mm.ragel in Sources */ = {isa = PBXBuildFile; fileRef = B612F45B12DD5DF1005D1B77 /* GNOConsole.mm.ragel */; };
 		B676063B11DEAD3500D6B66C /* TermWindowController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B676063A11DEAD3500D6B66C /* TermWindowController.mm */; };
 		B676065111DEBAE900D6B66C /* TermWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B676065011DEBAE900D6B66C /* TermWindow.xib */; };
 		B67B3CE512B6FA040033AE07 /* a2-charset-40.png in Resources */ = {isa = PBXBuildFile; fileRef = B67B3CE312B6FA040033AE07 /* a2-charset-40.png */; };
@@ -412,10 +412,8 @@
 				B60EBE2B11E918D500C1974F /* ScanLineFilter.cikernel in Resources */,
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */,
-				B675F4A91E561D20004B0D9C /* Apple80.mm.ragel in Resources */,
 				B676065111DEBAE900D6B66C /* TermWindow.xib in Resources */,
 				B67B3CE512B6FA040033AE07 /* a2-charset-40.png in Resources */,
-				B675F4AA1E562159004B0D9C /* GNOConsole.mm.ragel in Resources */,
 				B67B3CE612B6FA040033AE07 /* a2-charset-80.png in Resources */,
 				B6801BD912EB549300B22E9E /* vt100-charset.png in Resources */,
 				B61EF7C51481561E008C1891 /* titlebar-corner.png in Resources */,
@@ -438,6 +436,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B675F4A91E561D20004B0D9C /* Apple80.mm.ragel in Sources */,
+				B675F4AA1E562159004B0D9C /* GNOConsole.mm.ragel in Sources */,
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
 				256AC3DA0F4B6AC300CF3369 /* TwoTermAppDelegate.mm in Sources */,
 				B676063B11DEAD3500D6B66C /* TermWindowController.mm in Sources */,
