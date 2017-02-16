@@ -13,10 +13,7 @@
 
 @interface Apple80 : NSObject <Emulator> {
 
-    unsigned _state;
-    
-    iPoint _dca;
-    
+    _context ctx;
 }
 
 @end
