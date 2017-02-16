@@ -92,7 +92,8 @@ public:
 
 
 
-    void putc(uint8_t c, const context &);
+    void putc(uint8_t c, iPoint cursor, uint8_t flags = 0);
+    void putc(uint8_t c, const context &ctx) { putc(c, ctx.cursor, ctx.flags); }
 
     char_info getc(iPoint p) const;
 

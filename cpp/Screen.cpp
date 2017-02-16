@@ -67,13 +67,13 @@ iRect Screen::endUpdate()
 
 
 
-void Screen::putc(uint8_t c, const context &ctx)
+void Screen::putc(uint8_t c, iPoint cursor, uint8_t flags)
 {
-    auto cursor = ctx.cursor;
     if (!_frame.contains(cursor)) return;
+    if (cursor.x >= _frame.maxX() || cursor.y >= _frame.maxY()) return;
 
     _updates.push_back(cursor);
-    _screen[cursor.y][cursor.x] = char_info(c, ctx.flags);
+    _screen[cursor.y][cursor.x] = char_info(c, flags);
 }
 
 
