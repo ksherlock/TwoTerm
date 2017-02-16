@@ -23,10 +23,10 @@ typedef struct iSize {
     
     iSize &operator=(const iSize &) = default;
 
-    bool operator==(const iSize &aSize)
+    bool operator==(const iSize &aSize) const
     { return width == aSize.width && height == aSize.height; }
     
-    bool operator!=(const iSize& aSize)
+    bool operator!=(const iSize& aSize) const
     { return !(*this == aSize); }
     
 } iSize;
@@ -43,10 +43,10 @@ typedef struct iPoint {
     
     iPoint &operator=(const iPoint &) = default;
     
-    bool operator==(const iPoint &aPoint)
+    bool operator==(const iPoint &aPoint) const
     { return x == aPoint.x && y == aPoint.y; }
     
-    bool operator!=(const iPoint &aPoint)
+    bool operator!=(const iPoint &aPoint) const
     { return !(*this == aPoint); }
     
     iPoint offset(int dx, int dy) const
@@ -80,6 +80,23 @@ typedef struct iRect {
     
     bool intersects(const iRect aRect) const;
     
+    iRect intersection(const iRect &rhs) const;
+    
+    bool operator==(const iRect &rhs) const {
+        return origin == rhs.origin && size == rhs.size;
+    }
+    bool operator!=(const iRect &rhs) const {
+        return !(*this == rhs);
+    }
+    
+    explicit operator bool() const { return size.height >= 0 && size.width >= 0; }
+    bool operator!() const { return size.height < 0 || size.width < 0; }
+    bool valid() const { return size.height >= 0 && size.width >= 0; }
+    
+    iPoint topLeft() const { return origin; }
+    iPoint bottomRight() const { return iPoint(maxX(), maxY()); }
+    
+    void setBottomLeft(iPoint &p);
     
     int height() const
     { return size.height; }
