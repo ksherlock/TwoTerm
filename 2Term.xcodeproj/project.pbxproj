@@ -19,18 +19,9 @@
 		B612F45012DD5DAD005D1B77 /* iGeometry.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B612F44712DD5DAD005D1B77 /* iGeometry.cpp */; };
 		B612F45112DD5DAD005D1B77 /* Lock.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B612F44912DD5DAD005D1B77 /* Lock.cpp */; };
 		B612F45212DD5DAD005D1B77 /* OutputChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B612F44B12DD5DAD005D1B77 /* OutputChannel.cpp */; };
-		B612F45312DD5DAD005D1B77 /* Screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B612F44D12DD5DAD005D1B77 /* Screen.cpp */; };
-		B612F46412DD5DF1005D1B77 /* Apple80.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F45712DD5DF1005D1B77 /* Apple80.mm */; };
 		B612F46512DD5DF1005D1B77 /* EmulatorManager.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F45912DD5DF1005D1B77 /* EmulatorManager.mm */; };
-		B612F46612DD5DF1005D1B77 /* GNOConsole.mm.ragel in Sources */ = {isa = PBXBuildFile; fileRef = B612F45B12DD5DF1005D1B77 /* GNOConsole.mm.ragel */; };
-		B612F46712DD5DF1005D1B77 /* PTSE.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F45D12DD5DF1005D1B77 /* PTSE.mm */; };
-		B612F46812DD5DF1005D1B77 /* VT05.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F45F12DD5DF1005D1B77 /* VT05.mm */; };
-		B612F46912DD5DF1005D1B77 /* VT100.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F46112DD5DF1005D1B77 /* VT100.mm */; };
-		B612F46A12DD5DF1005D1B77 /* VT52.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F46312DD5DF1005D1B77 /* VT52.mm */; };
 		B612F47012DD5E02005D1B77 /* CurveView.m in Sources */ = {isa = PBXBuildFile; fileRef = B612F46D12DD5E02005D1B77 /* CurveView.m */; };
 		B612F47112DD5E02005D1B77 /* EmulatorView.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F46F12DD5E02005D1B77 /* EmulatorView.mm */; };
-		B612F47412DDEBA9005D1B77 /* Screen_obsolete.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B612F47212DDEBA9005D1B77 /* Screen_obsolete.cpp */; };
-		B612F47512DDEBA9005D1B77 /* Screen_TextPort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B612F47312DDEBA9005D1B77 /* Screen_TextPort.cpp */; };
 		B61D0D60125B7ACA001C713B /* NewTerminalWindowController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B61D0D5F125B7ACA001C713B /* NewTerminalWindowController.mm */; };
 		B61D0D69125B8E06001C713B /* Defaults.m in Sources */ = {isa = PBXBuildFile; fileRef = B61D0D68125B8E06001C713B /* Defaults.m */; };
 		B61EF7C51481561E008C1891 /* titlebar-corner.png in Resources */ = {isa = PBXBuildFile; fileRef = B61EF7C31481561E008C1891 /* titlebar-corner.png */; };
@@ -43,13 +34,15 @@
 		B61EF7D91482FB6D008C1891 /* titlebar-right.png in Resources */ = {isa = PBXBuildFile; fileRef = B61EF7D61482FB6D008C1891 /* titlebar-right.png */; };
 		B638188214A179D60027D007 /* ColorView.m in Sources */ = {isa = PBXBuildFile; fileRef = B638188114A179D60027D007 /* ColorView.m */; };
 		B66412391480A070003BC8D3 /* EmulatorWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B66412381480A070003BC8D3 /* EmulatorWindow.m */; };
+		B675F4A81E540394004B0D9C /* Screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B612F44D12DD5DAD005D1B77 /* Screen.cpp */; };
+		B675F4A91E561D20004B0D9C /* Apple80.mm.ragel in Resources */ = {isa = PBXBuildFile; fileRef = B612F45712DD5DF1005D1B77 /* Apple80.mm.ragel */; };
+		B675F4AA1E562159004B0D9C /* GNOConsole.mm.ragel in Resources */ = {isa = PBXBuildFile; fileRef = B612F45B12DD5DF1005D1B77 /* GNOConsole.mm.ragel */; };
 		B676063B11DEAD3500D6B66C /* TermWindowController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B676063A11DEAD3500D6B66C /* TermWindowController.mm */; };
 		B676065111DEBAE900D6B66C /* TermWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = B676065011DEBAE900D6B66C /* TermWindow.xib */; };
 		B67B3CE512B6FA040033AE07 /* a2-charset-40.png in Resources */ = {isa = PBXBuildFile; fileRef = B67B3CE312B6FA040033AE07 /* a2-charset-40.png */; };
 		B67B3CE612B6FA040033AE07 /* a2-charset-80.png in Resources */ = {isa = PBXBuildFile; fileRef = B67B3CE412B6FA040033AE07 /* a2-charset-80.png */; };
 		B6801BD912EB549300B22E9E /* vt100-charset.png in Resources */ = {isa = PBXBuildFile; fileRef = B6801BD812EB549300B22E9E /* vt100-charset.png */; };
 		B68E632A12FF909D00EAFF5F /* ExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = B68E632912FF909C00EAFF5F /* ExampleView.m */; };
-		B6C173921D31D2B80024E360 /* GSOSConsole.mm.ragel in Sources */ = {isa = PBXBuildFile; fileRef = B6C173911D31D2B80024E360 /* GSOSConsole.mm.ragel */; };
 		B6C704EF15CCC64100CC0401 /* titlebar-center@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C704EC15CCC64100CC0401 /* titlebar-center@2x.png */; };
 		B6C704F015CCC64100CC0401 /* titlebar-left@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C704ED15CCC64100CC0401 /* titlebar-left@2x.png */; };
 		B6C704F115CCC64100CC0401 /* titlebar-right@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C704EE15CCC64100CC0401 /* titlebar-right@2x.png */; };
@@ -119,7 +112,7 @@
 		B612F44D12DD5DAD005D1B77 /* Screen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Screen.cpp; sourceTree = "<group>"; };
 		B612F44E12DD5DAD005D1B77 /* Screen.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Screen.h; sourceTree = "<group>"; };
 		B612F45612DD5DF1005D1B77 /* Apple80.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Apple80.h; sourceTree = "<group>"; };
-		B612F45712DD5DF1005D1B77 /* Apple80.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Apple80.mm; sourceTree = "<group>"; };
+		B612F45712DD5DF1005D1B77 /* Apple80.mm.ragel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Apple80.mm.ragel; sourceTree = "<group>"; };
 		B612F45812DD5DF1005D1B77 /* Emulator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Emulator.h; sourceTree = "<group>"; };
 		B612F45912DD5DF1005D1B77 /* EmulatorManager.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EmulatorManager.mm; sourceTree = "<group>"; };
 		B612F45A12DD5DF1005D1B77 /* GNOConsole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GNOConsole.h; sourceTree = "<group>"; };
@@ -136,8 +129,6 @@
 		B612F46D12DD5E02005D1B77 /* CurveView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CurveView.m; sourceTree = "<group>"; };
 		B612F46E12DD5E02005D1B77 /* EmulatorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EmulatorView.h; sourceTree = "<group>"; };
 		B612F46F12DD5E02005D1B77 /* EmulatorView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EmulatorView.mm; sourceTree = "<group>"; };
-		B612F47212DDEBA9005D1B77 /* Screen_obsolete.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Screen_obsolete.cpp; sourceTree = "<group>"; };
-		B612F47312DDEBA9005D1B77 /* Screen_TextPort.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Screen_TextPort.cpp; sourceTree = "<group>"; };
 		B61D0D5E125B7ACA001C713B /* NewTerminalWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewTerminalWindowController.h; sourceTree = "<group>"; };
 		B61D0D5F125B7ACA001C713B /* NewTerminalWindowController.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = NewTerminalWindowController.mm; sourceTree = "<group>"; };
 		B61D0D67125B8E06001C713B /* Defaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Defaults.h; sourceTree = "<group>"; };
@@ -296,8 +287,6 @@
 				B612F44C12DD5DAD005D1B77 /* OutputChannel.h */,
 				B612F44D12DD5DAD005D1B77 /* Screen.cpp */,
 				B612F44E12DD5DAD005D1B77 /* Screen.h */,
-				B612F47212DDEBA9005D1B77 /* Screen_obsolete.cpp */,
-				B612F47312DDEBA9005D1B77 /* Screen_TextPort.cpp */,
 			);
 			path = cpp;
 			sourceTree = "<group>";
@@ -306,7 +295,7 @@
 			isa = PBXGroup;
 			children = (
 				B612F45612DD5DF1005D1B77 /* Apple80.h */,
-				B612F45712DD5DF1005D1B77 /* Apple80.mm */,
+				B612F45712DD5DF1005D1B77 /* Apple80.mm.ragel */,
 				B612F45812DD5DF1005D1B77 /* Emulator.h */,
 				B612F45912DD5DF1005D1B77 /* EmulatorManager.mm */,
 				B612F45A12DD5DF1005D1B77 /* GNOConsole.h */,
@@ -423,8 +412,10 @@
 				B60EBE2B11E918D500C1974F /* ScanLineFilter.cikernel in Resources */,
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */,
+				B675F4A91E561D20004B0D9C /* Apple80.mm.ragel in Resources */,
 				B676065111DEBAE900D6B66C /* TermWindow.xib in Resources */,
 				B67B3CE512B6FA040033AE07 /* a2-charset-40.png in Resources */,
+				B675F4AA1E562159004B0D9C /* GNOConsole.mm.ragel in Resources */,
 				B67B3CE612B6FA040033AE07 /* a2-charset-80.png in Resources */,
 				B6801BD912EB549300B22E9E /* vt100-charset.png in Resources */,
 				B61EF7C51481561E008C1891 /* titlebar-corner.png in Resources */,
@@ -447,7 +438,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B6C173921D31D2B80024E360 /* GSOSConsole.mm.ragel in Sources */,
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
 				256AC3DA0F4B6AC300CF3369 /* TwoTermAppDelegate.mm in Sources */,
 				B676063B11DEAD3500D6B66C /* TermWindowController.mm in Sources */,
@@ -459,18 +449,10 @@
 				B612F45012DD5DAD005D1B77 /* iGeometry.cpp in Sources */,
 				B612F45112DD5DAD005D1B77 /* Lock.cpp in Sources */,
 				B612F45212DD5DAD005D1B77 /* OutputChannel.cpp in Sources */,
-				B612F45312DD5DAD005D1B77 /* Screen.cpp in Sources */,
-				B612F46412DD5DF1005D1B77 /* Apple80.mm in Sources */,
 				B612F46512DD5DF1005D1B77 /* EmulatorManager.mm in Sources */,
-				B612F46612DD5DF1005D1B77 /* GNOConsole.mm.ragel in Sources */,
-				B612F46712DD5DF1005D1B77 /* PTSE.mm in Sources */,
-				B612F46812DD5DF1005D1B77 /* VT05.mm in Sources */,
-				B612F46912DD5DF1005D1B77 /* VT100.mm in Sources */,
-				B612F46A12DD5DF1005D1B77 /* VT52.mm in Sources */,
 				B612F47012DD5E02005D1B77 /* CurveView.m in Sources */,
+				B675F4A81E540394004B0D9C /* Screen.cpp in Sources */,
 				B612F47112DD5E02005D1B77 /* EmulatorView.mm in Sources */,
-				B612F47412DDEBA9005D1B77 /* Screen_obsolete.cpp in Sources */,
-				B612F47512DDEBA9005D1B77 /* Screen_TextPort.cpp in Sources */,
 				B68E632A12FF909D00EAFF5F /* ExampleView.m in Sources */,
 				B66412391480A070003BC8D3 /* EmulatorWindow.m in Sources */,
 				B612870E1480B4F6002E04DF /* TermContentView.m in Sources */,
@@ -563,7 +545,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
@@ -596,7 +578,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
