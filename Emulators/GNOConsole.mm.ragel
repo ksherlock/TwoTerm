@@ -351,7 +351,7 @@
                  // clear to end of line.
 
                     iRect tmp;
-                    tmp.origin = _context.cursor;
+                    tmp.origin = cursor;
                     tmp.size = iSize(window.size.width - cursor.x, 1);
 
                     screen->eraseRect(tmp);
