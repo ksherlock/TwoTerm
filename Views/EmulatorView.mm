@@ -101,7 +101,17 @@
     }
     else
     {
+        unsigned char c;
+        switch (cursorType) {
+            default:
+            case Screen::CursorTypeUnderscore: c = '_'; break;
+            case Screen::CursorTypePipe: c = '|'; break;
+            case Screen::CursorTypeBlock: c = 0x80; break;
+        }
+        [_cursorImg release];
+        _cursorImg = [[_charGen imageForCharacter: c] retain];
         [self startCursorTimer];
+
     }
 
     
@@ -341,7 +351,7 @@
         {
             NSRect charRect = NSMakeRect(_paddingLeft + x * _charWidth, _paddingTop + y *_charHeight, _charWidth, _charHeight);
             //NSImage *img;
-            CharInfo ci = _screen.getc(x, y);
+            char_info ci = _screen.getc(iPoint(x, y));
             unsigned flag = ci.flag;
             uint8_t c = ci.c;
             
@@ -374,7 +384,14 @@
                     std::swap(currentBack, currentFront);
                 }
             }
-                        
+            
+            
+            if (_cursorType == Screen::CursorTypeBlock && _cursorOn && _screen.cursor() == iPoint(x, y)) {
+
+                std::swap(currentBack, currentFront);
+
+            }
+            
             if (currentBack != _backgroundColor)
             {
                 [currentBack setFill];
@@ -417,14 +434,18 @@
     
     // cursor.
     iPoint cursor = _screen.cursor();
-    if (_cursorOn && iRect(minX, minY, maxX - minX, maxY - minY).contains(cursor))
+    if (_cursorOn && iRect(minX, minY, maxX - minX, maxY - minY).contains(cursor) && _cursorType != Screen::CursorTypeBlock)
     {
         NSRect charRect = NSMakeRect(_paddingLeft + cursor.x * _charWidth, _paddingTop + cursor.y *_charHeight, _charWidth, _charHeight);
 
+
         [_foregroundColor setFill];
 
+        NSCompositingOperation op = NSCompositingOperationCopy;
+        //if (_cursorType == Screen::CursorTypeBlock) op = NSCompositingOperationXOR;
         [_cursorImg drawInRect: charRect 
-                      fromRect: NSZeroRect operation: NSCompositeCopy 
+                      fromRect: NSZeroRect
+                     operation: op
                       fraction: 1.0 
                 respectFlipped: YES 
                          hints: nil];
@@ -514,6 +535,7 @@
         //[self stopCursorTimer];
         //_screen.setCursorType(Screen::CursorTypeNone);
         
+#if 0
         _screen.beginUpdate();
         
         _screen.setX(0);
@@ -524,11 +546,11 @@
             _screen.putc(*cp);
         }
         
-        
         updateRect = _screen.endUpdate();
         
         
         [self invalidateIRect: updateRect];
+#endif
         
         //[_emulator writeLine: @"[Process completed]"];
         
@@ -940,6 +962,7 @@ void ViewScreen::setSize(unsigned width, unsigned height, bool resizeView)
 void ViewScreen::setCursorType(CursorType cursorType)
 {
     Screen::setCursorType(cursorType);
+    [_view setCursorType: cursorType];
 }
 
 

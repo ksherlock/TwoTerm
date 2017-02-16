@@ -123,6 +123,16 @@
     
     action nop {}
     
+    action forward {
+        if (cursor.x > window.maxX()-1) {
+            cursor.x = window.minX();
+            if (cursor.y >= window.maxY()-1) {
+                screen->scrollUp(window);
+            } else cursor.y++;
+        }
+        
+    }
+    
     arg1 = any ${ _scratch[0] = ((fc & 0x7f) - 32); };
     arg2 = any ${ _scratch[1] = ((fc & 0x7f) - 32); };
     arg3 = any ${ _scratch[2] = ((fc & 0x7f) - 32); };
@@ -161,7 +171,7 @@
                  if (_scratch[3] <= _scratch[2]) _scratch[3] = 24;
                  
                  
-                  _textPort.frame = iRect(
+                  window = iRect(
                     iPoint(_scratch[0], _scratch[2]),
                     iPoint(_scratch[1], _scratch[3])
                 );
@@ -170,11 +180,9 @@
                  // move the cursor to the top left
                  // gnome clamps the horizontal, doesn't adjust the vertical.
                  //screen->setCursor(&_textPort, iPoint(0,0));
-                 int x = screen->x();
-                 if (x < _scratch[0]) x = _scratch[0];
-                 if (x >= _scratch[1]) x = _scratch[1] - 1;
-                 
-                 screen->setX(x);
+
+                 if (cursor.x < _scratch[0]) cursor.x = _scratch[0];
+                 if (cursor.x >= _scratch[1]) cursor.x = _scratch[1] - 1;
              }
 
              | 0x04 $nop
@@ -198,54 +206,70 @@
              
             | 0x08 ${
                 // CTRL('H'):
-                int x = screen->x();
-                if (x != 0 && x != _textPort.frame.minX())
-                    screen->decrementX(&_textPort);
-                //screen->decrementX(true);
+                
+                if (cursor.x == window.minX()) {
+                    cursor.x = window.maxX()-1;
+                    // go up, possibly scrolling.
+                    if (cursor.y != window.minY()) cursor.y--;
+                }
+                else cursor.x--;
+
              }
              
              | 0x09 ${
                  // CTRL('I'):
                  // tab
-                 screen->tabTo(&_textPort, (_textPort.cursor.x + 8) & ~0x07);
-                 //screen->tabTo((screen->x() + 8) & ~0x07);
-             }
+                 cursor.x = (cursor.x + 8) & ~ 0x07;
+             } $forward
              
              | 0x0a ${
                  // CTRL('J'):
                  // down 1 line.
-                 screen->lineFeed(&_textPort);
+                 if (cursor.y >= window.maxY()-1) {
+                     screen->scrollUp(window);
+                 } else cursor.y++;
              }
              
              | 0x0b ${
                  // CTRL('K'):
                  // clear to end of screen
-                 screen->erase(&_textPort, Screen::EraseAfterCursor);
+
+
+                iRect tmp;
+                tmp.origin = cursor;
+                tmp.size = iSize(window.size.width - cursor.x, 1);
+
+                screen->eraseRect(tmp);
+
+                tmp = window;
+                tmp.origin.y = cursor.y+1;
+                tmp.size.height -= cursor.y+1;
+                screen->eraseRect(tmp);
              }
              
              | 0x0c ${
                  // CTRL('L'):
                  // clear screen, go home.
-                 screen->erase(&_textPort, Screen::EraseAll);
-                 screen->setCursor(&_textPort, 0, 0);
+                 screen->eraseRect(window);
+                 cursor = window.origin;
              }
              
              | 0x0d ${
                  // CTRL('M'):
                  // move to left edge.
-                 screen->setX(&_textPort, 0);
+                 cursor.x = window.minX();
              }
              
              | 0x0e ${
                  // CTRL('N'):
                  // normal text.
-                 screen->clearFlagBit(Screen::FlagInverse);
+                 _context.clearFlagBit(Screen::FlagInverse);
              }
              
              | 0x0f ${
                  // CTRL('O'):
                  // inverse text.
-                 screen->setFlagBit(Screen::FlagInverse);
+                 _context.setFlagBit(Screen::FlagInverse);
              }
 
              | 0x10 $nop
@@ -253,73 +277,84 @@
              | 0x11 ${
                  // CTRL('Q'):
                  // insert line.
-                 // TODO -- verify textPort
-                 screen->insertLine(&_textPort, _textPort.cursor.y);
+                 iRect tmp(iPoint(window.minX(), cursor.y), window.bottomRight());
+                 screen->scrollDown(tmp);
              }
              
              | 0x12 ${
                  // CTRL('R'):
                  // delete line
-                 // TODO -- verify textPort
-                 screen->deleteLine(&_textPort, _textPort.cursor.y);
+                 iRect tmp(iPoint(window.minX(), cursor.y), window.bottomRight());
+                 screen->scrollUp(tmp);
+
              }
              
              | 0x13 $nop
              | 0x14 $nop
 
-             | 0x15 ${
-                 // CTRL('U'):
-                 // right arrow.
-                 screen->incrementX(&_textPort);
-             }
-             
+            | 0x15 $forward ${
+                // CTRL('U'):
+                // right arrow.
+                cursor.x++;
+            } $forward
+            
              | 0x16 ${
                  // CTRL('V'):
                  // scroll down 1 line.
-                 screen->insertLine(&_textPort, 0);
+                 screen->scrollDown(window);
              }
 
              | 0x17 ${
                  // CTRL('W'):
                  // scroll up 1 line.
-                 screen->deleteLine(&_textPort, 0);
+                 screen->scrollUp(window);
              }
              
              | 0x18 ${
                  // CTRL('X'):
                  //mouse text off
-                 screen->clearFlagBit(Screen::FlagMouseText);
+                 _context.clearFlagBit(Screen::FlagMouseText);
              }
              
              | 0x19 ${
                  // CTRL('Y'):
                  // cursor home
-                 screen->setCursor(&_textPort, 0, 0);
+                 cursor.x = 0;
+                 cursor.y = 0;
              }
              
              | 0x1a ${
                  // CTRL('Z'):
                  // clear entire line
-                 screen->erase(&_textPort, Screen::EraseLineAll);
+
+                iRect tmp;
+                tmp.origin = iPoint(window.origin.x, cursor.y);
+                tmp.size = iSize(window.size.width, 1);
+                screen->eraseRect(tmp);
              }
              
              | 0x1b ${
                  // CTRL('['):
                  // mouse text on
                  // inverse must also be on.
-                 screen->setFlagBit(Screen::FlagMouseText);
+                 _context.setFlagBit(Screen::FlagMouseText);
              }
              
              | 0x1c ${
                  // CTRL('\\'):
                  // move cursor 1 character to the right
-                 screen->incrementX(&_textPort);
+                 cursor.x++;
              }
              
              | 0x1d ${
                  // CTRL(']'):
                  // clear to end of line.
-                 screen->erase(&_textPort, Screen::EraseLineAfterCursor);
+
+                    iRect tmp;
+                    tmp.origin = _context.cursor;
+                    tmp.size = iSize(window.size.width - cursor.x, 1);
+
+                    screen->eraseRect(tmp);
              }
              
              | 0x1e arg1 arg2 ${
@@ -328,20 +363,20 @@
                 // goto xy does not respect the text window.
                 if (_scratch[0] >= 80) _scratch[0] = 0;
                 if (_scratch[1] >= 24) _scratch[1] = 0;
-                iPoint dca(_scratch[0], _scratch[1]);
-                screen->setCursor(&_textPort, dca);
+                cursor = iPoint(_scratch[0], _scratch[1]);
              }
              
              | 0x1f ${
                  // CTRL('_'):
                  // move up 1 line
-                 screen->decrementY(&_textPort);
+                 if (cursor.y != window.minY()) cursor.y--;
              }
              
              
              
-             | 0x20 .. 0x7f ${
-                 screen->putc(&_textPort, fc);
+             | 0x20 .. 0x7f  $forward ${
+                 screen->putc(fc, _context);
+                 cursor.x++;
              }
              | 0x80 .. 0xff $nop
     )* $err{ fgoto main; };
@@ -381,13 +416,10 @@
 
     %%write init;
 
-    _textPort.frame = iRect(0, 0, 80, 24);
-    _textPort.cursor = iPoint(0,0);
+    _context.flags = 0;
+    _context.window = iRect(0, 0, 80, 24);
+    _context.cursor = iPoint(0,0);
     
-    _textPort.scroll = true;
-    _textPort.advanceCursor = true;
-    _textPort.leftMargin = TextPort::MarginWrap;
-    _textPort.rightMargin = TextPort::MarginWrap;
     
     _cursorType = Screen::CursorTypeUnderscore;
 
@@ -429,8 +461,13 @@
     const uint8_t *p = data;
     const uint8_t *pe = data + length;
 
+    iPoint &cursor = _context.cursor;
+    iRect &window = _context.window;
+
     %%write exec;
 
+    if (cursor.x == 80) screen->setCursor(iPoint(79, cursor.y));
+    else screen->setCursor(cursor);
 }
 
 

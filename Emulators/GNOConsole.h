@@ -16,7 +16,7 @@
 @interface GNOConsole : NSObject <Emulator>
 {
     unsigned cs;
-    TextPort _textPort;
+    context _context;
     Screen::CursorType _cursorType;
 
     int _scratch[4];

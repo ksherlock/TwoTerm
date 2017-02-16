@@ -16,6 +16,7 @@
     unsigned cs;
     
     TextPort _textPort;
+    iRect _window;
     
     std::vector<TextPort> _tpStack;
     
