@@ -13,6 +13,22 @@
 
 #include "algorithm.h"
 
+// currently no way to set consFill :-)
+static char_info remap_fill(const gsos_context &ctx) { return char_info(' ', 0); }
+
+static void advance(Screen *screen, gsos_context &ctx) {
+
+    if (ctx.consAdvance) {
+        if (ctx.cursor.x < ctx.window.maxX() - 1) ctx.cursor.x++;
+        else if (ctx.consWrap) {
+            ctx.cursor.x = ctx.window.minX();
+            if (ctx.cursor.y < ctx.window.maxY() - 1) ctx.cursor.y++;
+            else if (ctx.consScroll) screen->scrollUp(ctx.window);
+        }
+    }
+
+}
+
 %%{
     machine console;
     alphtype unsigned int;
@@ -24,21 +40,32 @@
     arg3 = any ${ _scratch[2] = (fc - 32); };
     arg4 = any ${ _scratch[3] = (fc - 32); };
     
+    
+    action advance_if {
+        if (_context.consAdvance) advance(screen, _context);
+    }
+    
     main := (
                0x00 $nop
              | 0x01 ${
-                 /* save current textport and reset text port to default. */
+                 /*
+                  Save Current Text Port and Reset Default Text Port
+                  
+                  Saves the current text port and resets to the default text port. If the system is out of memory, no error is returned, and the text port is simply reset.
+                  */
                  
-                 _tpStack.push_back(_textPort);
-                 // todo -- consLF, consDLE?
-                 _textPort = TextPort();
-             
+                 _context_stack.push_back(_context);
+                 _context = gsos_context();
+                 _context.cursor = iPoint(0,0);
+                 _context.window = iRect(0, 0, 80, 24);
              }
 
              | 0x02 arg1 arg2 arg3 arg4 ${
-                 /* set the current text port */
+                 /*
+                  Set Text Port Size
 
-                 // left, top, right, bottom
+                  Accepts the next four bytes as absolute screen coordinates + 32. Sets the current text port to the new parameters. The parameters are in the following order: windLeft, windTop, windRight, windBottom. Any parameter outside the screen boundaries is clipped to a legal value. The cursor is set to the upper-left corner of the new text port.
+                  */
 
                  _scratch[0] = clamp(_scratch[0], 0, 80-1);
                  _scratch[1] = clamp(_scratch[1], 0, 24-1);
@@ -47,101 +74,193 @@
                  _scratch[3] = clamp(_scratch[3], 0, 24-1)+1;
                  
                  
-                 iRect r(_scratch[0],
+                 window = iRect(_scratch[0],
                          _scratch[1],
                          _scratch[2] - _scratch[0],
                          _scratch[3] - _scratch[1]
                          );
-
-                 _textPort.frame = r;
-
-                 screen->setCursor(&_textPort, 0, 0);
+                cursor = window.origin;
              }
-
-             | 0x03 ${
-                 /* clear from beginning of line */
-                 // todo -- should also include the cursor.
-                 screen->erase(&_textPort, Screen::EraseLineBeforeCursor);
-             }
-
-             | 0x04 ${
-                 /* pop text port */
              
-                 if (!_tpStack.empty()) {
-                     _textPort = _tpStack.back();
-                     _tpStack.pop_back();
+             | 0x03 ${
+                 /*
+                  Clear from Beginning of Line
+
+                  Clears all characters from the left edge to and including the cursor. Sets them to the current consFill character.
+                  */
+                 
+                 char_info ci = remap_fill(_context);
+                 iRect tmp(
+                    iPoint(window.minX(), cursor.y),
+                    iPoint(cursor.x+1, cursor.y+1)
+                 );
+                 screen->fillRect(tmp, ci);
+                 
+             }
+             
+             | 0x04 ${
+                 /*
+                  Pop Text Port
+
+                  Restores the text port to the most recently saved value (see code $01). If no saved ports exist, resets the text port to the default values. If an 80-column text port is pushed and subsequently restored in 40-column mode, the text port may be altered to fit in the 40-column screen (see code $11, Set 40-Column Mode).
+                  */
+             
+                 if (!_context_stack.empty()) {
+                     _context = _context_stack.back();
+                     _context_stack.pop_back();
                  } else {
-                     _textPort = TextPort();
+                     _context = gsos_context();
                  }
              
              }
 
              | 0x05 any ${
-                 /* horizontal scroll */
+                 /* 
+                  Horizontal Scroll
+
+                  Interprets the next byte as an 8-bit signed integer depicting the number (N) of
+                  columns to shift. N equal to zero is a null operation. If N is less than zero, the text
+                  port is shifted to the left; A greater than zero shifts to the right. If the shift magnitude is equal to or greater than windWidth, the text port is cleared.
+                  The shifted characters are moved directly to their destination location. The space vacated by the shifted characters is set to the current consFill character (see the description of consFill earlier in this chapter). Characters shifted out of the text port are removed from the screen and are not recoverable.
+                  */
                  int8_t n = fc;
-                 // ....
+                 // .... TODO
              }
 
              | 0x06 any ${
-                 /* set vertical position */
-                 unsigned n = clamp(fc - 32, 0, 24-1);
-                 screen->setY(&_textPort, n);
+                 /* 
+                  Set Vertical Position
+
+                  Interprets the next byte as a text port-relative vertical position + 32. If the destination is outside the current text port, the cursor is moved to the nearest edge.
+                  */
+                 unsigned n = clamp(fc - 32, 0, window.height()-1);
+                 cursor.y = window.minY() + n;
              }
 
              | 0x07 ${
+                 /* 
+                  Ring Bell
+
+                  Causes the System Beep to be played. It has no effect on the screen.
+                  */
                  NSBeep();
              }
 
              | 0x08 ${
-                 /* back space */
-                 screen->decrementX(&_textPort);
+                 /* 
+                  Backspace
+                  
+                  Moves the cursor one position to the left. If the cursor was on the left edge of the
+                  text port and consWrap is TRUE, the cursor is placed one row higher and at the right edge. If the cursor was also on the topmost row and consScroll is TRUE, thetext port will scroll backward one line.
+                  */
+                 if (cursor.x > window.minX()) cursor.x--;
+                 else if (_context.consWrap) {
+                     cursor.x = window.maxX() - 1;
+                     if (cursor.y > window.minY()) cursor.y--;
+                     else if (_context.consScroll) screen->scrollDown(window);
+                 }
+                 
              }
 
              | 0x09 $nop
 
              | 0x0a ${
-                 /* line feed */
-                 screen->lineFeed(&_textPort);
+                 /* 
+                  Line Feed
+                  
+                  Causes the cursor to move down one line. If the cursor was at the bottom edge of the text port and consScroll is TRUE, the text port scrolls up one line.
+                  */
+                 if (cursor.y < window.maxY()-1) cursor.y++;
+                 else if (_context.consScroll)
+                 screen->scrollUp(window);
              }
 
              | 0x0b ${
-                 /* clear to end of text port */
-                 /* actually sets them to consFill */
-                 screen->erase(&_textPort, Screen::EraseAfterCursor);
+                 /* 
+                  Clear to End of Text Port
+                  
+                  Clears all characters from the cursor to the end of the current text port and sets them to be equal to the current consFill character.
+                  */
+
+                iRect tmp;
+                tmp.origin = cursor;
+                tmp.size = iSize(window.size.width - cursor.x, 1);
+
+                screen->eraseRect(tmp);
+
+                tmp = window;
+                tmp.origin.y = cursor.y+1;
+                tmp.size.height -= cursor.y+1;
+                screen->eraseRect(tmp);
              }
 
-             
+
              | 0x0c ${
-                 /* clear text port and home */
-                 screen->erase(&_textPort, Screen::EraseAll);
-                 screen->setCursor(&_textPort, 0, 0);
+                 /*
+                  Clear Text Port and Home Cursor
+                  
+                  Clears the entire text port and resets the cursor to windLeft, windTop.
+                  */
+
+                 screen->eraseRect(window);
+                 cursor = window.origin;
              }
 
              | 0x0d ${
-                 /* carriage return */
-                 screen->setX(&_textPort, 0);
-                 
-                 if (_consLF) {
-                     screen->lineFeed(&_textPort);
+                 /* 
+                  Carriage Return
+                  
+                  Resets the cursor to the left edge of the text port; if consLF is TRUE, performs a line feed (see $0A, Line Feed).
+                  */
+
+                 cursor.x = window.minX();
+                 if (_context.consLF) {
+                     if (cursor.y < window.maxY() - 1) cursor.y++;
+                     else if (_context.consScroll) screen->scrollUp(window);
                  }
-                
              }
 
              | 0x0e ${
-                 /* set normal display */
-                 screen->clearFlagBit(Screen::FlagInverse);
+                 /* 
+                  Set Normal Display Mode
+                  
+                  After this character, displays all subsequent characters in normal mode,
+                  */
+                 _context.clearFlagBit(Screen::FlagInverse);
+                 _context.consFill = 0xa0;
+                 _context.consVideo = true;
              }
              
              | 0x0f ${
-                 /* set inverse display */
-                 screen->setFlagBit(Screen::FlagInverse);
+                 /*
+                  Set Inverse Display Mode
+                  After this character, displays all subsequent characters in inverse mode.
+                  */
+                 _context.setFlagBit(Screen::FlagInverse);
+                 _context.consFill = 0x20;
+                 _context.consVideo = false;
              }
 
              | 0x10 any ${
-                /* DLE expansion */
-                if (_consDLE) {
+                /*
+                 DLE Space Expansion
+
+                 If consDLE is TRUE, interprets the next character as number of spaces + 32, and the
+                 correct number of spaces is issued to die screen. If consDLE is FALSE, the DLE character is ignored and the following character is processed normally.
+                 */
+                if (_context.consDLE) {
                     unsigned count = (fc - 32) & 0xff;
-                    while (count--) screen->putc(&_textPort, ' ');
+                    char_info ci = remap_fill(_context);
+
+                    if (_context.consAdvance) {
+                        while (count--) {
+                            screen->putc(' ', _context);
+                            if (_context.consAdvance) advance(screen, _context);
+                        }
+                    }
+                    else {
+                        if (count) screen->putc(' ', _context);
+                    }
                 }
                 else { fhold; }
             }
@@ -150,110 +269,173 @@
              | 0x12 ${ /* 80 column mode */ }
 
              | 0x13 ${
-                 /* clear from beginning of text port */
-                 screen->erase(&_textPort, Screen::EraseBeforeCursor);
-                 // todo -- clears up to and including cursor location!
+
              }
 
              | 0x14 any ${
-                 /* set horizontal position */
-                 unsigned n = clamp(fc - 32, 0, 80 - 1);
-                 screen->setX(&_textPort, n);
+                 /*
+                  Set Horizontal Position
+                  
+                  Interprets the next byte as a text port-relative horizontal position + 32. If the destination is outside the current text port, the cursor is moved to the nearest edge.
+                  */
+                 unsigned n = clamp(fc - 32, 0, window.width() - 1);
+                 cursor.x = window.minX() + n;
              }
              
              | 0x15 any ${
-                 /* set cursor movement */
+                 /* 
+                  Set Cursor Movement Word
+                  
+                  Interprets the next byte as cursor movement control, and sets the values of these Boolean flags:
+                  */
+                  
                  unsigned flags = fc;
-                 _textPort.advanceCursor = flags & 0x01;
-                 _consLF = flags & 0x02;
-                 if (flags & 0x04) {
-                     _textPort.leftMargin = TextPort::MarginWrap;
-                     _textPort.rightMargin = TextPort::MarginWrap;
-                 } else {
-                     _textPort.leftMargin = TextPort::MarginTruncate;
-                     _textPort.rightMargin = TextPort::MarginTruncate;
-                 }
-                 _textPort.scroll = flags & 0x08;
-
-                 _consDLE = flags & 0x10;
+                 _context.consAdvance = flags & 0x01;
+                 _context.consLF = flags & 0x02;
+                 _context.consWrap = flags & 0x04;
+                 _context.consScroll = flags & 0x08;
+                 _context.consDLE = flags & 0x10;
              }
 
-             | 0x16 ${ /* scroll down 1 line */ }
+             | 0x16 ${
+                /*
+                 Scroll Down One Line
+                 
+                 Scrolls the text port down one line. Does not move the cursor.
+                 */
+                screen->scrollDown(window);
+             }
 
-             | 0x17 ${ /* scroll up one line */ }
+             | 0x16 ${
+                /*
+                 Scroll Up One Line
+                 
+                 Scrolls the text port up one line. Does not move the cursor.
+                 */
+                screen->scrollUp(window);
+             }
 
              | 0x18 ${
-                 /* disable mouse text */
-                 screen->clearFlagBit(Screen::FlagMouseText);
+                 /* 
+                  Disable MouseText Mapping
+                  
+                  When MouseText is disabled, uppercase inverse characters are displayed as such (see the section "Character Set Mapping" earlier in this chapter).
+                  */
+                 _context.clearFlagBit(Screen::FlagMouseText);
+                 _context.consMouse = false;
              }
 
              | 0x19 ${
-                 /* home cursor */
-                 screen->setCursor(&_textPort, 0, 0);
+                 /*
+                  Home Cursor
+                  
+                  Resets the cursor to the upper-left corner of the text port.
+                  */
+                 cursor = window.origin;
              }
 
              | 0x1a ${
-                 /* clear line */
-                 screen->erase(&_textPort, Screen::EraseLineAll);
-                 screen->setX(&_textPort, 0);
+                 /*
+                  Clear Line
+                  
+                  Clears the line that the cursor is on. Resets the cursor to the leftmost column in the window.
+                  */
+                 iRect tmp;
+                 tmp.origin = iPoint(window.origin.x, cursor.y);
+                 tmp.size = iSize(window.size.width, 1);
+                 screen->eraseRect(tmp);
              }
 
              | 0x1b ${
-                 /* enable mouse text mapping */
-                 screen->setFlagBit(Screen::FlagMouseText);
+                 /*
+                  Enable MouseText Mapping
+                  
+                  When MouseText is enabled, uppercase inverse letters are displayed as MouseText symbols (see the section "Character Set Mapping" earlier in this chapter).
+                  */
+                 _context.setFlagBit(Screen::FlagMouseText);
+                 _context.consMouse = true;
              }
 
              | 0x1c ${
-                 /* move cursor right */
-                 screen->incrementX(&_textPort);
+                 /*
+                  Move Cursor Right
+                  
+                  Performs a nondestructive forward-space of the cursor. If consWrap is TRUE,
+                  the cursor may go to the next line; if consScroll is TRUE, the screen may scroll up one line.
+                  */
+                 advance(screen, _context);
              }
 
              | 0x1d ${
-                 /* clear to end of line */
-                 screen->erase(&_textPort, Screen::EraseLineAfterCursor);
+                 /*
+                  Clear to End of Line
+                  
+                  Clears from the position underneath the cursor to the end of the current line.
+                  */
+                 iRect tmp;
+                 tmp.origin = cursor;
+                 tmp.size = iSize(window.size.width - cursor.x, 1);
+                 
+                 screen->eraseRect(tmp);
+
              }
 
-             | 0x1e arg1 arg2
-                ${ /* goto x y */
+             | 0x1e arg1 arg2 ${
+                    /* 
+                     Go to X,Y
+                     
+                     Adjusts the cursor position relative to the text port. The parameters passed are X+32
+                     and Y+32. If the new locations are outside the current text port, the cursor is placed on the nearest edge.
+                     */
+                    
                     iPoint dca;
-                    dca.x = clamp(_scratch[0], 0, 80 - 1);
-                    dca.y = clamp(_scratch[1], 0, 24 - 1);
-                    screen->setCursor(&_textPort, dca);
+
+                    dca.x = clamp(_scratch[0], 0, window.width() - 1);
+                    dca.y = clamp(_scratch[1], 0, window.height() - 1);
+                    cursor.x = dca.x + window.minX();
+                    cursor.y = dca.y + window.minY();
+                    cursor = dca;
                 }
 
              | 0x1f ${
-                 /* move cursor up */
-                 screen->reverseLineFeed(&_textPort);
+                 /* 
+                  Move Cursor Up
+                  
+                  Moves the cursor up one line (reverse line feed). If the cursor is already on the
+                  uppermost line of the textport and consScroll isTRUE, it will cause a reverse scroll.
+                  */
+                 if (cursor.y > window.minY()) cursor.y--;
+                 else if (_context.consScroll) screen->scrollDown(window);
              }
 
              | 0x20 .. 0x7f ${
-                 screen->putc(&_textPort, fc);
-             }
+                 screen->putc(fc, _context);
+             } $advance_if
 
              | 0x80 .. 0x9f ${
                  /* uppercase inverse/normal */
-                 uint8_t flag = ~(screen->flag() & Screen::FlagInverse);
-                 screen->putc(&_textPort, fc - 0x40, flag);
-             }
+                 uint8_t flags = ~(_context.flags & Screen::FlagInverse);
+                 screen->putc(fc - 0x40, cursor, flags);
+             } $advance_if
 
              | 0xa0 .. 0xbf ${
                  /* special inverse/normal */
-                 uint8_t flag = ~(screen->flag() & Screen::FlagInverse);
-                 screen->putc(&_textPort, fc - 0x80, flag);
-             }
+                 uint8_t flags = ~(_context.flags & Screen::FlagInverse);
+                 screen->putc(fc - 0x80, cursor, flags);
+             } $advance_if
 
              | 0xc0 .. 0xdf ${
                  /* uppercase normal / mouse text. */
-                 uint8_t flag = ~(screen->flag() & Screen::FlagInverse);
-                 if (flag) flag |= Screen::FlagMouseText;
-                 screen->putc(&_textPort, fc - 0x80, flag);
-             }
+                 uint8_t flags = ~(_context.flags & Screen::FlagInverse);
+                 if (flags) flags |= Screen::FlagMouseText;
+                 screen->putc(fc - 0x80, cursor, flags);
+             } $advance_if
 
              | 0xe0 .. 0xff ${
                  /* special inverse/normal */
-                 uint8_t flag = ~(screen->flag() & Screen::FlagInverse);
-                 screen->putc(&_textPort, fc - 0x80, flag);
-             }
+                 uint8_t flags = ~(_context.flags & Screen::FlagInverse);
+                 screen->putc(fc - 0x80, cursor, flags);
+             } $advance_if
              
     )* $err{ fgoto main; };
     
@@ -319,20 +501,23 @@
     
     %%write init;
     
-    _textPort.frame = iRect(0, 0, 80, 24);
-    _textPort.cursor = iPoint(0,0);
+    _context.window = iRect(0, 0, 80, 24);
+    _context.cursor = iPoint(0,0);
     
-    _textPort.scroll = true;
-    _textPort.advanceCursor = true;
-    _textPort.leftMargin = TextPort::MarginWrap;
-    _textPort.rightMargin = TextPort::MarginWrap;
-    
+
+    _context.consWrap = true;
+    _context.consAdvance = true;
+    _context.consLF = true;
+    _context.consScroll = true;
+    _context.consVideo = true;
+    _context.consDLE = true;
+    _context.consMouse = false;
+    _context.consFill = 0xa0;
+
     _cursorType = Screen::CursorTypeUnderscore;
-    _consLF = true;
-    _consDLE = true;
-    
-    // set flags to plain text.
+
 }
+
 
 -(void)processData:(const uint8_t *)data length: (size_t)length screen:(Screen *)screen output:(OutputChannel *)output
 {
@@ -341,8 +526,10 @@
     const uint8_t *p = data;
     const uint8_t *pe = data + length;
 
+    auto &cursor = _context.cursor;
+    auto &window = _context.window;
     %%write exec;
-
+    screen->setCursor(cursor);
 }
 
 -(void)keyDown:(NSEvent *)event screen:(Screen *)screen output:(OutputChannel *)output

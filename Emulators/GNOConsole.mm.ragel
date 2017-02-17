@@ -116,7 +116,6 @@
 
  */
 
-
 %%{
     machine console;
     alphtype unsigned int;
@@ -164,8 +163,8 @@
                  _scratch[2] = std::max(0, _scratch[2]);
                  
                  
-                 _scratch[1] = std::min(80, _scratch[1]+1);
-                 _scratch[3] = std::min(24, _scratch[3]+1);
+                 _scratch[1] = std::min(80-1, _scratch[1])+1;
+                 _scratch[3] = std::min(24-1, _scratch[3])+1;
                  
                  
                  if (_scratch[1] <= _scratch[0]) _scratch[1] = 80;
@@ -384,6 +383,7 @@
     
     write data;
 }%%
+
 
 @implementation GNOConsole
 

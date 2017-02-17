@@ -12,19 +12,26 @@
 #include "iGeometry.h"
 #include "Screen.h"
 
+struct gsos_context : public context {
+    bool consWrap = true;
+    bool consAdvance = true;
+    bool consLF = true;
+    bool consScroll = true;
+    bool consVideo = true;
+    bool consDLE = true;
+    bool consMouse = false;
+    uint8_t consFill = 0xa0;
+};
+
 @interface GSOSConsole : NSObject <Emulator> {
+
+    
+    gsos_context _context;
+    std::vector<gsos_context> _context_stack;
+
     unsigned cs;
-    
-    TextPort _textPort;
-    iRect _window;
-    
-    std::vector<TextPort> _tpStack;
-    
     int _scratch[4];
-    
     int _cursorType;
-    bool _consLF;
-    bool _consDLE;
 }
 
 @end

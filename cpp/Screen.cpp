@@ -89,24 +89,30 @@ void Screen::putc(uint8_t c, iPoint cursor, uint8_t flags)
 #pragma mark -
 #pragma mark Erase
 
-void Screen::eraseScreen()
-{
+void Screen::eraseScreen() { fillScreen(char_info()); }
+void Screen::eraseRect(iRect rect) { fillRect(rect, char_info()); }
 
+
+void Screen::fillScreen(char_info ci) {
+    
     for (auto &line : _screen) {
-        std::fill(line.begin(), line.end(), char_info());
+        std::fill(line.begin(), line.end(), ci);
     }
     _updates.push_back(iPoint(0,0));
     _updates.push_back(iPoint(width() - 1, height() - 1));
 }
-    
 
-void Screen::eraseRect(iRect rect) {
+
+
+
+
+void Screen::fillRect(iRect rect, char_info ci) {
 
     rect = rect.intersection(_frame);
 
     if (!rect.valid()) return;
 
-    if (rect == _frame) return eraseScreen();
+    if (rect == _frame) return fillScreen(ci);
 
     auto yIter = _screen.begin() + rect.origin.y;
     auto yEnd = yIter + rect.size.height;
@@ -116,7 +122,7 @@ void Screen::eraseRect(iRect rect) {
         auto xIter = line.begin() + rect.origin.x;
         auto xEnd = xIter + rect.size.width;
         
-        std::fill(xIter, xEnd, char_info());
+        std::fill(xIter, xEnd, ci);
     }
     _updates.push_back(rect.origin);
     _updates.push_back(iPoint(rect.maxX()-1, rect.maxY()-1));

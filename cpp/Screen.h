@@ -101,6 +101,9 @@ public:
     void eraseScreen();
     void eraseRect(iRect rect);
     
+    void fillScreen(char_info ci);
+    void fillRect(iRect rect, char_info ci);
+    
     
     void scrollUp();
     void scrollUp(iRect window);
@@ -187,6 +190,9 @@ inline int Screen::width() const
 
 inline void Screen::setCursor(iPoint point)
 {
+    if (point.x >= _frame.width()) point.x = _frame.width() - 1;
+    if (point.y >= _frame.height()) point.y = _frame.height() - 1;
+    
     _cursor = point;
 }
 
