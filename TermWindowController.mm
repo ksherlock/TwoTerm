@@ -11,8 +11,8 @@
 #import "CurveView.h"
 #import "EmulatorWindow.h"
 
-#import "VT52.h"
-#import "PTSE.h"
+//#import "VT52.h"
+//#import "PTSE.h"
 
 #import "Defaults.h"
 
@@ -309,7 +309,8 @@
     klass = [_parameters objectForKey: kClass];
     if (!klass || ![klass conformsToProtocol: @protocol(Emulator)])
     {
-        klass = [VT52 class];
+        klass = Nil;
+        //klass = [VT52 class];
     }
     
     o = [_parameters objectForKey: kForegroundColor];

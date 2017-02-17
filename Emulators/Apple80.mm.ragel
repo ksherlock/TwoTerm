@@ -1,0 +1,396 @@
+//
+//  Apple80.mm
+//  2Term
+//
+//  Created by Kelvin Sherlock on 12/23/2010.
+//  Copyright 2010 __MyCompanyName__. All rights reserved.
+//
+
+/*
+ * See Apple IIe Tech Ref page 273.
+ * See Apple IIgs Firmware Reference page 77
+ * See Apple IIe Extended 80-Column TextCard (revision B) appendix C.
+ *
+ */
+
+#import "Apple80.h"
+
+#include <sys/ttydefaults.h>
+
+#include "OutputChannel.h"
+#include "Screen.h"
+#include "algorithm.h"
+
+
+%%{
+    machine console;
+    alphtype unsigned int;
+    
+    action nop {}
+    
+    action advance {
+        // advance cursor
+        if (++cursor.x == 80) {
+            cursor.x = 0;
+            if (cursor.y >= 24-1) {
+                screen->scrollUp();
+            } else cursor.y++;
+        }
+    }
+    
+    arg1 = any ${ _scratch[0] = (fc - 32); };
+    arg2 = any ${ _scratch[1] = (fc - 32); };
+
+    
+    
+    
+    main := (
+               0x00 $nop
+             | 0x01 $nop
+             | 0x02 $nop
+             | 0x03 $nop
+             | 0x04 $nop
+             
+             | 0x05 ${
+                 /* E - $05 - Turns cursor on (enables cursor display) */
+                 screen->setCursorType(Screen::CursorTypeUnderscore);
+             }
+             
+             | 0x06 ${
+                 /* F - $06 - Turns cursor off (disables cursor display) */
+                 screen->setCursorType(Screen::CursorTypeNone);
+             }
+             
+             | 0x07 ${
+                 /* G - $07 - beep 1000 hz for .1 seconds. */
+                 NSBeep();
+             }
+             
+             | 0x08 ${
+                 /* H - $08 - Moves cursor left one column; 
+                  if cursor was at beginning of line, moves 
+                  it to end of previous line
+                  */
+
+                 if (cursor.x) cursor.x--;
+                 else {
+                     cursor.x = 80-1;
+                     // go up, possibly scrolling.
+                     if (cursor.y) cursor.y--;
+                 }
+             }
+             
+             | 0x09 ${
+                 // control-I
+                 // tab -- todo, verify.
+                 cursor.x = (cursor.x + 8) & ~7;
+                 cursor.x = std::min(cursor.x, 79);
+             }
+             
+             | 0x0a ${
+                 /* J - $0A - Moves cursor down one row; scrolls if needed */
+
+                 if (cursor.y >= 24-1) {
+                     screen->scrollUp();
+                 } else cursor.y++;
+             
+             }
+             
+             | 0x0b ${
+                 /* K - $0B - Clears to end of screen */
+
+                 iRect tmp;
+                 tmp.origin = cursor;
+                 tmp.size = iSize(80 - cursor.x, 1);
+                 
+                 screen->eraseRect(tmp);
+                 
+                 tmp = iRect(0, 0, 80, 24);
+                 tmp.origin.y = cursor.y+1;
+                 tmp.size.height -= cursor.y+1;
+                 screen->eraseRect(tmp);
+             
+             }
+             
+             | 0x0c ${
+                 // control-L
+                 /* clear text port and home */
+                 screen->eraseScreen();
+                 cursor = iPoint(0,0);
+             }
+             
+             | 0x0d ${
+                 // control-M
+                 /* carriage return */
+                 // BASIC also moves to next line, PASCAL does not.
+                 cursor.x = 0;
+             }
+             
+             | 0x0e ${
+                 // control-N
+                 /* set normal display */
+                 _context.clearFlagBit(Screen::FlagInverse);
+             }
+             
+             | 0x0f ${
+                 // control-O
+                 /* set inverse display */
+                 _context.setFlagBit(Screen::FlagInverse);
+             }
+             
+             | 0x10 $nop
+             
+             | 0x11 ${ /* ^Q 40 column mode */ }
+             | 0x12 ${ /* ^R 80 column mode */ }
+             
+             | 0x13 ${ /* ^S - stop listing until any keypress. */ }
+             
+             | 0x14 $nop
+             
+             | 0x15 ${
+                 /* ^U - deactivate 80 column? */
+             }
+             
+             | 0x16 ${ /* CTRL('V') */ screen->scrollDown(); }
+             
+             | 0x17 ${ /* CTRL('W') */ screen->scrollUp(); }
+             
+             | 0x18 ${
+                 // CTRL('X'):
+                 /* disable mouse text */
+                 _context.clearFlagBit(Screen::FlagMouseText);
+             }
+             
+             | 0x19 ${
+                 // CTRL('Y'):
+                 /* home cursor */
+                 cursor = iPoint(0,0);
+             }
+             
+             | 0x1a ${
+                 // CTRL('Z'):
+                 /* clear line */
+                 iRect tmp;
+                 tmp.origin = iPoint(0, cursor.y);
+                 tmp.size = iSize(80, 1);
+                 screen->eraseRect(tmp);
+             }
+             
+             | 0x1b ${
+                 // CTRL('['):
+                 /* ^[ enable mouse text mapping */
+                 _context.setFlagBit(Screen::FlagMouseText);
+             }
+             
+             | 0x1c ${
+                 // CTRL('\\'):
+                 /* Moves cursor right one column; if at end of line, does Control-M */
+                 // n.b. - BASIC ^M also moves to next line.
+                 cursor.x++;
+                 if (cursor.x == 80) cursor.x = 0;
+             }
+             
+             | 0x1d ${
+                 // CTRL(']'):
+                 /* clear to end of line */
+                 iRect tmp;
+                 tmp.origin = cursor;
+                 tmp.size = iSize(80 - cursor.x, 1);
+                 
+                 screen->eraseRect(tmp);
+             }
+             
+             | 0x1e arg1 arg2 ${
+                 // CTRL('^'):
+                 /* goto x y */
+                 // todo - verify behavior for illegal values.
+                 cursor.x = clamp(_scratch[0], 0, 80 - 1);
+                 cursor.y = clamp(_scratch[1], 0, 24 - 1);
+             }
+             
+             | 0x1f ${
+                 // CTRL('_'):
+                 /* move cursor up */
+                 if (cursor.y) cursor.y--;
+             }
+             
+             | 0x20 .. 0x7f ${
+                 screen->putc(fc, _context);
+             } $advance
+             
+             | 0x80 .. 0x9f ${
+                 /* uppercase inverse/normal */
+                 uint8_t flag = ~(_context.flags & Screen::FlagInverse);
+                 screen->putc(fc - 0x40, _context.cursor, flag);
+             } $advance
+             
+             | 0xa0 .. 0xbf ${
+                 /* special inverse/normal */
+                 uint8_t flag = ~(_context.flags & Screen::FlagInverse);
+                 screen->putc(fc - 0x80, _context.cursor, flag);
+             } $advance
+             
+             | 0xc0 .. 0xdf ${
+                 /* uppercase normal / mouse text. */
+                 uint8_t flag = ~(_context.flags & Screen::FlagInverse);
+                 if (flag) flag |= Screen::FlagMouseText;
+                 screen->putc(fc - 0x80, _context.cursor, flag);
+             } $advance
+             
+             | 0xe0 .. 0xff ${
+                 /* special inverse/normal */
+                 uint8_t flag = ~(_context.flags & Screen::FlagInverse);
+                 screen->putc(fc - 0x80, _context.cursor, flag);
+             } $advance
+             
+             )* $err{ fgoto main; };
+    
+    write data;
+}%%
+
+@implementation Apple80
+
+
++(void)load
+{
+    [EmulatorManager registerClass: self];
+}
+
++(NSString *)name
+{
+    return @"Apple 80";
+}
+
+-(NSString *)name
+{
+    return @"Apple 80";
+}
+
+-(const char *)termName
+{
+    return "appleIIe";
+}
+
+
+-(void)reset
+{
+
+    %%write init;
+    _context.window = iRect(0, 0, 80, 24);
+    _context.cursor = iPoint(0,0);
+    _context.flags = 0;
+}
+
+-(BOOL)resizable
+{
+    return NO;
+}
+
+-(struct winsize)defaultSize
+{
+    struct winsize ws = { 24, 80, 0, 0 };
+    
+    return ws;
+}
+
+-(void)initTerm: (struct termios *)term
+{
+    // Control-U is used by the up-arrow key.
+    term->c_cc[VKILL] = CTRL('X');
+}
+
+-(id)init
+{
+    if ((self = [super init]))
+    {
+        [self reset];
+    }
+    
+    return self;
+}
+
+-(void)processData:(const uint8_t *)data length: (size_t)length screen:(Screen *)screen output:(OutputChannel *)output
+{
+    
+    const uint8_t *eof = nullptr;
+    const uint8_t *p = data;
+    const uint8_t *pe = data + length;
+    
+    auto &cursor = _context.cursor;
+    %%write exec;
+    screen->setCursor(cursor);
+}
+
+
+-(void)keyDown:(NSEvent *)event screen:(Screen *)screen output:(OutputChannel *)output
+{
+    NSEventModifierFlags flags = [event modifierFlags];
+    NSString *chars = [event charactersIgnoringModifiers];
+    
+    NSUInteger length = [chars length];
+    
+    for (unsigned i = 0; i < length; ++i)
+    {
+        unichar uc = [chars characterAtIndex: i];
+        
+        switch (uc)
+        {
+            case NSEnterCharacter:
+                output->write(CTRL('M'));
+                break;
+                /*    
+                 case NSDeleteCharacter:
+                 output->write(0x7f);
+                 break;
+                 */
+            
+                
+                // the Apple II keyboard had a delete where the backspace key was.
+                // it functions as a backspace key.
+            case NSBackspaceCharacter:
+                output->write(0x7f);
+                break;
+                
+            case NSLeftArrowFunctionKey:
+                output->write(CTRL('H'));
+                break;
+                
+            case NSRightArrowFunctionKey:
+                output->write(CTRL('U'));
+                break;
+                
+            case NSUpArrowFunctionKey:
+                output->write(CTRL('K'));
+                break;
+                
+            case NSDownArrowFunctionKey:
+                output->write(CTRL('J'));
+                break;
+                
+                
+            default:
+                if (uc <= 0x7f)
+                {
+                    char c = uc;
+                    
+                    //NSLog(@"%@", event);
+                    
+                    if (flags & NSAlphaShiftKeyMask)
+                    {
+                        c = flags & NSShiftKeyMask  ? tolower(c) : toupper(c);
+                    }
+     
+                    if (flags & NSControlKeyMask)
+                        c = CTRL(c);
+                    
+                    output->write(c);
+                }
+                break;
+        }
+        
+        
+        
+    }
+}
+
+@end

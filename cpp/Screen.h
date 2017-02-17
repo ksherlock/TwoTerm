@@ -17,45 +17,27 @@
 
 
 
-typedef struct CharInfo {
+typedef struct char_info {
     
-    CharInfo() = default;
-    CharInfo(uint8_t cc, uint8_t ff) : c(cc), flag(ff) {}
+    char_info() = default;
+    char_info(uint8_t cc, uint8_t ff) : c(cc), flag(ff) {}
     
     uint8_t c = 0;
     uint8_t flag = 0;
     
-} CharInfo;
+} char_info;
 
 
-typedef struct TextPort {
-
-    enum MarginBehavior {
-        MarginTruncate,
-        MarginWrap,
-        MarginOverwrite
-    };
-    
-    
-        
-    iRect frame;
+typedef struct context {
+    uint8_t flags = 0;
+    iRect window;
     iPoint cursor;
+    
+    void setFlagBit(unsigned x) { flags |= x; }
+    void clearFlagBit(unsigned x) { flags &= ~x; }
+} context;
 
 
-    MarginBehavior leftMargin = MarginTruncate;
-    MarginBehavior rightMargin = MarginTruncate;
-    
-    bool advanceCursor = true;
-    bool scroll = true;
-    
-    // clamp setCursor calls.
-    bool clampX = true;
-    bool clampY = true;
-    
-    
-    iPoint absoluteCursor() const;
-
-} TextPort;
 
 class Screen {
     
@@ -72,7 +54,7 @@ public:
     static const unsigned FlagSelected = 0x8000;
     
     
-
+/*
     enum EraseRegion {
         EraseAll,
         EraseBeforeCursor,
@@ -82,7 +64,7 @@ public:
         EraseLineBeforeCursor,
         EraseLineAfterCursor
     };
-    
+*/
     enum CursorType {
         CursorTypeNone,
         CursorTypeUnderscore,
@@ -101,85 +83,42 @@ public:
     int y() const;
     
     iPoint cursor() const;
-    uint8_t flag() const;
     
     int height() const;
     int width() const;
     
     
-    int incrementX(bool clamp = true);
-    int decrementX(bool clamp = true);
-    int incrementY(bool clamp = true);
-    int decrementY(bool clamp = true);
-    
-    void setX(int x, bool clamp = true);
-    void setY(int y, bool clamp = true);
-    
-
-    void setCursor(iPoint point, bool clampX = true, bool clampY = true);
-    void setCursor(int x, int y, bool clampX = true, bool clampY = true);
+    void setCursor(iPoint point);
 
 
-    int setX(TextPort *textPort, int x);
-    int setY(TextPort *textPort, int y);
+
+    void putc(uint8_t c, iPoint cursor, uint8_t flags = 0);
+    void putc(uint8_t c, const context &ctx) { putc(c, ctx.cursor, ctx.flags); }
+
+    char_info getc(iPoint p) const;
+
     
-    int incrementX(TextPort *textPort);
-    int incrementY(TextPort *textPort);
-    
-    int decrementX(TextPort *textPort);
-    int decrementY(TextPort *textPort);        
-    
-    void setCursor(TextPort *textPort, iPoint point);
-    void setCursor(TextPort *textPort, int x, int y);
-    
-    
-    
-    void setFlag(uint8_t flag);
-    void setFlagBit(uint8_t bit);
-    void clearFlagBit(uint8_t bit);
-    
-    
-    void putc(uint8_t c, bool incrementX = true);
-    void putc(TextPort *textPort, uint8_t c);
-    void putc(TextPort *textPort, uint8_t c, uint8_t flags);
-    
-    
-    CharInfo getc(int x, int y) const;
-    
-    void deletec();
-    void insertc(uint8_t c);
-    
-    void tabTo(unsigned x);
-    void tabTo(TextPort *textPort, unsigned x);
-    
-    
-    void erase(EraseRegion);
-    void erase(TextPort *, EraseRegion);
-    
-    void eraseLine();
     void eraseScreen();
-    
     void eraseRect(iRect rect);
     
+    void fillScreen(char_info ci);
+    void fillRect(iRect rect, char_info ci);
     
-    void lineFeed();
-    int lineFeed(TextPort *textPort);
-
-    void reverseLineFeed();
-    int reverseLineFeed(TextPort *textPort);
+    
+    void scrollUp();
+    void scrollUp(iRect window);
+    
+    void scrollDown();
+    void scrollDown(iRect window);
     
     
     
     void deleteLine(unsigned line);
     void insertLine(unsigned line);
     
-    void insertLine(TextPort *textPort, int line);
-    void deleteLine(TextPort *textPort, int line);
+    //void deletec();
+    //void insertc(uint8_t c);
 
-    void insertc(TextPort *textPort, uint8_t c);
-    void deletec(TextPort *textPort);
-    
-    
     void beginUpdate();
     iRect endUpdate();
     
@@ -187,36 +126,32 @@ public:
     void lock();
     void unlock();
     
-    void setTextPort(const TextPort& textPort);
     virtual void setSize(unsigned width, unsigned height);
     
     virtual void setCursorType(CursorType cursor);
-    
     CursorType cursorType() const;
 
     
 private:
         
-    TextPort _port;    
-
-    
-    uint8_t _flag;
+    iRect _frame;
+    iPoint _cursor;
     
     CursorType _cursorType;
     
     
     Lock _lock;
     
-    std::vector< std::vector< CharInfo > > _screen; 
+    std::vector< std::vector< char_info > > _screen;
     
     std::vector<iPoint> _updates;
     iPoint _updateCursor;
     
     
-    typedef std::vector< std::vector< CharInfo > >::iterator ScreenIterator;
-    typedef std::vector< std::vector< CharInfo > >::reverse_iterator ReverseScreenIterator;
+    typedef std::vector< std::vector< char_info > >::iterator ScreenIterator;
+    typedef std::vector< std::vector< char_info > >::reverse_iterator ReverseScreenIterator;
 
-    typedef std::vector<CharInfo>::iterator CharInfoIterator;
+    typedef std::vector<char_info>::iterator CharInfoIterator;
     typedef std::vector<iPoint>::iterator UpdateIterator;
     
 };
@@ -224,23 +159,19 @@ private:
 
 inline int Screen::x() const
 {
-    return _port.cursor.x;
+    return _cursor.x;
 }
 
 inline int Screen::y() const 
 {
-    return _port.cursor.y;
+    return _cursor.y;
 }
 
 inline iPoint Screen::cursor() const
 {
-    return _port.cursor;
+    return _cursor;
 }
 
-inline uint8_t Screen::flag() const
-{
-    return _flag;
-}
 
 inline Screen::CursorType Screen::cursorType() const
 {
@@ -249,24 +180,20 @@ inline Screen::CursorType Screen::cursorType() const
 
 inline int Screen::height() const
 {
-    return _port.frame.size.height;
+    return _frame.size.height;
 }
 
 inline int Screen::width() const
 {
-    return _port.frame.size.width;
+    return _frame.size.width;
 }
 
-inline void Screen::setCursor(iPoint point, bool clampX, bool clampY)
+inline void Screen::setCursor(iPoint point)
 {
-    setX(point.x, clampX);
-    setY(point.y, clampY);
-}
-
-inline void Screen::setCursor(int x, int y, bool clampX, bool clampY)
-{
-    setX(x, clampX);
-    setY(y, clampY);
+    if (point.x >= _frame.width()) point.x = _frame.width() - 1;
+    if (point.y >= _frame.height()) point.y = _frame.height() - 1;
+    
+    _cursor = point;
 }
 
 
@@ -281,12 +208,10 @@ inline void Screen::unlock()
 }
 
 
-inline CharInfo Screen::getc(int x, int y) const
+inline char_info Screen::getc(iPoint p) const
 {
-    if (x < 0 || y < 0) return CharInfo();
-    if (x >= width() || y >= height()) return CharInfo(0,0);
-    
-    return _screen[y][x];
+    if (_frame.contains(p)) return _screen[p.y][p.x];
+    return char_info();
 }
 
 #endif

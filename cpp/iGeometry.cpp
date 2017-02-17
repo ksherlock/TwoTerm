@@ -9,7 +9,7 @@
 
 
 #include "iGeometry.h"
-
+#include <algorithm>
 
 bool iRect::contains(const iPoint aPoint) const
 {
@@ -30,4 +30,19 @@ bool iRect::contains(const iRect aRect) const
 bool iRect::intersects(const iRect aRect) const
 {
     return aRect.contains(origin) || aRect.contains(origin.offset(size));    
+}
+
+iRect iRect::intersection(const iRect &rhs) const {
+    iPoint topLeft;
+    iPoint bottomRight;
+    topLeft.x = std::max(origin.x, rhs.origin.x);
+    topLeft.y = std::max(origin.y, rhs.origin.y);
+
+    bottomRight.x = std::min(maxX(), rhs.maxX());
+    bottomRight.y = std::min(maxY(), rhs.maxY());
+    
+    if (bottomRight.x <= topLeft.x) return iRect();
+    if (bottomRight.y <= topLeft.y) return iRect();
+    
+    return iRect(topLeft, bottomRight);
 }

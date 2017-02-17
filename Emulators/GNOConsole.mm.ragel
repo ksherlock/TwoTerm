@@ -1,0 +1,536 @@
+//
+//  GNOConsole.mm
+//  2Term
+//
+//  Created by Kelvin Sherlock on 7/9/2010.
+//  Copyright 2010 __MyCompanyName__. All rights reserved.
+//
+
+#include <sys/ttydefaults.h>
+
+
+#import "GNOConsole.h"
+
+#include "OutputChannel.h"
+#include "Screen.h"
+
+
+/*
+ * The GNO Console Driver.
+ * this was gleaned from the source code.
+ *
+ * 0x00 n/a
+ * 0x01 ^A - enable overstrike mode (IODP_gInsertFlag = 0)
+ * 0x02 ^B - enable insert mode (IODP_gInsertFlag = 1)
+ * 0x03 ^C - setport (IODP_GotoFlag = 3)
+ * 0x04 n/a
+ * 0x05 ^E - turn on cursor
+ * 0x06 ^F - turn off cursor
+ * 0x07 ^G - beep
+ * 0x08 ^H - left arrow
+ * 0x09 ^I - tab
+ * 0x0a ^J - Line Feed (checks IODP_Scroll)
+ * 0x0b ^K - clear EOP ???? up arrow???
+ * 0x0c ^L - form feed - clear screen
+ * 0x0d ^M - carriage return cursor = left margin
+ * 0x0e ^N - inverse off - invert flag &= 0x7fff
+ * 0x0f ^O - inverse on - invert flag |= 0x8000
+ * 0x10 n/a
+ * 0x11 ^Q - insert line
+ * 0x12 ^R - Delete Line
+ * 0x13 n/a
+ * 0x14 n/a
+ * 0x15 ^U - right arrow
+ * 0x16 ^V - scroll down 1 line
+ * 0x17 ^W - scroll up 1 line
+ * 0x18 ^X - mouse text off.
+ * 0x19 ^Y - cursor home.
+ * 0x1a ^Z - clear line
+ * 0x1b ^[ - mouse text on (inv flag | 0x4000)
+ * 0x1c ^\ - increment IODP_CH (kill?)
+ * 0x1d ^] -clear EOL
+ * 0x1e ^^ - goto xy (IODP_GotoFlag = 1)
+ * 0x1f ^_ - up arrow
+ *
+ * mouse text only applies if mouse text and inverse are on.
+ 
+ 
+ * set port - 0x03 '[' left-margin right-margin top-margin bottom-margin [any printable character]
+ */
+
+
+/*
+ this was gleaned from the kernel reference manual.
+ 
+ The new console driver supports all the features of the old 80-column Pascal firmware, 
+ and adds a few extensions, with one exception - the codes that switched between 40 and 
+ 80 columns modes are not supported. It is not compatible with the GS/OS '.console' 
+ driver. The control codes supported are as follows:
+ 
+ Hex ASCII Action
+ 01 CTRL-A set cursor to flashing block
+ 02 CTRL-B set cursor to flashing underscore
+ 03 CTRL-C Begin "Set Text Window" sequence
+ 05 CTRL-E Cursor on
+ 06 CTRL-F Cursor off
+ 07 CTRL-G Perform FlexBeep
+ 08 CTRL-H Move left one character
+ 09 CTRL-I Tab
+ 0A CTRL-J Move down a line
+ 0B CTRL-K Clear to EOP (end of screen)
+ 0C CTRL-L Clear screen, home cursor
+ 0D CTRL-M Move cursor to left edge of line
+ 0E CTRL-N Normal text
+ 0F CTRL-O Inverse text
+ 11 CTRL-Q Insert a blank line at the current cursor position
+ 12 CTRL-R Delete the line at the current cursor position.
+ 15 CTRL-U Move cursor right one character
+ 16 CTRL-V Scroll display down one line
+ 17 CTRL-W Scroll display up one line
+ 18 CTRL-X Normal text, mousetext off
+ 19 CTRL-Y Home cursor
+ 1A CTRL-Z Clear entire line
+ 1B CTRL-[ MouseText on
+ 1C CTRL-\ Move cursor one character to the right
+ 1D CTRL-] Clear to end of line
+ 1E CTRL-^ Goto XY
+ 1F CTRL-_ Move up one line
+ 
+ (Note: the Apple IIgs Firmware Reference incorrectly has codes 05 and 06 reversed. The 
+ codes listed here are correct for both GNO/ME and the Apple IIgs 80-column firmware)
+ 
+ The Set Text Window sequence (begun by a $03 code) works as follows:
+ 
+ CTRL-C '[' LEFT RIGHT TOP BOTTOM
+ 
+ CTRL-C is of course hex $03, and '[' is the open bracket character ($5B). TOP, BOTTOM, 
+ LEFT, and RIGHT are single-byte ASCII values that represent the margin settings. Values 
+ for TOP and BOTTOM range from 0 to 23; LEFT and RIGHT range from 0 to 79. TOP must be 
+ numerically less than BOTTOM; LEFT must be less than RIGHT. Any impossible settings are 
+ ignored, and defaults are used instead. The extra '[' in the sequence helps prevent the 
+ screen from becoming confused in the event that random data is printed to the screen.
+ 
+ After a successful Set Text Window sequence, only the portion of the screen inside the 
+ 'window' will be accessible, and only the window will scroll; any text outside the 
+ window is not affected.
+
+ */
+
+%%{
+    machine console;
+    alphtype unsigned int;
+    
+    action nop {}
+    
+    action forward {
+        if (cursor.x > window.maxX()-1) {
+            cursor.x = window.minX();
+            if (cursor.y >= window.maxY()-1) {
+                screen->scrollUp(window);
+            } else cursor.y++;
+        }
+        
+    }
+    
+    arg1 = any ${ _scratch[0] = ((fc & 0x7f) - 32); };
+    arg2 = any ${ _scratch[1] = ((fc & 0x7f) - 32); };
+    arg3 = any ${ _scratch[2] = ((fc & 0x7f) - 32); };
+    arg4 = any ${ _scratch[3] = ((fc & 0x7f) - 32); };
+    
+    main := (
+               0x00 $nop
+             | 0x01 ${
+                 // CTRL(A)
+                 // set cursor to flashing block.
+                 _cursorType = Screen::CursorTypeBlock;
+                 screen->setCursorType(_cursorType);
+             }
+
+             | 0x02 ${
+                // CTRL('B')
+                 // set cursor to flashing underscore.
+                 _cursorType = Screen::CursorTypeUnderscore;
+                 screen->setCursorType((Screen::CursorType)_cursorType);
+             }
+
+             | 0x03 '[' arg1 arg2 arg3 arg4 ${
+                 // CTRL('C'):
+                 // '[' left right top bottom
+                 // n.b. - 0, 79, 0, 23 is full screen.
+
+                 
+                 _scratch[0] = std::max(0, _scratch[0]);
+                 _scratch[2] = std::max(0, _scratch[2]);
+                 
+                 
+                 _scratch[1] = std::min(80-1, _scratch[1])+1;
+                 _scratch[3] = std::min(24-1, _scratch[3])+1;
+                 
+                 
+                 if (_scratch[1] <= _scratch[0]) _scratch[1] = 80;
+                 if (_scratch[3] <= _scratch[2]) _scratch[3] = 24;
+                 
+                 
+                  window = iRect(
+                    iPoint(_scratch[0], _scratch[2]),
+                    iPoint(_scratch[1], _scratch[3])
+                );
+
+                                  
+                 // move the cursor to the top left
+                 // gnome clamps the horizontal, doesn't adjust the vertical.
+                 //screen->setCursor(&_textPort, iPoint(0,0));
+
+                 if (cursor.x < _scratch[0]) cursor.x = _scratch[0];
+                 if (cursor.x >= _scratch[1]) cursor.x = _scratch[1] - 1;
+             }
+
+             | 0x04 $nop
+
+             | 0x05 ${
+                 // CTRL('E'):
+                 // cursor on
+                 screen->setCursorType(_cursorType);
+             }
+             
+             | 0x06 ${
+                 //CTRL('F'):
+                 //cursor off
+                 screen->setCursorType(Screen::CursorTypeNone);
+             }
+             
+             | 0x07 ${
+                 //CTRL('G'):
+                 NSBeep();
+             }
+             
+            | 0x08 ${
+                // CTRL('H'):
+                
+                if (cursor.x == window.minX()) {
+                    cursor.x = window.maxX()-1;
+                    // go up, possibly scrolling.
+                    if (cursor.y != window.minY()) cursor.y--;
+                }
+                else cursor.x--;
+
+             }
+             
+             | 0x09 ${
+                 // CTRL('I'):
+                 // tab
+                 cursor.x = (cursor.x + 8) & ~ 0x07;
+             } $forward
+             
+             | 0x0a ${
+                 // CTRL('J'):
+                 // down 1 line.
+                 if (cursor.y >= window.maxY()-1) {
+                     screen->scrollUp(window);
+                 } else cursor.y++;
+             }
+             
+             | 0x0b ${
+                 // CTRL('K'):
+                 // clear to end of screen
+
+
+                iRect tmp;
+                tmp.origin = cursor;
+                tmp.size = iSize(window.size.width - cursor.x, 1);
+
+                screen->eraseRect(tmp);
+
+                tmp = window;
+                tmp.origin.y = cursor.y+1;
+                tmp.size.height -= cursor.y+1;
+                screen->eraseRect(tmp);
+             }
+             
+             | 0x0c ${
+                 // CTRL('L'):
+                 // clear screen, go home.
+                 screen->eraseRect(window);
+                 cursor = window.origin;
+             }
+             
+             | 0x0d ${
+                 // CTRL('M'):
+                 // move to left edge.
+                 cursor.x = window.minX();
+             }
+             
+             | 0x0e ${
+                 // CTRL('N'):
+                 // normal text.
+                 _context.clearFlagBit(Screen::FlagInverse);
+             }
+             
+             | 0x0f ${
+                 // CTRL('O'):
+                 // inverse text.
+                 _context.setFlagBit(Screen::FlagInverse);
+             }
+
+             | 0x10 $nop
+             
+             | 0x11 ${
+                 // CTRL('Q'):
+                 // insert line.
+                 iRect tmp(iPoint(window.minX(), cursor.y), window.bottomRight());
+                 screen->scrollDown(tmp);
+             }
+             
+             | 0x12 ${
+                 // CTRL('R'):
+                 // delete line
+                 iRect tmp(iPoint(window.minX(), cursor.y), window.bottomRight());
+                 screen->scrollUp(tmp);
+
+             }
+             
+             | 0x13 $nop
+             | 0x14 $nop
+
+            | 0x15 $forward ${
+                // CTRL('U'):
+                // right arrow.
+                cursor.x++;
+            } $forward
+            
+             | 0x16 ${
+                 // CTRL('V'):
+                 // scroll down 1 line.
+                 screen->scrollDown(window);
+             }
+
+             | 0x17 ${
+                 // CTRL('W'):
+                 // scroll up 1 line.
+                 screen->scrollUp(window);
+             }
+             
+             | 0x18 ${
+                 // CTRL('X'):
+                 //mouse text off
+                 _context.clearFlagBit(Screen::FlagMouseText);
+             }
+             
+             | 0x19 ${
+                 // CTRL('Y'):
+                 // cursor home
+                 cursor.x = 0;
+                 cursor.y = 0;
+             }
+             
+             | 0x1a ${
+                 // CTRL('Z'):
+                 // clear entire line
+
+                iRect tmp;
+                tmp.origin = iPoint(window.origin.x, cursor.y);
+                tmp.size = iSize(window.size.width, 1);
+                screen->eraseRect(tmp);
+             }
+             
+             | 0x1b ${
+                 // CTRL('['):
+                 // mouse text on
+                 // inverse must also be on.
+                 _context.setFlagBit(Screen::FlagMouseText);
+             }
+             
+             | 0x1c ${
+                 // CTRL('\\'):
+                 // move cursor 1 character to the right
+                 cursor.x++;
+             }
+             
+             | 0x1d ${
+                 // CTRL(']'):
+                 // clear to end of line.
+
+                    iRect tmp;
+                    tmp.origin = cursor;
+                    tmp.size = iSize(window.size.width - cursor.x, 1);
+
+                    screen->eraseRect(tmp);
+             }
+             
+             | 0x1e arg1 arg2 ${
+                // CTRL('^'):
+                // goto x y
+                // goto xy does not respect the text window.
+                if (_scratch[0] >= 80) _scratch[0] = 0;
+                if (_scratch[1] >= 24) _scratch[1] = 0;
+                cursor = iPoint(_scratch[0], _scratch[1]);
+             }
+             
+             | 0x1f ${
+                 // CTRL('_'):
+                 // move up 1 line
+                 if (cursor.y != window.minY()) cursor.y--;
+             }
+             
+             
+             
+             | 0x20 .. 0x7f  $forward ${
+                 screen->putc(fc, _context);
+                 cursor.x++;
+             }
+             | 0x80 .. 0xff $nop
+    )* $err{ fgoto main; };
+    
+    write data;
+}%%
+
+
+@implementation GNOConsole
+
+
+
+
+
++(void)load
+{
+    [EmulatorManager registerClass: self];
+}
+
++(NSString *)name
+{
+    return @"GNO Console";
+}
+
+-(NSString *)name
+{
+    return @"GNO Console";
+}
+
+-(const char *)termName
+{
+    return "gno-console";
+}
+
+
+-(void)reset
+{
+
+    %%write init;
+
+    _context.flags = 0;
+    _context.window = iRect(0, 0, 80, 24);
+    _context.cursor = iPoint(0,0);
+    
+    
+    _cursorType = Screen::CursorTypeUnderscore;
+
+    // set flags to plain text.
+}
+
+-(BOOL)resizable
+{
+    return NO;
+}
+
+-(struct winsize)defaultSize
+{
+    struct winsize ws = { 24, 80, 0, 0 };
+    
+    return ws;
+}
+
+-(void)initTerm: (struct termios *)term
+{
+    // Control-U is used by the up-arrow key.
+    term->c_cc[VKILL] = CTRL('X');
+}
+
+-(id)init
+{
+    if ((self = [super init]))
+    {
+        [self reset];
+    }
+    
+    return self;
+}
+
+-(void)processData:(const uint8_t *)data length: (size_t)length screen:(Screen *)screen output:(OutputChannel *)output
+{
+ 
+    const uint8_t *eof = nullptr;
+    const uint8_t *p = data;
+    const uint8_t *pe = data + length;
+
+    iPoint &cursor = _context.cursor;
+    iRect &window = _context.window;
+
+    %%write exec;
+
+    if (cursor.x == 80) screen->setCursor(iPoint(79, cursor.y));
+    else screen->setCursor(cursor);
+}
+
+
+-(void)keyDown:(NSEvent *)event screen:(Screen *)screen output:(OutputChannel *)output
+{
+    NSEventModifierFlags flags = [event modifierFlags];
+    NSString *chars = [event charactersIgnoringModifiers];
+    
+    NSUInteger length = [chars length];
+    
+    for (unsigned i = 0; i < length; ++i)
+    {
+        unichar uc = [chars characterAtIndex: i];
+        
+        switch (uc)
+        {
+            case NSEnterCharacter:
+                output->write(CTRL('M'));
+                break;
+            /*    
+            case NSDeleteCharacter:
+                output->write(0x7f);
+                break;
+            */
+            
+            case NSBackspaceCharacter:
+                output->write(0x7f);
+                break;
+                
+            case NSLeftArrowFunctionKey:
+                output->write(CTRL('H'));
+                break;
+                
+            case NSRightArrowFunctionKey:
+                output->write(CTRL('U'));
+                break;
+                
+            case NSUpArrowFunctionKey:
+                output->write(CTRL('K'));
+                break;
+                
+            case NSDownArrowFunctionKey:
+                output->write(CTRL('J'));
+                break;
+
+                
+            default:
+                if (uc <= 0x7f)
+                {
+                    char c = uc;
+                    if (flags & (NSShiftKeyMask | NSAlphaShiftKeyMask))
+                    {
+                        c = toupper(c);
+                    }
+                    if (flags & NSControlKeyMask)
+                        c = CTRL(c);
+                    
+                    output->write(c);
+                }
+                break;
+        }
+    }
+}
+
+@end
