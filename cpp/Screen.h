@@ -112,6 +112,12 @@ public:
     void scrollDown(iRect window);
     
     
+    void scrollLeft(int n = 1);
+    void scrollLeft(iRect window, int n = 1);
+
+    void scrollRight(int n = 1);
+    void scrollRight(iRect window, int n = 1);
+    
     
     void deleteLine(unsigned line);
     void insertLine(unsigned line);

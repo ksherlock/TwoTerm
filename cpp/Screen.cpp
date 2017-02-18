@@ -198,7 +198,7 @@ void Screen::scrollUp(iRect rect)
 void Screen::scrollDown()
 {
 
-    // save the first line (to avoid allocation/deallocation)
+    // save the last line (to avoid allocation/deallocation)
     std::vector<char_info> tmp;
     std::swap(tmp, _screen.back());
     std::fill(tmp.begin(), tmp.end(), char_info());
@@ -238,42 +238,97 @@ void Screen::scrollDown(iRect rect)
     _updates.push_back(iPoint(rect.maxX()-1, rect.maxY()-1));
 }
 
+void Screen::scrollLeft(int n) {
 
-
-
-
-#if 0
-void Screen::scrollDown(iRect rect)
-{
+    if (n <= 0) return;
+    if (n >= _frame.width()) return eraseScreen();
     
-    rect = rect.intersection(_frame);
+    for (auto &line : _screen) {
+        
+        auto iter = std::copy(line.begin() + n, line.end(), line.begin());
 
-    if (!rect.valid()) return;
-    
-    if (rect == _frame) return scrollDown();
-    
-    
-    auto src = _screen.begin() + rect.maxY()-1;
-    auto dest = _screen.begin() + rect.maxY();
-    auto end = _screen.begin() + rect.minY();
-    
-    
-    while (src != end) {
-        --src;
-        --dest;
-
-        std::copy(src->begin() + rect.minX(), src->begin() + rect.maxX(), dest->begin() + rect.minX());
-
+        while (n--) *iter++ = char_info();
     }
+
+    _updates.push_back(iPoint(0,0));
+    _updates.push_back(iPoint(width() - 1, height() - 1));
+
+}
+
+
+
+
+void Screen::scrollLeft(iRect rect, int n) {
     
-    auto &line = _screen[rect.minY()];
-    std::fill(line.begin() + rect.minX(), line.begin() + rect.maxX(), char_info());
+    if (n <= 0) return;
+
+    rect = rect.intersection(_frame);
+    if (!rect.valid()) return;
+    if (rect == _frame) return scrollLeft(n);
+
+    if (n >= rect.width()) return eraseRect(rect);
+    
+    auto yIter = _screen.begin() + rect.minY();
+    auto yEnd  = _screen.begin() + rect.maxY();
+    for( ; yIter != yEnd; ++yIter) {
+        auto &line = *yIter;
+        auto xIter = line.begin() + rect.minX();
+        auto xEnd = line.begin() + rect.maxX();
+
+        auto iter = std::copy(xIter + n, xEnd, xIter);
+        while (n--) *iter++ = char_info();
+    }
+
     
     _updates.push_back(rect.origin);
     _updates.push_back(iPoint(rect.maxX()-1, rect.maxY()-1));
 }
-#endif
 
+
+void Screen::scrollRight(int n) {
+    
+    if (n <= 0) return;
+    if (n >= _frame.width()) return eraseScreen();
+    
+    for (auto &line : _screen) {
+        
+        auto iter = std::copy_backward(line.begin(), line.end()-n, line.end());
+        
+        while (n--) { --iter; *iter = char_info(); }
+    }
+    
+    _updates.push_back(iPoint(0,0));
+    _updates.push_back(iPoint(width() - 1, height() - 1));
+}
+
+
+
+
+void Screen::scrollRight(iRect rect, int n) {
+    
+    if (n <= 0) return;
+    
+    rect = rect.intersection(_frame);
+    if (!rect.valid()) return;
+    if (rect == _frame) return scrollRight(n);
+    
+    if (n >= rect.width()) return eraseRect(rect);
+    
+    auto yIter = _screen.begin() + rect.minY();
+    auto yEnd  = _screen.begin() + rect.maxY();
+    for( ; yIter != yEnd; ++yIter) {
+        auto &line = *yIter;
+        auto xIter = line.begin() + rect.minX();
+        auto xEnd = line.begin() + rect.maxX();
+        
+        auto iter = std::copy(xIter, xEnd-n, xEnd);
+        while (n--) { --iter; *iter = char_info(); }
+    }
+    
+    
+    _updates.push_back(rect.origin);
+    _updates.push_back(iPoint(rect.maxX()-1, rect.maxY()-1));
+}
 
 
 
