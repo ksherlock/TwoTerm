@@ -1,0 +1,422 @@
+//
+//  PTSE.mm
+//  2Term
+//
+//  Created by Kelvin Sherlock on 7/9/2010.
+//  Copyright 2010 __MyCompanyName__. All rights reserved.
+//
+
+#include <sys/ttydefaults.h>
+
+
+#import "PTSE.h"
+
+#include "OutputChannel.h"
+#include "Screen.h"
+
+#include "algorithm.h"
+
+
+%%{
+    machine console;
+    alphtype unsigned int;
+    
+    action nop {}
+    
+    action advance {
+        // advance cursor
+        if (++cursor.x == 80) {
+            cursor.x = 0;
+            if (cursor.y >= 24-1) {
+                screen->scrollUp();
+            } else cursor.y++;
+        }
+    }
+    
+    arg1 = any ${ _scratch[0] = fc; };
+    arg2 = any ${ _scratch[1] = fc; };
+    
+    
+    
+    
+    main := (
+             0x00 $nop
+             | 0x01 ${
+                 // A - $01 Move cursor to beginning of line.
+                 cursor.x = 0;
+             }
+             | 0x02 ${
+                 // B - $02 Move cursor to end of line.
+                 cursor.x = 79;
+             }
+             | 0x03 $nop
+             | 0x04 ${
+                 // D - Delete current character (under cursor)
+                 iRect tmp;
+                 tmp.origin = cursor;
+                 tmp.size = iSize(80 - cursor.x, 1);
+                 screen->scrollLeft(tmp);
+             }
+             
+             | 0x05 ${
+                 /* E - $05 */
+                 //Inquire if using ProTERM Special Emulation
+                 /*
+                  * When you send out [CONTROL-E] to a caller using ProTERM
+                  * Special, the caller’s ProTERM will send back [CONTROL-“]”]
+                  * (ASCII code 29). This allows a BBS to transparently
+                  * detect the use of PSE.
+                  */
+                 output->write(29);
+             }
+             
+             | 0x06 ${
+                 /* F - $06  */
+                 // Insert space at cursor
+                 iRect tmp;
+                 tmp.origin = cursor;
+                 tmp.size = iSize(80 - cursor.x, 1);
+                 screen->scrollRight(tmp);
+             }
+             
+             | 0x07 ${
+                 /* G - $07 - beep 1000 hz for .1 seconds. */
+                 NSBeep();
+             }
+             
+             | 0x08 ${
+                 /* H - $08 - Moves cursor left one column;
+                  if cursor was at beginning of line, moves
+                  it to end of previous line
+                  */
+                 
+                 if (cursor.x) cursor.x--;
+                 else {
+                     cursor.x = 80-1;
+                     if (cursor.y) cursor.y--;
+                     else screen->scrollDown();
+                 }
+             }
+             
+             | 0x09 ${
+                 // control-I
+                 cursor.x = (cursor.x + 8) & ~7;
+                 cursor.x = std::min(cursor.x, 72); // verified.
+             }
+             
+             | 0x0a ${
+                 /* J - $0A - Moves cursor down one row; scrolls if needed */
+                 
+                 if (cursor.y >= 24-1) {
+                     screen->scrollUp();
+                 } else cursor.y++;
+                 
+             }
+             
+             | 0x0b ${
+                 /* K - $0B - Move cursor up one line */
+                 
+                 if (cursor.y == 0) {
+                     screen->scrollDown();
+                 } else cursor.y--;
+                 
+             }
+             
+             | 0x0c ${
+                 // control-L
+                 /* clear text port and home */
+                 // n.b - PT "home" is 0, 1
+                 screen->eraseScreen();
+                 cursor = iPoint(0,0);
+             }
+             
+             | 0x0d ${
+                 // control-M
+                 /* carriage return */
+                 cursor.x = 0;
+             }
+             
+             | 0x0e ${
+                 // control-N
+                 //Set: inverse off, mousetext off.
+                 _context.flags = Screen::FlagNormal;
+             }
+             
+             | 0x0f ${
+                 // control-O
+                 //Set: inverse on, mousetext off.
+                 _context.flags = Screen::FlagInverse;
+             }
+             
+             | 0x10 ${
+                 // control-P
+                 //Set inverse off, mousetext on.
+                 _context.flags = Screen::FlagInverse | Screen::FlagMouseText;
+             }
+             
+             | 0x11 $nop
+             | 0x12 arg1 arg2 ${
+                 /* ^R  */
+
+                 /*
+                  * This allows a three character code to be used to display
+                  * multiple characters. For example, to display a window frame,
+                  * it is necessary to show the top and bottom borders which are
+                  * long lines of the same character (dashes, underlines, etc.).
+                  * To draw a 64-character line consisting of equal signs, send
+                  * [CONTROL-R = @] where “@” is the ASCII code for 64.
+                  */
+                 
+                 uint8_t c = _scratch[0] & 0x7f;
+                 int count = _scratch[1];
+                 while (count--) {
+                     screen->putc(c, _context);
+                     if (cursor.x++ >= 80) {
+                         cursor.x = 0;
+                         if (cursor.y < 23) cursor.y++;
+                         else screen->scrollUp();
+                     }
+                    
+                 }
+                 
+             }
+             
+             | 0x13 $nop
+             
+             | 0x14 any any any ${
+                 //Sound single/dual-tone for duration.
+                 // [Control-T Tl Control-A D] Sound tone Tl, for duration D
+                 // [Control-T Tl T2 D] Sound dual tone Tl, T2 for duration D
+                 /*
+                  * The tone command has two forms. The first invokes the single-tone
+                  * generator, which produces relatively pure tones. The second
+                  * invokes the dual-tone generator, which produces some rather
+                  * interesting sounds. The three parameters, tone1, tone2, and
+                  * duration, can all take values from 1 through 127. There is
+                  * currently no known translation between pitch/duration values
+                  * and actual frequencies/times.
+                  */
+             }
+             
+             | 0x15 ${
+                 /* ^U - Move cursor right one character */
+             } $advance
+             
+             | 0x16 ${
+                /* CTRL('V') */
+                // Insert blank line
+                iRect tmp;
+                tmp.origin = iPoint(0, cursor.y);
+                tmp.size = iSize(80, 24 - cursor.y);
+                 screen->scrollDown(tmp);
+             }
+             
+             | 0x17 ${
+                 /* CTRL('W') */
+                 // Clear to end of screen
+
+                iRect tmp;
+                tmp.origin = cursor;
+                tmp.size = iSize(80 - cursor.x, 1);
+
+                screen->eraseRect(tmp);
+
+                tmp = iRect(0, 0, 80, 24);
+                tmp.origin.y = cursor.y+1;
+                tmp.size.height -= cursor.y+1;
+                screen->eraseRect(tmp);
+             }
+             
+             | 0x18 ${
+                 // CTRL('X'):
+                 // Home cursor (move to upper left corner)
+                 // n.b. -- Proterm status bar on line 1.  "home" is y=1.
+                 cursor = iPoint(0,0);
+
+             }
+             
+             | 0x19 ${
+                 // CTRL('Y'):
+                 /* clear to end of line. */
+                 
+                 iRect tmp;
+                 tmp.origin = cursor;
+                 tmp.size = iSize(80 - cursor.x, 1);
+                 
+                 screen->eraseRect(tmp);
+             }
+             
+             | 0x1a ${
+                 // CTRL('Z'):
+                 /* Delete current line */
+                 iRect tmp;
+                 tmp.origin = iPoint(0, cursor.y);
+                 tmp.size = iSize(80, 24 - cursor.y);
+                 screen->scrollUp(tmp);
+
+             }
+             
+             | 0x1b $nop
+             
+             | 0x1c $nop
+             
+             | 0x1d $nop
+             
+             | 0x1e arg1 arg2 ${
+                 // CTRL('^'):
+                 /* goto x y */
+                 // todo - verify behavior for illegal values.
+                 cursor.x = clamp(_scratch[0]-32, 0, 80 - 1);
+                 cursor.y = clamp(_scratch[1]-32, 0, 24 - 1);
+             }
+             
+             | 0x1f $nop
+             
+             | 0x20 .. 0x7f ${
+                 screen->putc(fc, _context);
+             } $advance
+             
+             | 0x80..0xff $nop
+             
+             )* $err{ fgoto main; };
+             
+             write data;
+}%%
+
+
+@implementation PTSE
+
++(void)load
+{
+    [EmulatorManager registerClass: self];
+}
+
++(NSString *)name
+{
+    return @"Proterm Special Emulation";
+}
+
+-(NSString *)name
+{
+    return @"Proterm Special Emulation";
+}
+
+-(const char *)termName
+{
+    return "proterm-special";
+}
+
+-(void)reset: (Screen *)screen
+{
+    [self reset];
+
+    if (screen) screen->eraseScreen();
+}
+
+-(void)reset
+{
+    %%write init;
+    
+    _context.cursor = iPoint(0,0);
+    _context.window = iRect(0,0,80,24);
+    _context.flags = 0;
+}
+
+-(BOOL)resizable
+{
+    return NO;
+}
+
+-(struct winsize)defaultSize
+{
+    struct winsize ws = { 24, 80, 0, 0 };
+    
+    return ws;
+}
+
+-(id)init
+{
+    [self reset];
+    return self;
+}
+
+-(void)initTerm: (struct termios *)term
+{
+    // Control-U is used by the up-arrow key.
+    term->c_cc[VKILL] = CTRL('X');
+}
+
+-(void)processData:(const uint8_t *)data length: (size_t)length screen:(Screen *)screen output:(OutputChannel *)output
+{
+    
+    const uint8_t *eof = nullptr;
+    const uint8_t *p = data;
+    const uint8_t *pe = data + length;
+    
+    auto &cursor = _context.cursor;
+    %%write exec;
+    screen->setCursor(cursor);
+}
+
+-(void)keyDown:(NSEvent *)event screen:(Screen *)screen output:(OutputChannel *)output
+{
+    NSEventModifierFlags flags = [event modifierFlags];
+    NSString *chars = [event charactersIgnoringModifiers];
+    
+    NSUInteger length = [chars length];
+    
+    for (unsigned i = 0; i < length; ++i)
+    {
+        unichar uc = [chars characterAtIndex: i];
+        
+        switch (uc)
+        {
+            case NSEnterCharacter:
+                output->write(CTRL('M'));
+                break;
+                
+            case NSDeleteCharacter:
+                output->write(0x7f);
+                break;
+                
+            
+                // backspace and left arrow use the same code, alas.
+            case NSBackspaceCharacter:
+                output->write(0x7f);
+                break;
+                
+            case NSLeftArrowFunctionKey:
+                output->write(CTRL('H'));
+                break;
+                
+            case NSRightArrowFunctionKey:
+                output->write(CTRL('U'));
+                break;
+                
+            case NSUpArrowFunctionKey:
+                output->write(CTRL('K'));
+                break;
+                
+            case NSDownArrowFunctionKey:
+                output->write(CTRL('J'));
+                break;
+
+                
+            default:
+                if (uc <= 0x7f)
+                {
+                    char c = uc;
+                    if (flags & NSControlKeyMask)
+                        c = CTRL(c);
+                    
+                    output->write(c);
+                }
+                break;
+        }
+        
+        
+        
+    }
+}
+
+@end

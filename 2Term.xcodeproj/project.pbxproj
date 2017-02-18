@@ -47,6 +47,7 @@
 		B6C704EF15CCC64100CC0401 /* titlebar-center@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C704EC15CCC64100CC0401 /* titlebar-center@2x.png */; };
 		B6C704F015CCC64100CC0401 /* titlebar-left@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C704ED15CCC64100CC0401 /* titlebar-left@2x.png */; };
 		B6C704F115CCC64100CC0401 /* titlebar-right@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C704EE15CCC64100CC0401 /* titlebar-right@2x.png */; };
+		B6D1CD071E577E7D00C4A6BC /* PTSE.mm.ragel in Sources */ = {isa = PBXBuildFile; fileRef = B612F45D12DD5DF1005D1B77 /* PTSE.mm.ragel */; };
 		B6EBE2B511E0EA9100EA0458 /* CharacterGenerator.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6EBE2B411E0EA9100EA0458 /* CharacterGenerator.mm */; };
 		B6ECFF271D2EEA2B00871A81 /* TextLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = B6ECFF261D2EEA2B00871A81 /* TextLabel.m */; };
 /* End PBXBuildFile section */
@@ -119,7 +120,7 @@
 		B612F45A12DD5DF1005D1B77 /* GNOConsole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GNOConsole.h; sourceTree = "<group>"; };
 		B612F45B12DD5DF1005D1B77 /* GNOConsole.mm.ragel */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = GNOConsole.mm.ragel; sourceTree = "<group>"; };
 		B612F45C12DD5DF1005D1B77 /* PTSE.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTSE.h; sourceTree = "<group>"; };
-		B612F45D12DD5DF1005D1B77 /* PTSE.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = PTSE.mm; sourceTree = "<group>"; };
+		B612F45D12DD5DF1005D1B77 /* PTSE.mm.ragel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = PTSE.mm.ragel; sourceTree = "<group>"; };
 		B612F45E12DD5DF1005D1B77 /* VT05.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VT05.h; sourceTree = "<group>"; };
 		B612F45F12DD5DF1005D1B77 /* VT05.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = VT05.mm; sourceTree = "<group>"; };
 		B612F46012DD5DF1005D1B77 /* VT100.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VT100.h; sourceTree = "<group>"; };
@@ -295,16 +296,16 @@
 		B612F45512DD5DF1005D1B77 /* Emulators */ = {
 			isa = PBXGroup;
 			children = (
-				B612F45612DD5DF1005D1B77 /* Apple80.h */,
-				B612F45712DD5DF1005D1B77 /* Apple80.mm.ragel */,
 				B612F45812DD5DF1005D1B77 /* Emulator.h */,
 				B612F45912DD5DF1005D1B77 /* EmulatorManager.mm */,
+				B612F45612DD5DF1005D1B77 /* Apple80.h */,
+				B612F45712DD5DF1005D1B77 /* Apple80.mm.ragel */,
 				B612F45A12DD5DF1005D1B77 /* GNOConsole.h */,
 				B612F45B12DD5DF1005D1B77 /* GNOConsole.mm.ragel */,
 				B6C173901D31D2B80024E360 /* GSOSConsole.h */,
 				B6C173911D31D2B80024E360 /* GSOSConsole.mm.ragel */,
 				B612F45C12DD5DF1005D1B77 /* PTSE.h */,
-				B612F45D12DD5DF1005D1B77 /* PTSE.mm */,
+				B612F45D12DD5DF1005D1B77 /* PTSE.mm.ragel */,
 				B612F45E12DD5DF1005D1B77 /* VT05.h */,
 				B612F45F12DD5DF1005D1B77 /* VT05.mm */,
 				B612F46012DD5DF1005D1B77 /* VT100.h */,
@@ -440,6 +441,7 @@
 				B675F4A91E561D20004B0D9C /* Apple80.mm.ragel in Sources */,
 				B675F4AA1E562159004B0D9C /* GNOConsole.mm.ragel in Sources */,
 				B675F4AC1E56A7F2004B0D9C /* GSOSConsole.mm.ragel in Sources */,
+				B6D1CD071E577E7D00C4A6BC /* PTSE.mm.ragel in Sources */,
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
 				256AC3DA0F4B6AC300CF3369 /* TwoTermAppDelegate.mm in Sources */,
 				B676063B11DEAD3500D6B66C /* TermWindowController.mm in Sources */,

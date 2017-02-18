@@ -17,15 +17,11 @@
 
 @interface PTSE : NSObject <Emulator>
 {
-    unsigned _state;
     
-    iPoint _dca;
-    uint8_t _repeatChar;
- 
-#ifdef __cplusplus
-    TextPort _textPort;
-#endif
-    
+    context _context;
+
+    unsigned cs;
+    int _scratch[4];
 }
 
 
