@@ -124,6 +124,12 @@ static void advance(Screen *screen, gsos_context &ctx) {
                   The shifted characters are moved directly to their destination location. The space vacated by the shifted characters is set to the current consFill character (see the description of consFill earlier in this chapter). Characters shifted out of the text port are removed from the screen and are not recoverable.
                   */
                  int8_t n = fc;
+                 if (n < 0) {
+                     screen->scrollLeft(window, n);
+                 }
+                 if (n > 0) {
+                     screen->scrollRight(window, n);
+                 }
                  // .... TODO
              }
 
@@ -250,7 +256,7 @@ static void advance(Screen *screen, gsos_context &ctx) {
                  */
                 if (_context.consDLE) {
                     unsigned count = (fc - 32) & 0xff;
-                    char_info ci = remap_fill(_context);
+                    //char_info ci = remap_fill(_context);
 
                     if (_context.consAdvance) {
                         while (count--) {
