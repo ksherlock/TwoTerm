@@ -525,7 +525,7 @@ static void advance(Screen *screen, gsos_context &ctx) {
 }
 
 
--(void)processData:(const uint8_t *)data length: (size_t)length screen:(Screen *)screen output:(OutputChannel *)output
+-(void)processData: (uint8_t *)data length: (size_t)length screen:(Screen *)screen output:(OutputChannel *)output
 {
  
     const uint8_t *eof = nullptr;

@@ -191,6 +191,7 @@
     if (fcntl(_fd, F_GETFL, &flags) < 0) flags = 0;
     fcntl(_fd, F_SETFL, flags | O_NONBLOCK);
     
+    [_emulatorView childBegan];
 
     dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 

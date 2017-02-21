@@ -455,8 +455,10 @@
     return self;
 }
 
--(void)processData:(const uint8_t *)data length: (size_t)length screen:(Screen *)screen output:(OutputChannel *)output
+-(void)processData: (uint8_t *)data length: (size_t)length screen:(Screen *)screen output:(OutputChannel *)output
 {
+
+    std::transform(data, data + length, data, [](uint8_t c){ return c & 0x7f; });
  
     const uint8_t *eof = nullptr;
     const uint8_t *p = data;

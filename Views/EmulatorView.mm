@@ -14,8 +14,8 @@
 
 #import "CharacterGenerator.h"
 
-#import "VT52.h"
-#import "VT100.h"
+//#import "VT52.h"
+//#import "VT100.h"
 
 
 #include "OutputChannel.h"
@@ -43,13 +43,6 @@
                                                  repeats: YES ];
         [[NSRunLoop currentRunLoop] addTimer: _cursorTimer forMode: NSDefaultRunLoopMode];
         
-        /*
-        _cursorTimer = [[NSTimer scheduledTimerWithTimeInterval: .5 
-                                                         target: self 
-                                                       selector: @selector(cursorTimer:) 
-                                                       userInfo: nil 
-                                                        repeats: YES] retain];
-         */
     }
     else
     {
@@ -64,6 +57,9 @@
         [_cursorTimer invalidate];
         [_cursorTimer release];
         _cursorTimer = nil;
+
+        iRect r(_screen.cursor(), iSize(1,1));
+        [self invalidateIRect: r];
     }
     else
     {
@@ -74,7 +70,8 @@
 
 -(void)cursorTimer: (NSTimer *)timer
 {
-    
+    if (_cursorType == Screen::CursorTypeNone) return;
+
     _screen.lock();
     
     _cursorOn = !_cursorOn;
@@ -89,18 +86,20 @@
 -(void)setCursorType: (unsigned)cursorType
 {
     if (_cursorType == cursorType) return;
-    
-    _cursorOn = NO;
+
     _cursorType = cursorType;
-    
-    // todo -- set the cursor image...
-    
-    if (cursorType == Screen::CursorTypeNone)
-    {
-        [self stopCursorTimer];
-    }
-    else
-    {
+    iRect r(_screen.cursor(), iSize(1,1));
+    [self invalidateIRect: r];
+}
+-(unsigned)cursorType
+{
+    return _cursorType;
+}
+#if 0
+dispatch_async(dispatch_get_main_queue(), ^(){
+
+        if (_cursorType == cursorType) return;
+
         unsigned char c;
         switch (cursorType) {
             default:
@@ -109,21 +108,17 @@
             case Screen::CursorTypeBlock: c = 0x80; break;
         }
         [_cursorImg release];
+        _cursorType = cursorType;
         _cursorImg = [[_charGen imageForCharacter: c] retain];
-        [self startCursorTimer];
 
-    }
+        iRect r(_screen.cursor(), iSize(1,1));
+        
+        [self invalidateIRect: r];
+        
+    });
+#endif
 
-    
-    iRect r(_screen.cursor(), iSize(1,1));
-    
-    [self invalidateIRect: r];
-}
 
--(unsigned)cursorType
-{
-    return _cursorType;
-}
 
 @end
 
@@ -180,8 +175,13 @@
     
     _charGen = [[CharacterGenerator generator] retain];
     
-    _cursorImg = [[_charGen imageForCharacter: '_'] retain];
     _cursorType = Screen::CursorTypeUnderscore;
+
+    _cursors[Screen::CursorTypeNone] = nil;
+    _cursors[Screen::CursorTypeUnderscore] = [[_charGen imageForCharacter: '_'] retain];
+    _cursors[Screen::CursorTypePipe] = [[_charGen imageForCharacter: '|'] retain];
+    _cursors[Screen::CursorTypeBlock] = [[_charGen imageForCharacter: 0x80] retain];
+    
     
     size  = [_charGen characterSize];
     _charWidth = size.width;
@@ -441,14 +441,15 @@
 
         [_foregroundColor setFill];
 
+        NSImage *img = _cursors[_cursorType];
         NSCompositingOperation op = NSCompositingOperationCopy;
         //if (_cursorType == Screen::CursorTypeBlock) op = NSCompositingOperationXOR;
-        [_cursorImg drawInRect: charRect 
-                      fromRect: NSZeroRect
-                     operation: op
-                      fraction: 1.0 
-                respectFlipped: YES 
-                         hints: nil];
+        [img drawInRect: charRect
+               fromRect: NSZeroRect
+              operation: op
+               fraction: 1.0
+         respectFlipped: YES
+                  hints: nil];
         
     }
     
@@ -473,8 +474,8 @@
     
     
     [_emulator release];
-    [_cursorImg release];
-    
+    //[_cursorImg release];
+    for (int i = 0; i < 4; ++i) [_cursors[i] release];
     [super dealloc];
 }
 
@@ -520,6 +521,9 @@
     channel.write([data bytes], length);
 }
 
+-(void)childBegan {
+    //[self startCursorTimer];
+}
 
 -(void)childFinished:(int)status {
     
@@ -532,7 +536,7 @@
         iRect updateRect;
         
         [self setCursorType: Screen::CursorTypeNone];
-        //[self stopCursorTimer];
+        [self stopCursorTimer];
         //_screen.setCursorType(Screen::CursorTypeNone);
         
 #if 0
@@ -610,21 +614,13 @@
     [pb setData: [NSData dataWithBytes: rv.data() length: rv.length()] forType: NSStringPboardType];
 }
 
--(void)processData:(const uint8_t *)buffer size:(size_t)size {
+-(void)processData: (uint8_t *)buffer size:(size_t)size {
 
     typedef void (*ProcessCharFX)(id, SEL, uint8_t, Screen *, OutputChannel *);
     
     OutputChannel channel(_fd);
     iRect updateRect;
 
-    
-#if 0
-    FILE *debug = fopen("/tmp/debug.txt", "a");
-    fwrite(buffer, 1, size, debug);
-    fflush(debug);
-    fclose(debug);
-#endif
-    
     
     _debug_buffer.write(buffer, size);
     

@@ -63,7 +63,7 @@ private:
     CGFloat _paddingLeft;
     CGFloat _paddingRight;
     
-    NSImage *_cursorImg;
+    //NSImage *_cursorImg;
     NSTimer *_cursorTimer;
     BOOL _cursorOn;
     
@@ -72,7 +72,8 @@ private:
     BOOL _inResizeTo;
     
     unsigned _cursorType;
-        
+    
+    NSImage *_cursors[4];
 #ifdef __cplusplus
     
     ring_buffer<1024> _debug_buffer;
@@ -106,8 +107,9 @@ private:
 -(IBAction)clearDebugData:(id)sender;
 
 
--(void)processData: (const uint8_t *)data size: (size_t)size;
+-(void)processData: (uint8_t *)data size: (size_t)size;
 -(void)childFinished: (int)status;
+-(void)childBegan;
 @end
 
 
