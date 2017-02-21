@@ -6,6 +6,10 @@
 //  Copyright 2010 __MyCompanyName__. All rights reserved.
 //
 
+/*
+ * http://vt100.net/docs/vt05-rm/contents.html
+ */
+
 #include <sys/ttydefaults.h>
 #include <cctype>
 
@@ -63,6 +67,17 @@ enum {
 -(void)reset
 {
     _state = StateText;
+    _context.cursor = iPoint(0,0);
+    _context.window = iRect(0, 0, 72, 20);
+    _upperCase = YES;
+    
+}
+
+-(id)init {
+    if ((self = [super init])) {
+        [self reset];
+    }
+    return self;
 }
 
 -(void)keyDown: (NSEvent *)event screen: (Screen *)screen output: (OutputChannel *)output
@@ -135,26 +150,29 @@ enum {
                     
                 case VTCursorLeft:
                     // backspace aka left arrow.
-                    screen->decrementX();
+                    if (_context.cursor.x) _context.cursor.x--;
                     break;
                 
                 case VTTab:
-                    [self tab: screen];
+                    if (_context.cursor.x < 64) _context.cursor.x = (_context.cursor.x + 8) & ~7;
+                    else if (_context.cursor.x < _context.window.maxX() -1) _context.cursor.x++;
                     break;
                     
                 case VTLineFeed:
                     // line feed.
-                    screen->lineFeed();
+                    // only if in line 20.
+                    if (_context.cursor.y == _context.window.maxY() -1)
+                        screen->scrollUp();
                     break;
                     
                 case VTCursorDown:
                     // arrow down.
-                    screen->incrementY();
+                    if (_context.cursor.y < _context.window.maxY() -1) _context.cursor.y++;
                     break;
                 
                 case VTCarriageReturn:
                     // carriage return;
-                    screen->setX(0);
+                    _context.cursor.x = 0;
                     break;
                 
                 case VTCAD:
@@ -164,96 +182,99 @@ enum {
                 
                 case VTCursorRight:
                     // right arrow.
-                    screen->incrementX();
+                    if (_context.cursor.x < _context.window.maxX() -1) _context.cursor.x++;
                     break;
                     
                 case VTCursorUp:
                     // up arrow
-                    screen->decrementY();
+                    if (_context.cursor.y) _context.cursor.y--;
                     break;
                     
                 case VTHome:
                     // home
-                    screen->setCursor(0, 0);
+                    _context.cursor = iPoint(0,0);
                     break;
                     
-                case VTEOL:
+                case VTEOL: {
                     // erase line (EOL)
                     // erase all data from the current cursor position 
                     // (including data in the cursor position)
                     // to end of the line.
-                    screen->erase(Screen::EraseLineAfterCursor);
-                    break;
+
+                    iRect tmp;
+                    tmp.origin = _context.cursor;
+                    tmp.size = iSize(_context.window.size.width - _context.cursor.x, 1);
                     
-                case VTEOS:
+                    screen->eraseRect(tmp);
+                    
+                    break;
+                }
+                    
+                case VTEOS: {
                     // erase screen (EOS)
                     // erase all data on the crt screen from the current
                     // cursor position (including data in the cursor position)
                     // to line 20, character position 72.
                     //
-                    screen->erase(Screen::EraseAfterCursor);
+
+                    iRect tmp;
+                    tmp.origin = _context.cursor;
+                    tmp.size = iSize(_context.window.size.width - _context.cursor.x, 1);
+                    
+                    screen->eraseRect(tmp);
+                    
+                    tmp = _context.window;
+                    tmp.origin.y = _context.cursor.y+1;
+                    tmp.size.height -= _context.cursor.y+1;
+                    screen->eraseRect(tmp);
+                    
+                    
                     break;
+                }
                     
                 default:
                     if (c >= ' ' && c < 0x7f)
                     {
                         // if cursor at end of screen, overwrite previous contents, doesn't advance cursor.
                         
-                        if (_upperCase) c = toupper(c);
-                        screen->putc(c);
+                        if (_upperCase) {
+                            // uppercase algorithm (from vt50)
+                            if (c & 0x40) c &= ~0x20;
+                        }
+                        screen->putc(c, _context);
+                        if (_context.cursor.x < _context.window.maxX() -1) _context.cursor.x++;
                     }
                     break;
             }
         
             break;
         }
+
+        // based on the padding requirement -after- Y component of DCA, I assume
+        // the cursor is updated immediately.
         case StateDCAY:
         {
-            // not sure how invalid values are handled.
-            
             if (c != 0x00)
             {
+                c -= 32;
+                if (c >= 0 || c <= _context.window.maxY()-1) _context.cursor.y = c;
                 _state = StateDCAX;
-                _dca.y = c - ' ';
             }
             break;
         }
         case StateDCAX:
         {
-            if (c != 0x00)
-            {
+            if (c != 0x00) {
+                c -= 32;
+                if (c >= 0 || c <= _context.window.maxX()-1) _context.cursor.x = c;
                 _state = StateText;
-                _dca.x = c - ' ';
-                
-                screen->setCursor(_dca);
             }
             break;
         }
     }
-    
+    screen->setCursor(_context.cursor);
 }
 
--(void)tab: (Screen *)screen
-{
-    /*
-     * TAB (011_8) causes the cursor to move right to the next TAB stop each time the TAB code is received.
-     * TAB stops are preset eight character spaces apart.  TAB stop locations are at characters positions 1, 9,
-     * 17, 25, 33, 41, 49, 57, and 65. Once the cursor reaches character position 65, all TAB commands 
-     * received thereafter will cause the cursor to move only one character position.  Once the cursor reaches 
-     * character position 72, receipt of the the TAB code has no effect.
-     */
-
-    int x = screen->x();
-    
-    if (x >= screen->width() - 8)
-    {
-        screen->setX(x + 1);
-    }
-    else
-    {
-        screen->setX((x + 8) & ~7);
-    }
-}
 
 -(BOOL)resizable
 {

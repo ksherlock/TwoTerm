@@ -11,14 +11,12 @@
 
 #include "iGeometry.h"
 
-class OutputChannel;
-class Screen;
-
+#include "Screen.h"
 
 
 @interface VT05 : NSObject <Emulator> {
     unsigned _state;
-    struct iPoint _dca;
+    context _context;
     BOOL _upperCase;
 }
 
