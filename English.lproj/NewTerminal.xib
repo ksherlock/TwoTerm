@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11201" systemVersion="16A323" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11201"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
         <capability name="box content view" minToolsVersion="7.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NewTerminalWindowController">
@@ -165,7 +166,7 @@ Gw
                                 <slider verticalHuggingPriority="750" misplaced="YES" id="78">
                                     <rect key="frame" x="85" y="131" width="263" height="21"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                    <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" doubleValue="0.10000000000000001" tickMarkPosition="above" sliderType="linear" id="79"/>
+                                    <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" tickMarkPosition="above" sliderType="linear" id="79"/>
                                     <connections>
                                         <action selector="filterParameterChanged:" target="-2" id="124"/>
                                         <binding destination="-2" name="enabled" keyPath="effectsEnabled" id="115"/>
@@ -174,7 +175,7 @@ Gw
                                 <slider verticalHuggingPriority="750" misplaced="YES" id="82">
                                     <rect key="frame" x="85" y="79" width="263" height="21"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                    <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" doubleValue="0.14999999999999999" tickMarkPosition="above" sliderType="linear" id="83"/>
+                                    <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" doubleValue="0.25" tickMarkPosition="above" sliderType="linear" id="83"/>
                                     <connections>
                                         <action selector="filterParameterChanged:" target="-2" id="125"/>
                                         <binding destination="-2" name="enabled" keyPath="effectsEnabled" id="117"/>
@@ -210,7 +211,7 @@ Gw
                                 <slider verticalHuggingPriority="750" misplaced="YES" id="84">
                                     <rect key="frame" x="85" y="56" width="263" height="21"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                    <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" doubleValue="0.66000000000000003" tickMarkPosition="above" sliderType="linear" id="85"/>
+                                    <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" doubleValue="0.5" tickMarkPosition="above" sliderType="linear" id="85"/>
                                     <connections>
                                         <action selector="filterParameterChanged:" target="-2" id="126"/>
                                         <binding destination="-2" name="enabled" keyPath="effectsEnabled" id="119"/>
@@ -219,7 +220,7 @@ Gw
                                 <slider verticalHuggingPriority="750" misplaced="YES" id="vAv-z0-AKd">
                                     <rect key="frame" x="85" y="31" width="263" height="21"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                    <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" doubleValue="0.25" tickMarkPosition="above" sliderType="linear" id="6ek-4n-F91"/>
+                                    <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" doubleValue="1" tickMarkPosition="above" sliderType="linear" id="6ek-4n-F91"/>
                                     <connections>
                                         <action selector="filterParameterChanged:" target="-2" id="xT7-DI-d9v"/>
                                         <binding destination="-2" name="enabled" keyPath="effectsEnabled" id="Zom-p6-sns"/>
@@ -248,7 +249,7 @@ Gw
                                 <slider verticalHuggingPriority="750" misplaced="YES" id="MVc-mQ-qGn">
                                     <rect key="frame" x="83" y="106" width="263" height="21"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                    <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" doubleValue="0.5" tickMarkPosition="above" sliderType="linear" id="rry-su-ojc"/>
+                                    <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" doubleValue="0.75" tickMarkPosition="above" sliderType="linear" id="rry-su-ojc"/>
                                     <connections>
                                         <action selector="filterParameterChanged:" target="-2" id="QKT-s7-pAK"/>
                                         <binding destination="-2" name="enabled" keyPath="effectsEnabled" id="DfY-jU-vle"/>
