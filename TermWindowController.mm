@@ -150,6 +150,9 @@
     }
 
 
+    if ([_emulator respondsToSelector: @selector(displaySize)]) {
+        ws = [_emulator displaySize];
+    }
     
     [_emulatorView resizeTo: iSize(ws.ws_col, ws.ws_row) animated: NO];
 

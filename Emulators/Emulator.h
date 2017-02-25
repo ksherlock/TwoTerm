@@ -43,6 +43,8 @@ extern "C" unsigned EventCharacters(NSEvent *event, std::u32string &rv);
 -(void)processCharacter: (uint8_t)c screen: (Screen *)screen output: (OutputChannel *)output;
 -(void)processData: (uint8_t *)data length: (size_t)length screen: (Screen *)screen output: (OutputChannel *)output;
 
+-(struct winsize)displaySize;
+
 @required
 
 -(void)keyDown: (NSEvent *)event screen: (Screen *)screen output: (OutputChannel *)output;
