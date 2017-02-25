@@ -357,12 +357,14 @@
                     screen->eraseRect(tmp);
              }
              
+             // hmmm ... embedded control characters seem to be processed as control characters...
              | 0x1e arg1 arg2 ${
                 // CTRL('^'):
                 // goto x y
                 // goto xy does not respect the text window.
+                // testing shows illegal value go to 0 for x, 23 for y.
                 if (_scratch[0] >= 80) _scratch[0] = 0;
-                if (_scratch[1] >= 24) _scratch[1] = 0;
+                if (_scratch[1] >= 24) _scratch[1] = 23;
                 cursor = iPoint(_scratch[0], _scratch[1]);
              }
              
