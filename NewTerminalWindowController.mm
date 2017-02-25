@@ -34,7 +34,9 @@ enum {
     kGreenBlack,
     kBlueBlack,
     kWhiteBlue,
-    kAmberBlack
+    kAmberBlack,
+    kGreen2,
+    kBlue2
 };
 
 +(id)new
@@ -97,6 +99,17 @@ enum {
     [item setTitle: @"Amber Black"];
     [item setTag: kAmberBlack];
     [menu addItem: item];    
+    
+    item = [[NSMenuItem new] autorelease];
+    [item setTitle: @"Green Phosphor"];
+    [item setTag: kGreen2];
+    [menu addItem: item];
+    
+    item = [[NSMenuItem new] autorelease];
+    [item setTitle: @"Blue Phosphor"];
+    [item setTag: kBlue2];
+    [menu addItem: item];
+    
     
     
     item = [[NSMenuItem new] autorelease];
@@ -176,7 +189,17 @@ enum {
             [_foregroundColorControl setColor: [NSColor colorWithDeviceRed: 1.0 green: 0.5 blue: 0.0 alpha: 1.0]];
             [_backgroundColorControl setColor: [NSColor blackColor]];            
             break;
-            
+        
+        case kBlue2:
+            [_foregroundColorControl setColor: [NSColor colorWithDeviceRed:0.324 green:0.592 blue:0.934 alpha:1.000]];
+            [_backgroundColorControl setColor: [NSColor blackColor]];
+            break;
+
+        case kGreen2:
+            [_foregroundColorControl setColor: [NSColor colorWithRed: 0.0 green: 1.0 blue: 0.6 alpha: 1.0]];
+            [_backgroundColorControl setColor: [NSColor blackColor]];
+            break;
+
         case kCustom:
             break;
             
