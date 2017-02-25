@@ -9,6 +9,7 @@
 #include <sys/ttydefaults.h>
 #include <cctype>
 #include <cstdio>
+#include <numeric>
 
 #import "VT52.h"
 #include "OutputChannel.h"
@@ -16,10 +17,12 @@
 
 enum {
     StateText,
-    StateEsc,
     StateDCAY,
     StateDCAX
 };
+
+
+
 
 /*
  * TODO -- the VT50x are 12 rows but double spaced.
@@ -32,58 +35,168 @@ enum {
 // The 50s only display/transmit uppercase characters and lack `~ {} characters on the keypad.
 // VT55 is a VT52 with extra graphic display capabilites.
 enum {
-    ModelVT52,
-    ModelVT50H,
     ModelVT50,
+    ModelVT50H,
+    ModelVT52,
     ModelVT55
 };
 
-#define ESC "\x1b"
 
-@implementation VT52
 
-+(void)load
-{
+
+@implementation VT50
+
++(void)load {
     [EmulatorManager registerClass: self];
 }
 
-+(NSString *)name
++(NSString *)name {
+    return @"VT50";
+}
+-(NSString *)name {
+    return @"VT50";
+}
+
+-(const char *)termName {
+    return "vt50";
+}
+
+-(struct winsize)displaySize
 {
+    struct winsize ws = { 24, 80, 0, 0 };
+    
+    return ws;
+}
+
+
+-(id)init {
+    if ((self = [super init])) {
+        _model = ModelVT50;
+        [self reset];
+
+    }
+    return self;
+}
+
+@end
+
+
+@implementation VT50H
+
++(void)load {
+    [EmulatorManager registerClass: self];
+}
+
+
++(NSString *)name {
+    return @"VT50H";
+}
+
+-(NSString *)name {
+    return @"VT50H";
+}
+
+-(const char *)termName {
+    return "vt50h";
+}
+
+
+-(id)init {
+    if ((self = [super init])) {
+        _model = ModelVT50H;
+        [self reset];
+
+    }
+    return self;
+}
+
+-(struct winsize)displaySize
+{
+    struct winsize ws = { 24, 80, 0, 0 };
+    
+    return ws;
+}
+
+@end
+
+@implementation VT52
+
++(void)load {
+    [EmulatorManager registerClass: self];
+}
+
+
++(NSString *)name {
     return @"VT52";
 }
 
--(NSString *)name
-{
-    switch (_model)
-    {
-        case ModelVT50:
-            return @"VT50";
-        case ModelVT50H:
-            return @"VT50H";
-        case ModelVT55:
-            return @"VT55";
-        case ModelVT52:
-        default:
-            return @"VT52";
-    }    
+-(NSString *)name {
+    return @"VT52";
 }
 
--(const char *)termName
-{
-    switch (_model)
-    {
-        case ModelVT50:
-            return "vt50";
-        case ModelVT50H:
-            return "vt50h";
-        case ModelVT55:
-            return "vt55";
-        case ModelVT52:
-        default:
-            return "vt52";
-    } 
+-(const char *)termName {
+    return "vt52";
 }
-        
+
+-(id)init {
+    if ((self = [super init])) {
+        _model = ModelVT52;
+        [self reset];
+    }
+    return self;
+}
+@end
+
+@implementation VT55
+
++(void)load {
+    //[EmulatorManager registerClass: self];
+}
+
++(NSString *)name {
+    return @"VT55";
+}
+
+-(NSString *)name {
+    return @"VT55";
+}
+
+-(const char *)termName {
+    return "vt55";
+}
+
+-(id)init {
+    if ((self = [super init])) {
+        _model = ModelVT55;
+        [self reset];
+
+    }
+    return self;
+}
+@end
+
+
+
+
+#define ESC "\x1b"
+
+@implementation VT5x
+
+
+
+
++(NSString *)name {
+    return @"";
+}
+
+-(NSString *)name {
+    return @"";
+}
+
+-(const char *)termName {
+    return "";
+}
+    
 
 -(void)keyDown: (NSEvent *)event screen: (Screen *)screen output: (OutputChannel *)output
 {
@@ -208,157 +321,186 @@ enum {
 
 -(void)reset
 {
-    _state = StateText;
+    cs = StateText;
+    _escape = false;
+    _altKeyPad = false;
+    _graphics = false;
+    _context.cursor = iPoint(0,0);
+    _context.window = iRect(0, 0, 80, 24);
+    if (_model <= ModelVT50H) _context.window = iRect(0, 0, 80, 12);
+    _context.flags = 0;
 }
 
--(void)processCharacter: (uint8_t)c screen: (Screen *)screen output: (OutputChannel *)output
+
+
+static void advance(context &ctx, Screen *screen) {
+    if (ctx.cursor.x < ctx.window.maxX()-1) ctx.cursor.x++;
+}
+
+-(void)processData: (uint8_t *)data length: (size_t)length screen: (Screen *)screen output: (OutputChannel *)output
 {
     
-    switch (_state)
-    {
-        case StateEsc:
-        {
-            switch (c)
-            {
-                case 0x00:
-                case 0x7f:
-                    // filler.
+    
+    cs = std::accumulate(data, data + length, cs, [&](unsigned state, uint8_t c) -> unsigned {
+
+        auto &cursor = _context.cursor;
+        auto &window = _context.window;
+
+        c &= 0x7f;
+        if (c == 0x7f) return state; // pad character
+        if (c < 32) {
+            // control characters are always control characters
+            switch(c) {
+                // bell
+                case 007: NSBeep(); break;
+                // backspace
+                case 010: if (cursor.x) cursor.x--; break;
+                //tab
+                case 011:
+                    if (cursor.x < 72) cursor.x = (cursor.x + 8) & ~7;
+                    else if (cursor.x < window.maxX() -1) cursor.x++;
                     break;
-                
-                case 0x1b:
-                    /*
-                     * If the VT50 or VT50H receives ESC ESC from the host, the second ESC will cancel the Escape Sequence ...
-                     * If the VT52 receies ESC ESC, it will still be prepared to interpret rather than display the next displayable character.
-                     */
-                    switch (_model) {
-                            
-                        case ModelVT50:
-                        case ModelVT50H:
-                            _state = StateText;
-                            break;
+                // linefeed
+                case 012:
+                    if (cursor.y < window.maxY() -1) cursor.y++;
+                    else {
+                        if (_model <= ModelVT50H) screen->scrollUp();
+                        screen->scrollUp();
                     }
                     break;
+                // cr
+                case 015: cursor.x = 0; break;
+                // vt05-compatible dca
+                case 016: 
+                    if (_model == ModelVT50) return StateDCAY;
+                    break;
+
+                case 0x1b: // escape.
+                    if (_model >= ModelVT52) _escape = true;
+                    else _escape = !_escape;
+                    break;
                 
-                    // cursor control.
+            }            
+            return state;
+        }
 
-                case 'A':
-                    /* cursor up */
-                    screen->decrementY();
-                    _state = StateText;
-                    break;
-                    
-                case 'C':
-                    /* cursor right */
-                    screen->incrementX();
-                    _state = StateText;
-                    break;
+        if (state == StateDCAY) {
+            c -= 32;
+            //if (_model <= ModelVT50H) c *= 2; // double it up.
 
+            if (c >= window.maxY()) {
+                if (_model <= ModelVT50H) cursor.y = window.maxY() -1;
+                else c = cursor.y;
+            }
+            cursor.y = c;
+            return StateDCAX;
+        }
+        if (state == StateDCAX) {
+            c -= 32;
+            if (c >= window.maxX()) c = window.maxX() -1;
+            cursor.x = c;
+            return StateText;
+        }
+        
+        if (_escape) {
+            _escape = false;
+            switch(c) {
+                case 'A': if (cursor.y) cursor.y--; break;
                 case 'B':
-                    /* cursor down (not on VT50) */
-                    
-                    if (_model != ModelVT50)
-                        screen->incrementY();
-                    _state = StateText;
+                    if (_model >= ModelVT50H && cursor.y < window.maxY() -1)
+                        cursor.y++;
                     break;
-                    
+                case 'C':
+                    if (cursor.x < window.maxX() -1) cursor.x++;
+                    break;
                 case 'D':
-                    /* cursor left (not on the VT50) */
-                    
-                    if (_model != ModelVT50)
-                        screen->decrementX();
-                    _state = StateText;
-                    break;
-                    
-                case 'H':
-                    /* home */
-                    screen->setCursor(0, 0);
-                    _state = StateText;
-                    break;
-                    
-                case 'Y':
-                    /* direct cursor addressing (not on the VT50) */
-                    if (_model == ModelVT50)
-                    {
-                        _state = StateText;
-                    }
-                    else
-                    {
-                        _state = StateDCAY;
-                    }
-                    break;
-                    
-                    
-                case 'I':
-                    // reverse line feed
-                    switch (_model) {
-                        case ModelVT52:
-                        case ModelVT55:
-                            screen->reverseLineFeed();
-                            break;
-                    }
-                    _state = StateText;
-                    break;     
-                    
-                    
-                // erasing
-                case 'K':
-                    // erase to end of line
-                    screen->erase(Screen::EraseLineAfterCursor);
-                    _state = StateText;
-                    break;
-                    
-                case 'J':
-                    // erase to end of screen.
-                    screen->erase(Screen::EraseAfterCursor);
-                    _state = StateText;
+                    if (_model >= ModelVT50H && cursor.x) cursor.x--;
                     break;
 
-                    
-                    // alternate keypad mode
-                case '=':
-                    switch (_model) {
-                        case ModelVT52:
-                        case ModelVT55:
-                            _altKeyPad = YES;
-                            break;
-                    }
-                    _state = StateText;
-                    break; 
-                    
-                    
-                case '>':
-                    switch (_model) {
-                        case ModelVT52:
-                        case ModelVT55:
-                            _altKeyPad = NO;
-                            break;
-                    }
-                    _state = StateText;
-                    break;
-                    
-
-                    // graphics.
+                // alt graphics
                 case 'F':
-                    switch (_model) {
-                        case ModelVT52:
-                        case ModelVT55:
-                            _graphics = YES;
-                            break;
-                    }
-                    _state = StateText;
+                    if (_model >= ModelVT52) _graphics = true;
                     break;
-                    
                 case 'G':
-                    switch (_model) {
-                        case ModelVT52:
-                        case ModelVT55:
-                            _graphics = NO;
-                            break;
+                    if (_model >= ModelVT52) _graphics = false;
+                    break;
+
+
+                // cursor home
+                case 'H': cursor = iPoint(0,0); break;
+
+                // reverse line feed
+                case 'I':
+                    // this is documented as being vt52++
+                    // however the 2BSD termcap entry (dating to 1980)
+                    // and every termcap since claims 50h supports it...
+                    if (_model >= ModelVT50H) {
+                        if (cursor.y) cursor.y--;
+                        else {
+                            screen->scrollDown();
+                            if (_model <= ModelVT50H) screen->scrollDown();
+                        }
                     }
-                    _state = StateText;
-                    break;                    
+                    break;
+
+                case 'J': { 
+                    // erase to end-of screen
+
+                    iRect tmp;
+
+                    if (_model <= ModelVT50H) {
+                        cursor.y *= 2;
+                        window.size.height *= 2;
+                    }
+                    
+                    tmp.origin = cursor;
+                    tmp.size = iSize( window.maxX() - cursor.x, 1);
+                    screen->eraseRect(tmp);
+                    
+                    tmp.origin = iPoint(0, cursor.y+1);
+                    tmp.size = iSize(window.maxX(), window.maxY() - cursor.y - 1);
+                    screen->eraseRect(tmp);
+
+                    if (_model <= ModelVT50H) {
+                        cursor.y /= 2;
+                        window.size.height /= 2;
+                    }
                     
                     
+                    break;
+                }
+
+                // erase to eol
+                case 'K': {
+                    iRect tmp;
+
+                    if (_model <= ModelVT50H) {
+                        cursor.y *= 2;
+                        window.size.height *= 2;
+                    }
+                    
+                    tmp.origin = cursor;
+                    tmp.size = iSize( window.maxX() - cursor.x, 1);
+                    screen->eraseRect(tmp);
+
+                    if (_model <= ModelVT50H) {
+                        cursor.y /= 2;
+                        window.size.height /= 2;
+                    }
+                    
+                    break;
+                }
+
+
+
+                // direct cursor addressing
+                case 'Y':
+                    if (_model >= ModelVT50H) {
+                        _escape = false;
+                        return StateDCAY;
+                    }
+                    break;
+
                 case 'Z':
                     // identify terminal.
                     // NB -- these indicate no copier.
@@ -372,158 +514,51 @@ enum {
                         case ModelVT52:
                             output->write(ESC "/K");
                             break;
-
                         case ModelVT55:
-                            output->write(ESC "/C"); // E?
+                            output->write(ESC "/C");
                             break;
-
                     }
                     break;
-                    
-                    // hold screen unsupported.
-                    
-                    // ESC 1 -- (VT55) -- enter graph drawing
-                    // ESC 2 -- (VT55) -- exit graph drawing
-                    
-                default:
-                    std::fprintf(stderr, "Unrecognized escape sequence: %02x (%c)\n", (int)c, c);
-                    _state = StateText;
+                // alternate keypad
+                case '=':
+                    if (_model >= ModelVT52) _altKeyPad = true;
                     break;
-            }
-            
-         
-            break;
-        }
-            
-        case StateDCAY:
-        {
-            if (c == 0x00) break;
-            _dca.y = c - 0x20;
-            _state = StateDCAX;
-            break;
-        }
-            
-        case StateDCAX:
-        {
-            if (c == 0x00) break;
-            
-            _dca.x = c - 0x20;
+                case '>':
+                    if (_model >= ModelVT52) _altKeyPad = false;
+                    break;
 
-            /*
-             * If the line # does not specify a line that exists on the screen, the VT50H
-             * will move the cursor to the bottom line of the screen.  However, the VT52 will
-             * not move the cursor vertically if the vertical parameter is out of bounds.
-             */
-            
-            /*
-             * If the column number is greater than 157 and, therefore, does not specify a column
-             * that exists on the screen, the cursor is moved to the rightmost column on a line on all models.
-             */
-             
-            screen->setCursor(_dca, true, _model == ModelVT50H);
+                    
+            }
+            return state;
+        }
+        // normal text!
+
         
-            _state = StateText;
-            break;
-        }
-            
-        case StateText:
-        {
-         
-            switch(c)
-            {
-                case 0x00:
-                case 0x7f:
-                    // filler
-                    break;
-                case 0x1b:
-                    _state = StateEsc;
-                    break;
-                    
-                case 0x07:
-                    NSBeep();
-                    break;
-                    
-                case 0x08:
-                    // backspace
-                    screen->decrementX();
-                    break;
-                    
-                case 0x09:
-                    [self tab: screen];
-                    break;
-                    
-                case 0x0a:
-                    screen->lineFeed();
-                    break;
-                    
-                case 0x0d:
-                    screen->setX(0);
-                    break;
-                    
-                case 0x0e:
-                    // VT52H only -- backwards compatability with the VT05.
-                    if (_model == ModelVT50H)
-                        _state = StateDCAY;
-                    break;
-                
-                default:
-                    if (c >= 0x20 && c < 0x7f)
-                    {
-                        // VT50x cannot display anything in the range 0140--0176
-                        
-                        if (c >= 0140 && (_model == ModelVT50 || _model == ModelVT50H))
-                            c -= 040;
-    
-                        screen->putc(c);
-                    }
-                    break;
-            }
-            
-            break;
-        }
-            
-            
-            
-            
-            
-            
-            
-            
-    }
-    
-    
-    
-    
-    
-    
+        if (c >= 0140 && (_model <= ModelVT50H))
+            c -= 040;
+
+        if (_model <= ModelVT50H) {
+            auto tmp = cursor; tmp.y *= 2;
+            screen->putc(c, tmp, _context.flags);
+        } else screen->putc(c, cursor, _context.flags);
+        
+        advance(_context, screen);
+        return state;
+        
+        
+    });
+
+    if (_model <= ModelVT50H) {
+        auto tmp = _context.cursor; tmp.y *= 2;
+        screen->setCursor(tmp);
+    } else screen->setCursor(_context.cursor);
+  
 }
-
-
--(void)tab: (Screen *)screen
-{
-    /*
-     * TAB (011_8) causes the cursor to move right to the next TAB stop each time the TAB code is received.
-     * TAB stops are preset eight character spaces apart.  TAB stop locations are at characters positions 1, 9,
-     * 17, 25, 33, 41, 49, 57, and 65. Once the cursor reaches character position 65, all TAB commands 
-     * received thereafter will cause the cursor to move only one character position.  Once the cursor reaches 
-     * character position 72, receipt of the the TAB code has no effect.
-     */
-    
-    int x = screen->x();
-    
-    if (x >= screen->width() - 8)
-    {
-        screen->setX(x + 1);
-    }
-    else
-    {
-        screen->setX((x + 8) & ~7);
-    }
-}
-
 
 -(BOOL)resizable
 {
+    return NO;
+
     switch (_model)
     {
         case ModelVT52:
