@@ -45,6 +45,7 @@
 		B68E632A12FF909D00EAFF5F /* ExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = B68E632912FF909C00EAFF5F /* ExampleView.m */; };
 		B6ACA2AC1E5C8BEC000E774B /* GNOConsole.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6ACA2AB1E5C8BEC000E774B /* GNOConsole.mm */; };
 		B6ACA2AD1E614E38000E774B /* VT52.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F46312DD5DF1005D1B77 /* VT52.mm */; };
+		B6ACA2AF1E635CEC000E774B /* vt52-charset.png in Resources */ = {isa = PBXBuildFile; fileRef = B6ACA2AE1E635CEC000E774B /* vt52-charset.png */; };
 		B6C704EF15CCC64100CC0401 /* titlebar-center@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C704EC15CCC64100CC0401 /* titlebar-center@2x.png */; };
 		B6C704F015CCC64100CC0401 /* titlebar-left@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C704ED15CCC64100CC0401 /* titlebar-left@2x.png */; };
 		B6C704F115CCC64100CC0401 /* titlebar-right@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C704EE15CCC64100CC0401 /* titlebar-right@2x.png */; };
@@ -158,6 +159,7 @@
 		B68E632812FF909C00EAFF5F /* ExampleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExampleView.h; sourceTree = "<group>"; };
 		B68E632912FF909C00EAFF5F /* ExampleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExampleView.m; sourceTree = "<group>"; };
 		B6ACA2AB1E5C8BEC000E774B /* GNOConsole.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GNOConsole.mm; sourceTree = "<group>"; };
+		B6ACA2AE1E635CEC000E774B /* vt52-charset.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vt52-charset.png"; sourceTree = "<group>"; };
 		B6C173901D31D2B80024E360 /* GSOSConsole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSOSConsole.h; sourceTree = "<group>"; };
 		B6C173911D31D2B80024E360 /* GSOSConsole.mm.ragel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = GSOSConsole.mm.ragel; sourceTree = "<group>"; };
 		B6C173941D35546A0024E360 /* algorithm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = algorithm.h; sourceTree = "<group>"; };
@@ -354,6 +356,7 @@
 				B61EF7C31481561E008C1891 /* titlebar-corner.png */,
 				B61EF7C41481561E008C1891 /* titlebar-middle.png */,
 				B6801BD812EB549300B22E9E /* vt100-charset.png */,
+				B6ACA2AE1E635CEC000E774B /* vt52-charset.png */,
 				B67B3CE312B6FA040033AE07 /* a2-charset-40.png */,
 				B67B3CE412B6FA040033AE07 /* a2-charset-80.png */,
 			);
@@ -431,6 +434,7 @@
 				B6C704EF15CCC64100CC0401 /* titlebar-center@2x.png in Resources */,
 				B6C704F015CCC64100CC0401 /* titlebar-left@2x.png in Resources */,
 				B6C704F115CCC64100CC0401 /* titlebar-right@2x.png in Resources */,
+				B6ACA2AF1E635CEC000E774B /* vt52-charset.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
