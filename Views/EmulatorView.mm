@@ -690,7 +690,6 @@ dispatch_async(dispatch_get_main_queue(), ^(){
     rect.origin.x += _paddingLeft;
     rect.origin.y += _paddingTop;
     
-    /*
     dispatch_async(dispatch_get_main_queue(), ^(){
 
         [self setNeedsDisplayInRect: rect];
@@ -698,9 +697,8 @@ dispatch_async(dispatch_get_main_queue(), ^(){
         //[self display];
         
     });
-    */
     
-    [self setNeedsDisplayInRect: rect];
+    //[self setNeedsDisplayInRect: rect];
     //[self display];
      
     
