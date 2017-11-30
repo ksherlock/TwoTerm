@@ -62,6 +62,7 @@
 			isEditable = 1;
 			outputFiles = (
 			);
+			script = "";
 		};
 		B6C173931D32A8840024E360 /* PBXBuildRule */ = {
 			isa = PBXBuildRule;
