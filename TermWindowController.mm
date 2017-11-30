@@ -107,7 +107,7 @@
         std::string s;
         
             
-        s.append("TERM_PROGRAM=2Term");
+        s.append("TERM_PROGRAM=TwoTerm");
         s.append(1, (char)0);
         
         s.append("LANG=C");
