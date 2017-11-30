@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the '2Term' target in the '2Term' project
+//
+
+#ifdef __OBJC__
+    #import <Cocoa/Cocoa.h>
+#endif
