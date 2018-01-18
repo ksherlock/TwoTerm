@@ -236,7 +236,7 @@
 
             static uint8_t sbuffer[1024];
             size_t estimated = dispatch_source_get_data(_read_source);
-
+            estimated = std::max(estimated, sizeof(sbuffer));
             
             uint8_t *buffer = estimated > sizeof(sbuffer) ? (uint8_t *)malloc(estimated) : sbuffer;
             if (buffer)
@@ -244,7 +244,7 @@
                 ssize_t actual;
                 
                 for (;;) {
-                    actual = read(fd, buffer, (estimated));
+                    actual = read(fd, buffer, estimated);
                     if (actual < 0) {
                         if (errno == EINTR) continue;
 
