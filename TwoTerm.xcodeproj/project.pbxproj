@@ -33,6 +33,8 @@
 		B61EF7D81482FB6D008C1891 /* titlebar-left.png in Resources */ = {isa = PBXBuildFile; fileRef = B61EF7D51482FB6D008C1891 /* titlebar-left.png */; };
 		B61EF7D91482FB6D008C1891 /* titlebar-right.png in Resources */ = {isa = PBXBuildFile; fileRef = B61EF7D61482FB6D008C1891 /* titlebar-right.png */; };
 		B638188214A179D60027D007 /* ColorView.m in Sources */ = {isa = PBXBuildFile; fileRef = B638188114A179D60027D007 /* ColorView.m */; };
+		B6407804201CE8BD00D3F2D1 /* GNOConsole.mm.ragel in Resources */ = {isa = PBXBuildFile; fileRef = B612F45B12DD5DF1005D1B77 /* GNOConsole.mm.ragel */; };
+		B6407805201CE93500D3F2D1 /* GNOConsole.mm.ragel in Sources */ = {isa = PBXBuildFile; fileRef = B612F45B12DD5DF1005D1B77 /* GNOConsole.mm.ragel */; };
 		B66412391480A070003BC8D3 /* EmulatorWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B66412381480A070003BC8D3 /* EmulatorWindow.m */; };
 		B675F4A81E540394004B0D9C /* Screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B612F44D12DD5DAD005D1B77 /* Screen.cpp */; };
 		B675F4A91E561D20004B0D9C /* Apple80.mm.ragel in Sources */ = {isa = PBXBuildFile; fileRef = B612F45712DD5DF1005D1B77 /* Apple80.mm.ragel */; };
@@ -43,7 +45,6 @@
 		B67B3CE612B6FA040033AE07 /* a2-charset-80.png in Resources */ = {isa = PBXBuildFile; fileRef = B67B3CE412B6FA040033AE07 /* a2-charset-80.png */; };
 		B6801BD912EB549300B22E9E /* vt100-charset.png in Resources */ = {isa = PBXBuildFile; fileRef = B6801BD812EB549300B22E9E /* vt100-charset.png */; };
 		B68E632A12FF909D00EAFF5F /* ExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = B68E632912FF909C00EAFF5F /* ExampleView.m */; };
-		B6ACA2AC1E5C8BEC000E774B /* GNOConsole.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6ACA2AB1E5C8BEC000E774B /* GNOConsole.mm */; };
 		B6ACA2AD1E614E38000E774B /* VT52.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F46312DD5DF1005D1B77 /* VT52.mm */; };
 		B6ACA2AF1E635CEC000E774B /* vt52-charset.png in Resources */ = {isa = PBXBuildFile; fileRef = B6ACA2AE1E635CEC000E774B /* vt52-charset.png */; };
 		B6C704EF15CCC64100CC0401 /* titlebar-center@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C704EC15CCC64100CC0401 /* titlebar-center@2x.png */; };
@@ -424,6 +425,7 @@
 				B676065111DEBAE900D6B66C /* TermWindow.xib in Resources */,
 				B67B3CE512B6FA040033AE07 /* a2-charset-40.png in Resources */,
 				B67B3CE612B6FA040033AE07 /* a2-charset-80.png in Resources */,
+				B6407804201CE8BD00D3F2D1 /* GNOConsole.mm.ragel in Resources */,
 				B6801BD912EB549300B22E9E /* vt100-charset.png in Resources */,
 				B61EF7C51481561E008C1891 /* titlebar-corner.png in Resources */,
 				B61EF7C61481561E008C1891 /* titlebar-middle.png in Resources */,
@@ -449,6 +451,7 @@
 				B675F4A91E561D20004B0D9C /* Apple80.mm.ragel in Sources */,
 				B675F4AC1E56A7F2004B0D9C /* GSOSConsole.mm.ragel in Sources */,
 				B6D1CD071E577E7D00C4A6BC /* PTSE.mm.ragel in Sources */,
+				B6407805201CE93500D3F2D1 /* GNOConsole.mm.ragel in Sources */,
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
 				256AC3DA0F4B6AC300CF3369 /* TwoTermAppDelegate.mm in Sources */,
 				B676063B11DEAD3500D6B66C /* TermWindowController.mm in Sources */,
@@ -457,7 +460,6 @@
 				B61D0D60125B7ACA001C713B /* NewTerminalWindowController.mm in Sources */,
 				B61D0D69125B8E06001C713B /* Defaults.m in Sources */,
 				B6ECFF271D2EEA2B00871A81 /* TextLabel.m in Sources */,
-				B6ACA2AC1E5C8BEC000E774B /* GNOConsole.mm in Sources */,
 				B612F45012DD5DAD005D1B77 /* iGeometry.cpp in Sources */,
 				B612F45112DD5DAD005D1B77 /* Lock.cpp in Sources */,
 				B612F45212DD5DAD005D1B77 /* OutputChannel.cpp in Sources */,

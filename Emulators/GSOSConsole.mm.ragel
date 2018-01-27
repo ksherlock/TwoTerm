@@ -178,7 +178,7 @@ static void advance(Screen *screen, gsos_context &ctx) {
                   */
                  if (cursor.y < window.maxY()-1) cursor.y++;
                  else if (_context.consScroll)
-                 screen->scrollUp(window);
+                    screen->scrollUp(window);
              }
 
              | 0x0b ${

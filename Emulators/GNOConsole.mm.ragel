@@ -357,7 +357,7 @@
                     screen->eraseRect(tmp);
              }
              
-             // hmmm ... embedded control characters seem to be processed as control characters...
+             # hmmm ... embedded control characters seem to be processed as control characters...
              | 0x1e arg1 arg2 ${
                 // CTRL('^'):
                 // goto x y
@@ -388,9 +388,6 @@
 
 
 @implementation GNOConsole
-
-
-
 
 
 +(void)load
