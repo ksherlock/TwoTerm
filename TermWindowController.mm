@@ -226,7 +226,33 @@
         dispatch_resume(_wait_source);
     }
 
+#if 0
+    dispatch_io_t io = dispatch_io_create(DISPATCH_IO_STREAM, fd, queue, ^(int error){
+        close(fd);
+        NSLog(@"dispatch_io_create: %d", error);
+    });
     
+    dispatch_io_read(io, 0, SIZE_MAX, queue, ^(bool done, dispatch_data_t data, int error){
+        if (error) {
+            NSLog(@"dispatch_io_read: %d", error);
+            dispatch_io_close(io, DISPATCH_IO_STOP);
+            return;
+        }
+        
+        dispatch_data_apply(data, ^(dispatch_data_t, size_t, const void *buffer, size_t size){
+            [_emulatorView processData: (uint8_t *)buffer size: size];
+            return true;
+        } );
+        
+        if (done) {
+            NSLog(@"closing fd");
+            dispatch_io_close(io, DISPATCH_IO_STOP);
+            return;
+        }
+        
+    });
+    
+#else
     _read_source = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ,
                                                           fd, 0, queue);
     if (_read_source)
@@ -245,6 +271,7 @@
                 
                 for (;;) {
                     actual = read(fd, buffer, estimated);
+                    //fprintf(stderr, "read: %ld\n", actual);
                     if (actual < 0) {
                         if (errno == EINTR) continue;
 
@@ -266,7 +293,6 @@
                 if (buffer != sbuffer) free(buffer);
 
                 if (actual == 0) {
-                    NSLog(@"closing fd");
                     dispatch_source_cancel(_read_source);
                     dispatch_release(_read_source);
                     _read_source = nullptr;
@@ -276,6 +302,7 @@
 
         
         dispatch_source_set_cancel_handler(_read_source, ^{
+            NSLog(@"closing fd");
             _fd = -1;
             [_emulatorView setFd: -1];
             close(fd);
@@ -283,6 +310,7 @@
         
         dispatch_resume(_read_source);
     }
+#endif
 }
 
 #pragma mark -
