@@ -321,7 +321,7 @@ void Screen::scrollRight(iRect rect, int n) {
         auto xIter = line.begin() + rect.minX();
         auto xEnd = line.begin() + rect.maxX();
         
-        auto iter = std::copy(xIter, xEnd-n, xEnd);
+        auto iter = std::copy_backward(xIter, xEnd-n, xEnd);
         while (n--) { --iter; *iter = char_info(); }
     }
     
