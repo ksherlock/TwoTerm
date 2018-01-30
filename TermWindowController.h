@@ -7,7 +7,7 @@
 //
 
 #import <Cocoa/Cocoa.h>
-
+#include <atomic>
 
 @class EmulatorView;
 @class ColorView;
@@ -25,11 +25,9 @@
     
     NSObject <Emulator> *_emulator;
     
+    NSThread * _thread;
     int _fd;
-    pid_t _pid;
-    
-    dispatch_source_t _read_source;
-    dispatch_source_t _wait_source;
+    std::atomic<pid_t> _pid;
     
 }
 

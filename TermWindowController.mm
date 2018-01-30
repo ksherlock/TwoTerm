@@ -11,8 +11,11 @@
 #import "CurveView.h"
 #import "EmulatorWindow.h"
 
-//#import "VT52.h"
-//#import "PTSE.h"
+#include <sys/types.h>
+#include <sys/event.h>
+#include <sys/time.h>
+#include <atomic>
+
 
 #import "Defaults.h"
 
@@ -48,7 +51,7 @@
     [_colorView release];
 
     [_parameters release];
-
+    [_thread release];
     
     [super dealloc];
 }
@@ -174,143 +177,120 @@
 
     [_emulatorView setFd: _fd];
     [self monitor];
- 
-    /*
-    if (!_childMonitor)
-    {
-        _childMonitor = [ChildMonitor new];
-        [_childMonitor setDelegate: _emulatorView];
+}
+
+-(BOOL)read: (int)fd {
+
+    BOOL rv = NO;
+
+    for(;;) {
+        
+        uint8_t buffer[1024];
+        ssize_t size = read(fd, buffer, sizeof(buffer));
+        if (size < 0 && errno == EINTR) continue;
+
+        if (size <= 0) break;
+        [_emulatorView processData: buffer size: size];
+        rv = YES;
     }
-    */
+    
+    return rv;
+}
+
+-(int)wait: (pid_t)pid {
+
+    std::atomic_exchange(&_pid, -1);
+
+    int status = 0;
+    for(;;) {
+        int ok = waitpid(pid, &status, WNOHANG);
+        if (ok >= 0) break;
+        if (errno == EINTR) continue;
+        NSLog(@"waitpid(%d): %s", pid, strerror(errno));
+        break;
+    }
+    return status;
 }
 
 -(void)monitor {
 
+    
     int fd = _fd;
-    int pid = _pid;
-
+    pid_t pid = _pid;
+    
+    int q = kqueue();
+    
+    struct kevent events[2] = {};
+    
+    EV_SET(&events[0], pid, EVFILT_PROC, EV_ADD | EV_RECEIPT, NOTE_EXIT | NOTE_EXITSTATUS, 0, NULL);
+    EV_SET(&events[1], fd, EVFILT_READ, EV_ADD | EV_RECEIPT, 0, 0, NULL);
+    
     int flags;
     // non-blocking io.
     if (fcntl(_fd, F_GETFL, &flags) < 0) flags = 0;
     fcntl(_fd, F_SETFL, flags | O_NONBLOCK);
     
+    kevent(q, events, 2, NULL, 0, NULL);
+
     [_emulatorView childBegan];
 
-    dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    _thread = [[NSThread alloc] initWithBlock: ^(){
+    
+        struct kevent events[2] = {};
 
-    _wait_source = dispatch_source_create(DISPATCH_SOURCE_TYPE_PROC,
-                                              pid, DISPATCH_PROC_EXIT, queue);
-    if (_wait_source)
-    {
+        bool stop = false;
+        int status = 0;
+
+        while (!stop) {
         
-        dispatch_source_set_event_handler(_wait_source, ^{
-            
-            int status = 0;
-            int ok;
-            for(;;) {
-                ok = waitpid(pid, &status, WNOHANG);
-                if (ok >= 0) break;
-                if (errno == EINTR) continue;
+            int n = kevent(q, NULL, 0, events, 2, NULL);
+            if (n <= 0) {
+                NSLog(@"kevent");
                 break;
             }
-            _pid = 0;
-            //dispatch_async(dispatch_get_main_queue(), ^(){
-            [_emulatorView childFinished: status];
-            //});
-            
-            dispatch_source_cancel(_wait_source);
-            dispatch_release(_wait_source);
-            _wait_source = nullptr;
-        });
-            
-        dispatch_resume(_wait_source);
-    }
 
-#if 0
-    dispatch_io_t io = dispatch_io_create(DISPATCH_IO_STREAM, fd, queue, ^(int error){
-        close(fd);
-        NSLog(@"dispatch_io_create: %d", error);
-    });
-    
-    dispatch_io_read(io, 0, SIZE_MAX, queue, ^(bool done, dispatch_data_t data, int error){
-        if (error) {
-            NSLog(@"dispatch_io_read: %d", error);
-            dispatch_io_close(io, DISPATCH_IO_STOP);
-            return;
-        }
-        
-        dispatch_data_apply(data, ^(dispatch_data_t, size_t, const void *buffer, size_t size){
-            [_emulatorView processData: (uint8_t *)buffer size: size];
-            return true;
-        } );
-        
-        if (done) {
-            NSLog(@"closing fd");
-            dispatch_io_close(io, DISPATCH_IO_STOP);
-            return;
-        }
-        
-    });
-    
-#else
-    _read_source = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ,
-                                                          fd, 0, queue);
-    if (_read_source)
-    {
-        // Install the event handler
-        dispatch_source_set_event_handler(_read_source, ^{
-
-            static uint8_t sbuffer[1024];
-            size_t estimated = dispatch_source_get_data(_read_source);
-            estimated = std::max(estimated, sizeof(sbuffer));
-            
-            uint8_t *buffer = estimated > sizeof(sbuffer) ? (uint8_t *)malloc(estimated) : sbuffer;
-            if (buffer)
-            {
-                ssize_t actual;
-                
-                for (;;) {
-                    actual = read(fd, buffer, estimated);
-                    //fprintf(stderr, "read: %ld\n", actual);
-                    if (actual < 0) {
-                        if (errno == EINTR) continue;
-
-                        if (errno == EAGAIN) {
-                            if (buffer != sbuffer) free(buffer);
-                            return;
-                        }
-
-                        NSLog(@"read: %s", strerror(errno));
-                        dispatch_source_cancel(_read_source);
-                        dispatch_release(_read_source);
-                        _read_source = nullptr;
+            for (unsigned i = 0; i < n; ++i) {
+                const auto &e = events[i];
+                unsigned flags = e.flags;
+                if (e.filter == EVFILT_READ) {
+                    int fd = (int)e.ident;
+                    if (flags & EV_EOF) {
+                        NSLog(@"EV_EOF");
                     }
-                    break;
+
+                    if (flags & EV_ERROR) {
+                        NSLog(@"EV_ERROR");
+                    }
+
+                    [self read: fd];
+                    continue;
                 }
 
-                if (actual > 0) [_emulatorView processData: buffer size: actual];
+                if (e.filter == EVFILT_PROC) {
 
-                if (buffer != sbuffer) free(buffer);
-
-                if (actual == 0) {
-                    dispatch_source_cancel(_read_source);
-                    dispatch_release(_read_source);
-                    _read_source = nullptr;
+                    pid_t pid = (pid_t)e.ident;
+                    NSLog(@"Child finished");
+                    status = [self wait: pid];
+                    stop = true;
                 }
             }
-        });
+        }
+        
+        if (![_thread isCancelled]) {
 
-        
-        dispatch_source_set_cancel_handler(_read_source, ^{
-            NSLog(@"closing fd");
-            _fd = -1;
-            [_emulatorView setFd: -1];
-            close(fd);
-        });
-        
-        dispatch_resume(_read_source);
-    }
-#endif
+            // read any lingering io...
+            [self read: fd];
+
+            [_emulatorView childFinished: status];
+        }
+        close(q);
+        close(fd);
+
+        _fd = -1;
+        //NSLog(@"Closing fd");
+    }];
+
+    [_thread start];
 }
 
 #pragma mark -
@@ -380,28 +360,11 @@
 -(void)windowWillClose:(NSNotification *)notification
 {
 
+    pid_t pid = std::atomic_exchange(&_pid, -1);
+    [_thread cancel];
 
-    if (_wait_source) {
-        dispatch_source_cancel(_wait_source);
-        dispatch_release(_wait_source);
-    }
-    
-    if (_read_source) {
-        dispatch_source_cancel(_read_source);
-        dispatch_release(_read_source);
-    }
-    
-    int status;
-    int ok;
-    if (_pid) {
-        kill(_pid, 9);
-        for(;;) {
-            ok = waitpid(_pid, &status, 0);
-            if (ok >= 0) break;
-            if (errno == EINTR) continue;
-            perror("waitpid: ");
-            break;
-        }
+    if (pid > 0) {
+        kill(pid, 9);
     }
 
     [self autorelease];

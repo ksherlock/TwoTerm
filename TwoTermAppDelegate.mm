@@ -31,6 +31,13 @@
     NSDictionary *parameters;
     CIFilter *filter;    
     
+#if 0
+    struct sigaction sa = {};
+    sa.sa_handler = SIG_IGN;
+    sa.sa_flags = SA_RESTART;
+    sigaction(SIGCHLD, &sa, NULL);
+#endif
+
     NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
     
     [nc addObserver: self selector: @selector(newTerminal:) name: kNotificationNewTerminal object: nil];
