@@ -420,26 +420,26 @@ static void advance(Screen *screen, gsos_context &ctx) {
 
              | 0x80 .. 0x9f ${
                  /* uppercase inverse/normal */
-                 uint8_t flags = ~(_context.flags & Screen::FlagInverse);
+                 uint8_t flags = _context.flags ^ Screen::FlagInverse;
                  screen->putc(fc - 0x40, cursor, flags);
              } $advance_if
 
              | 0xa0 .. 0xbf ${
                  /* special inverse/normal */
-                 uint8_t flags = ~(_context.flags & Screen::FlagInverse);
+                 uint8_t flags = _context.flags ^ Screen::FlagInverse;
                  screen->putc(fc - 0x80, cursor, flags);
              } $advance_if
 
              | 0xc0 .. 0xdf ${
                  /* uppercase normal / mouse text. */
-                 uint8_t flags = ~(_context.flags & Screen::FlagInverse);
+                 uint8_t flags = _context.flags ^ Screen::FlagInverse;
                  if (flags) flags |= Screen::FlagMouseText;
                  screen->putc(fc - 0x80, cursor, flags);
              } $advance_if
 
              | 0xe0 .. 0xff ${
                  /* special inverse/normal */
-                 uint8_t flags = ~(_context.flags & Screen::FlagInverse);
+                 uint8_t flags = _context.flags ^ Screen::FlagInverse;
                  screen->putc(fc - 0x80, cursor, flags);
              } $advance_if
              
