@@ -33,7 +33,6 @@
 		B61EF7D81482FB6D008C1891 /* titlebar-left.png in Resources */ = {isa = PBXBuildFile; fileRef = B61EF7D51482FB6D008C1891 /* titlebar-left.png */; };
 		B61EF7D91482FB6D008C1891 /* titlebar-right.png in Resources */ = {isa = PBXBuildFile; fileRef = B61EF7D61482FB6D008C1891 /* titlebar-right.png */; };
 		B638188214A179D60027D007 /* ColorView.m in Sources */ = {isa = PBXBuildFile; fileRef = B638188114A179D60027D007 /* ColorView.m */; };
-		B6407804201CE8BD00D3F2D1 /* GNOConsole.mm.ragel in Resources */ = {isa = PBXBuildFile; fileRef = B612F45B12DD5DF1005D1B77 /* GNOConsole.mm.ragel */; };
 		B6407805201CE93500D3F2D1 /* GNOConsole.mm.ragel in Sources */ = {isa = PBXBuildFile; fileRef = B612F45B12DD5DF1005D1B77 /* GNOConsole.mm.ragel */; };
 		B66412391480A070003BC8D3 /* EmulatorWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = B66412381480A070003BC8D3 /* EmulatorWindow.m */; };
 		B675F4A81E540394004B0D9C /* Screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B612F44D12DD5DAD005D1B77 /* Screen.cpp */; };
@@ -104,6 +103,10 @@
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* TwoTerm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TwoTerm.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B60B98712022BAF100E688E3 /* appleIIgs.ti */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = appleIIgs.ti; sourceTree = "<group>"; };
+		B60B98732022BAF100E688E3 /* gno-console.ti */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "gno-console.ti"; sourceTree = "<group>"; };
+		B60B98742022BAF100E688E3 /* gsos-console.ti */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "gsos-console.ti"; sourceTree = "<group>"; };
+		B60B98762022BAF100E688E3 /* proterm-special.ti */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "proterm-special.ti"; sourceTree = "<group>"; };
 		B60EBD1111E8DEEF00C1974F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = /System/Library/Frameworks/QuartzCore.framework; sourceTree = "<absolute>"; };
 		B60EBDE111E90FC300C1974F /* ScanLineFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScanLineFilter.h; sourceTree = "<group>"; };
 		B60EBDE211E90FC300C1974F /* ScanLineFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScanLineFilter.m; sourceTree = "<group>"; };
@@ -266,6 +269,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				B60B98702022BAF100E688E3 /* a2-terminfo */,
 				B60EBDE711E9143F00C1974F /* ScanLineFilter.cikernel */,
 				B66979CE11E6BCAE002ED475 /* images */,
 				8D1107310486CEB800E47090 /* Info.plist */,
@@ -285,6 +289,17 @@
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B60B98702022BAF100E688E3 /* a2-terminfo */ = {
+			isa = PBXGroup;
+			children = (
+				B60B98712022BAF100E688E3 /* appleIIgs.ti */,
+				B60B98732022BAF100E688E3 /* gno-console.ti */,
+				B60B98742022BAF100E688E3 /* gsos-console.ti */,
+				B60B98762022BAF100E688E3 /* proterm-special.ti */,
+			);
+			path = "a2-terminfo";
 			sourceTree = "<group>";
 		};
 		B612F44612DD5DAD005D1B77 /* cpp */ = {
@@ -381,6 +396,7 @@
 				8D11072C0486CEB800E47090 /* Sources */,
 				8D11072E0486CEB800E47090 /* Frameworks */,
 				B61D0D57125B728D001C713B /* CopyFiles */,
+				B60B98802022BF5900E688E3 /* ShellScript */,
 			);
 			buildRules = (
 				B6C173931D32A8840024E360 /* PBXBuildRule */,
@@ -430,7 +446,6 @@
 				B676065111DEBAE900D6B66C /* TermWindow.xib in Resources */,
 				B67B3CE512B6FA040033AE07 /* a2-charset-40.png in Resources */,
 				B67B3CE612B6FA040033AE07 /* a2-charset-80.png in Resources */,
-				B6407804201CE8BD00D3F2D1 /* GNOConsole.mm.ragel in Resources */,
 				B6801BD912EB549300B22E9E /* vt100-charset.png in Resources */,
 				B61EF7C51481561E008C1891 /* titlebar-corner.png in Resources */,
 				B61EF7C61481561E008C1891 /* titlebar-middle.png in Resources */,
@@ -447,6 +462,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		B60B98802022BF5900E688E3 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "for x in \"$PROJECT_DIR/a2-terminfo/\"*.ti ; do\ntic -N -s -o \"$BUILT_PRODUCTS_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/terminfo\" \"$x\"\ndone";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8D11072C0486CEB800E47090 /* Sources */ = {
