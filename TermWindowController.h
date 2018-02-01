@@ -25,10 +25,6 @@
     
     NSObject <Emulator> *_emulator;
     
-    NSThread * _thread;
-    int _fd;
-    std::atomic<pid_t> _pid;
-    
 }
 
 @property (nonatomic, retain) NSDictionary *parameters;
@@ -39,5 +35,7 @@
 @property (nonatomic, retain) NSObject<Emulator> *emulator;
 
 -(void)initPTY;
+-(void)childFinished: (int)status;
+-(void)processData: (const void *)buffer size: (size_t)size;
 
 @end

@@ -31,6 +31,8 @@
 #include <string>
 #include <vector>
 
+#include "ChildMonitor.h"
+
 @implementation TermWindowController
 
 @synthesize emulator = _emulator;
@@ -46,12 +48,13 @@
 
 -(void)dealloc
 {
+    [[ChildMonitor monitor] removeController: self];
+    
     [_emulator release];
     [_emulatorView release];
     [_colorView release];
 
     [_parameters release];
-    [_thread release];
     
     [super dealloc];
 }
@@ -66,6 +69,9 @@
 -(void)initPTY
 {
     static std::string username;
+    
+    pid_t pid;
+    int fd;
 
     struct termios term;
     struct winsize ws = [_emulator defaultSize];
@@ -94,16 +100,16 @@
         username = [NSUserName() UTF8String];
     }
     //NSLog(@"%@ %s %s", NSUserName(), getlogin(), getpwent()->pw_name);
-    _pid = forkpty(&_fd, NULL, &term, &ws);
+   pid = forkpty(&fd, NULL, &term, &ws);
     
-    if (_pid < 0)
+    if (pid < 0)
     {
         fprintf(stderr, "forkpty failed\n");
         fflush(stderr);
         
         return;
     }
-    if (_pid == 0)
+    if (pid == 0)
     {
         
         std::vector<const char *> environ;
@@ -175,122 +181,18 @@
 
     [window setMinSize: [window frame].size];
 
-    [_emulatorView setFd: _fd];
-    [self monitor];
+    [_emulatorView setFd: fd];
+
+    [[ChildMonitor monitor] addController: self pid: pid fd: fd];
 }
 
--(BOOL)read: (int)fd {
 
-    BOOL rv = NO;
-
-    for(;;) {
-        
-        uint8_t buffer[1024];
-        ssize_t size = read(fd, buffer, sizeof(buffer));
-        if (size < 0 && errno == EINTR) continue;
-
-        if (size <= 0) break;
-        [_emulatorView processData: buffer size: size];
-        rv = YES;
-    }
-    
-    return rv;
+-(void)childFinished: (int)status {
+    [_emulatorView childFinished: status];
 }
 
--(int)wait: (pid_t)pid {
-
-    std::atomic_exchange(&_pid, -1);
-
-    int status = 0;
-    for(;;) {
-        int ok = waitpid(pid, &status, WNOHANG);
-        if (ok >= 0) break;
-        if (errno == EINTR) continue;
-        NSLog(@"waitpid(%d): %s", pid, strerror(errno));
-        break;
-    }
-    return status;
-}
-
--(void)monitor {
-
-    
-    int fd = _fd;
-    pid_t pid = _pid;
-    
-    int q = kqueue();
-    
-    struct kevent events[2] = {};
-    
-    EV_SET(&events[0], pid, EVFILT_PROC, EV_ADD | EV_RECEIPT, NOTE_EXIT | NOTE_EXITSTATUS, 0, NULL);
-    EV_SET(&events[1], fd, EVFILT_READ, EV_ADD | EV_RECEIPT, 0, 0, NULL);
-    
-    int flags;
-    // non-blocking io.
-    if (fcntl(_fd, F_GETFL, &flags) < 0) flags = 0;
-    fcntl(_fd, F_SETFL, flags | O_NONBLOCK);
-    
-    kevent(q, events, 2, NULL, 0, NULL);
-
-    [_emulatorView childBegan];
-
-    _thread = [[NSThread alloc] initWithBlock: ^(){
-    
-        struct kevent events[2] = {};
-
-        bool stop = false;
-        int status = 0;
-
-        while (!stop) {
-        
-            int n = kevent(q, NULL, 0, events, 2, NULL);
-            if (n <= 0) {
-                NSLog(@"kevent");
-                break;
-            }
-
-            for (unsigned i = 0; i < n; ++i) {
-                const auto &e = events[i];
-                unsigned flags = e.flags;
-                if (e.filter == EVFILT_READ) {
-                    int fd = (int)e.ident;
-                    if (flags & EV_EOF) {
-                        NSLog(@"EV_EOF");
-                    }
-
-                    if (flags & EV_ERROR) {
-                        NSLog(@"EV_ERROR");
-                    }
-
-                    [self read: fd];
-                    continue;
-                }
-
-                if (e.filter == EVFILT_PROC) {
-
-                    pid_t pid = (pid_t)e.ident;
-                    NSLog(@"Child finished");
-                    status = [self wait: pid];
-                    stop = true;
-                }
-            }
-        }
-        
-        if (![_thread isCancelled]) {
-
-            // read any lingering io...
-            [self read: fd];
-
-            [_emulatorView childFinished: status];
-        }
-        close(q);
-        close(fd);
-
-        _fd = -1;
-        //NSLog(@"Closing fd");
-    }];
-
-    [_thread start];
+-(void)processData: (const void *)buffer size: (size_t)size {
+    [_emulatorView processData: (uint8_t *)buffer size: size];
 }
 
 #pragma mark -
@@ -359,14 +261,7 @@
 
 -(void)windowWillClose:(NSNotification *)notification
 {
-
-    pid_t pid = std::atomic_exchange(&_pid, -1);
-    [_thread cancel];
-
-    if (pid > 0) {
-        kill(pid, 9);
-    }
-
+    [[ChildMonitor monitor] removeController: self];
     [self autorelease];
 }
 
