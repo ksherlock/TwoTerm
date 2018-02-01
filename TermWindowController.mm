@@ -69,6 +69,21 @@
 -(void)initPTY
 {
     static std::string username;
+    static std::string terminfo;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        // getlogin() sometimes returns crap.
+        username = [NSUserName() UTF8String];
+        char *cp = getenv("TERMINFO_DIRS");
+        if (cp && *cp) {
+            terminfo = cp;
+            terminfo.push_back(':');
+        }
+        NSString *s = [[NSBundle mainBundle] resourcePath];
+        s = [s stringByAppendingPathComponent: @"terminfo"];
+        terminfo += [s UTF8String];
+    });
+    
     
     pid_t pid;
     int fd;
@@ -77,10 +92,6 @@
     struct winsize ws = [_emulator defaultSize];
     
     memset(&term, 0, sizeof(term));
-    
-    //term.c_oflag = OPOST | ONLCR;
-    //term.c_lflag = ECHO;
-    //term.c_iflag = ICRNL; // | ICANON | ECHOE | ISIG;
     
     term.c_oflag = TTYDEF_OFLAG;
     term.c_lflag = TTYDEF_LFLAG;
@@ -95,11 +106,6 @@
         [_emulator initTerm: &term];
     
     
-    // getlogin() sometimes returns crap.
-    if (username.empty()) {
-        username = [NSUserName() UTF8String];
-    }
-    //NSLog(@"%@ %s %s", NSUserName(), getlogin(), getpwent()->pw_name);
    pid = forkpty(&fd, NULL, &term, &ws);
     
     if (pid < 0)
@@ -124,8 +130,12 @@
         
         s.append("TERM=");
         s.append([_emulator termName]);
-        
+        s.append(1, (char)0);
+
+        s.append("TERMINFO_DIRS=");
+        s.append(terminfo.c_str());
         s.append(1, (char)0); 
+
         s.append(1, (char)0);
         
         for (std::string::size_type index = 0;;)
