@@ -1,0 +1,3 @@
+[submodule "a2-terminfo"]
+	path = a2-terminfo
+	url = https://github.com/ksherlock/a2-terminfo
