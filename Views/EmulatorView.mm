@@ -58,6 +58,7 @@
         [_cursorTimer release];
         _cursorTimer = nil;
 
+        _cursorOn = YES;
         iRect r(_screen.cursor(), iSize(1,1));
         [self invalidateIRect: r];
     }
@@ -95,30 +96,24 @@
 {
     return _cursorType;
 }
-#if 0
-dispatch_async(dispatch_get_main_queue(), ^(){
 
-        if (_cursorType == cursorType) return;
+-(void)pushCursor:(unsigned)type {
+    if (_fd < 0) return;
 
-        unsigned char c;
-        switch (cursorType) {
-            default:
-            case Screen::CursorTypeUnderscore: c = '_'; break;
-            case Screen::CursorTypePipe: c = '|'; break;
-            case Screen::CursorTypeBlock: c = 0x80; break;
-        }
-        [_cursorImg release];
-        _cursorType = cursorType;
-        _cursorImg = [[_charGen imageForCharacter: c] retain];
+    _cursorStack.push_back(_cursorType);
+    [self setCursorType: type];
+    [self stopCursorTimer];
+}
 
-        iRect r(_screen.cursor(), iSize(1,1));
-        
-        [self invalidateIRect: r];
-        
-    });
-#endif
+-(void)popCursor {
+    if (_fd < 0) return;
 
-
+    if (!_cursorStack.empty()) {
+        [self setCursorType: _cursorStack.back()];
+        _cursorStack.pop_back();
+        if (_cursorStack.empty()) [self startCursorTimer];
+    }
+}
 
 @end
 
@@ -160,7 +155,7 @@ dispatch_async(dispatch_get_main_queue(), ^(){
     _paddingLeft = 8;
     _paddingTop = 8;
     _paddingBottom = 8;
-    
+    _fd = 1;
     
     //_foregroundColor = [[NSColor greenColor] retain];
     //_backgroundColor = [[NSColor blackColor] retain];
@@ -181,6 +176,7 @@ dispatch_async(dispatch_get_main_queue(), ^(){
     _cursors[Screen::CursorTypeUnderscore] = [[_charGen imageForCharacter: '_'] retain];
     _cursors[Screen::CursorTypePipe] = [[_charGen imageForCharacter: '|'] retain];
     _cursors[Screen::CursorTypeBlock] = [[_charGen imageForCharacter: 0x80] retain];
+    _cursors[Screen::CursorTypeCrossHatch] = [[_charGen imageForCharacter: 0x7f] retain];
     
     
     size  = [_charGen characterSize];
@@ -214,49 +210,6 @@ dispatch_async(dispatch_get_main_queue(), ^(){
     [self setNeedsDisplay: YES];
 }
 
--(void)setScanLines:(BOOL)scanLines
-{
-    if (_scanLines == scanLines) return;
-    
-    _scanLines = scanLines;
-    
-    if (_scanLines)
-    {
-        NSMutableArray *filters;
-        CIFilter *filter;
-        
-        [self setWantsLayer: YES];
-        
-        filters = [NSMutableArray arrayWithCapacity: 3];
-        
-        
-        
-        //add the scanlines
-        
-        filter = [[ScanLineFilter new] autorelease];
-        [filter setValue: [NSNumber numberWithFloat: 1.0] forKey: @"inputDarken"];
-        [filter setValue: [NSNumber numberWithFloat: 0.025] forKey: @"inputLighten"];
-        [filters addObject: filter];  
-        
-        //blur it a bit...
-        
-        filter = [CIFilter filterWithName: @"CIGaussianBlur"];
-        [filter setDefaults];
-        [filter setValue: [NSNumber numberWithFloat: 0.33] forKey: @"inputRadius"];
-        
-        [filters addObject: filter];
-         
-        
-      
-        
-        [self setContentFilters: filters];   
-    }
-    else
-    {
-        [self setContentFilters: @[]];
-    }
-}
-
 -(BOOL)isFlipped
 {
     return YES;
@@ -273,11 +226,6 @@ dispatch_async(dispatch_get_main_queue(), ^(){
     
     [self startCursorTimer];
     
-    /*
-    [[self window] display];
-    [[self window] setHasShadow: NO];
-    [[self window] setHasShadow: YES];
-    */
 }
 
 -(void)viewDidMoveToSuperview
@@ -467,8 +415,6 @@ dispatch_async(dispatch_get_main_queue(), ^(){
 
 -(void)dealloc
 {
-    close(_fd);
-    
     [_foregroundColor release];
     [_backgroundColor release];
     
@@ -531,11 +477,12 @@ dispatch_async(dispatch_get_main_queue(), ^(){
     
     //NSLog(@"[process complete]");
     
+    _fd = -1;
     dispatch_async(dispatch_get_main_queue(), ^(){
         
         iRect updateRect;
         
-        [self setCursorType: Screen::CursorTypeNone];
+        [self setCursorType: Screen::CursorTypeCrossHatch];
         [self stopCursorTimer];
         //_screen.setCursorType(Screen::CursorTypeNone);
         
@@ -802,7 +749,7 @@ dispatch_async(dispatch_get_main_queue(), ^(){
     
     SEL cmd = [anItem action];
     if (cmd == @selector(paste:)) {
-        return _fd >= 1;
+        return _fd >= 0;
     }
     if (cmd == @selector(copy:)) return NO;
     if (cmd == @selector(copyDebugData:)) return YES;

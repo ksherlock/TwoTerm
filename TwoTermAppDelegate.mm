@@ -13,7 +13,7 @@
 #import "Defaults.h"
 //#import "VT52.h"
 #import "GNOConsole.h"
-
+#import "ChildMonitor.h"
 #import "ScanLineFilter.h"
 
 @implementation TwoTermAppDelegate
@@ -27,9 +27,7 @@
     TermWindowController *controller;
 
     
-    NSMutableArray *filters;
     NSDictionary *parameters;
-    CIFilter *filter;    
     
 #if 0
     struct sigaction sa = {};
@@ -42,7 +40,7 @@
     
     [nc addObserver: self selector: @selector(newTerminal:) name: kNotificationNewTerminal object: nil];
 
-    
+#if 0
     filters = [NSMutableArray arrayWithCapacity: 5];
 
 
@@ -76,12 +74,12 @@
     [filter setValue: @2.0 forKey: @"inputRadius"];
     [filter setValue: @(0.75) forKey: @"inputIntensity"];
     
-
+#endif
 
     
     parameters = @{
                    kClass: [GNOConsole class],
-                   kContentFilters: filters,
+                   //kContentFilters: filters,
                    kForegroundColor: [NSColor colorWithRed: 0.0 green: 1.0 blue: 0.6 alpha: 1.0],
                    kBackgroundColor: [NSColor colorWithRed: 0.0 green: .25 blue: .15 alpha: 1.0]
                    };
@@ -90,6 +88,10 @@
     [controller setParameters: parameters];
     [controller showWindow: nil];
     // this leak is ok.
+}
+
+-(void)applicationWillTerminate:(NSNotification *)notification {
+    [[ChildMonitor monitor] removeAll];
 }
 
 -(void)dealloc {

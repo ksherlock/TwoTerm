@@ -6,6 +6,9 @@
 //  Copyright 2010 __MyCompanyName__. All rights reserved.
 //
 
+#import <CoreImage/CoreImage.h>
+#import "ScanLineFilter.h"
+
 #import "TermWindowController.h"
 #import "EmulatorView.h"
 #import "CurveView.h"
@@ -15,7 +18,7 @@
 #include <sys/event.h>
 #include <sys/time.h>
 #include <atomic>
-
+#include <utility>
 
 #import "Defaults.h"
 
@@ -32,14 +35,11 @@
 #include <vector>
 
 #include "ChildMonitor.h"
+#include "ColorView.h"
 
 @implementation TermWindowController
 
 @synthesize emulator = _emulator;
-@synthesize emulatorView = _emulatorView;
-@synthesize colorView = _colorView;
-
-@synthesize parameters = _parameters;
 
 +(id)new
 {
@@ -51,20 +51,63 @@
     [[ChildMonitor monitor] removeController: self];
     
     [_emulator release];
-    [_emulatorView release];
-    [_colorView release];
-
-    [_parameters release];
     
+    [_popover release];
+    [_popoverViewController release];
+    
+    [_foregroundColor release];
+    [_backgroundColor release];
+
     [super dealloc];
 }
 
-/*
--(void)awakeFromNib
-{
-    [self initPTY];
+-(id)initWithWindow:(NSWindow *)window {
+    if ((self = [super initWithWindow: window])) {
+        _foregroundColor = [[NSColor greenColor] retain];
+        _backgroundColor = [[NSColor blackColor] retain];
+
+        _bloomValue = 0.75;
+        _blurValue = 0.0;
+        _backlightValue = 0.25;
+        _scanlineValue = 0.5;
+        _vignetteValue = 0.5;
+        _effectsEnabled = YES;
+    
+    }
+    return self;
 }
-*/
+
+-(void)setParameters: (NSDictionary *)parameters {
+
+    NSColor *o;
+    Class klass;
+
+    o = [parameters objectForKey: kForegroundColor];
+    o = o ? (NSColor *)o : [NSColor greenColor];
+    [self setForegroundColor: o];
+
+    o = [parameters objectForKey: kBackgroundColor];
+    o = o ? (NSColor *)o : [NSColor blackColor];
+    [self setBackgroundColor: o];
+
+    klass = [parameters objectForKey: kClass];
+    if (!klass || ![klass conformsToProtocol: @protocol(Emulator)])
+    {
+        klass = Nil;
+        //klass = [VT52 class];
+    }
+    
+    [self willChangeValueForKey: @"emulator"];
+    _emulator = [klass new];
+    [self didChangeValueForKey: @"emulator"];
+
+    
+#if 0
+    [self updateBackgroundColor];
+    [self updateForegroundColor];
+#endif
+}
+
 
 -(void)initPTY
 {
@@ -205,68 +248,35 @@
     [_emulatorView processData: (uint8_t *)buffer size: size];
 }
 
+
+
 #pragma mark -
 #pragma mark NSWindowDelegate
 
 - (void)windowDidLoad
 {
-    
-    NSColor *foregroundColor;
-    NSColor *backgroundColor;
-    Class klass;
-    id o;
-    
+
     NSWindow *window;
     
     [super windowDidLoad];
     
-    window = [self window];
-    
-    //[(CurveView *)[window contentView] setColor: [NSColor clearColor]];
-    
-    //[window setContentView: _curveView];
     
     // resize in 2.0 height increments to prevent jittering the scan lines.
     //[window setResizeIncrements: NSMakeSize(1.0, 2.0)];
     
-    
-    klass = [_parameters objectForKey: kClass];
-    if (!klass || ![klass conformsToProtocol: @protocol(Emulator)])
-    {
-        klass = Nil;
-        //klass = [VT52 class];
-    }
-    
-    o = [_parameters objectForKey: kForegroundColor];
-    foregroundColor = o ? (NSColor *)o : [NSColor greenColor];
-    
-    o = [_parameters objectForKey: kBackgroundColor];
-    backgroundColor = o ? (NSColor *)o : [NSColor blackColor];
-    
-    
-    [self willChangeValueForKey: @"emulator"];
-    _emulator = [klass new];
-    [self didChangeValueForKey: @"emulator"];
 
-    [window setBackgroundColor: backgroundColor];
-    [(EmulatorWindow *)window setTitleTextColor: foregroundColor];
+    window = [self window];
 
+    
     [_emulatorView setEmulator: _emulator];
-    [_emulatorView setForegroundColor: foregroundColor];
-    [_emulatorView setBackgroundColor: backgroundColor];
-    //[_emulatorView setScanLines: scanLines];
+
+    [self updateBackgroundColor];
+    [self updateForegroundColor];
     
-    [_colorView setColor: backgroundColor];
-    
-    o = [_parameters objectForKey: kContentFilters];
-    if (o)
-    {
-        [_colorView setWantsLayer: YES];
-        [_colorView setContentFilters: (NSArray *)o];
-    }
+    [_colorView setWantsLayer: YES];
+    [_colorView setContentFilters: [self effectsFilter]];
 
     [self initPTY];
-    
 }
 
 -(void)windowWillClose:(NSNotification *)notification
@@ -274,6 +284,178 @@
     [[ChildMonitor monitor] removeController: self];
     [self autorelease];
 }
+
+-(void)windowDidBecomeKey:(NSNotification *)notification {
+    [_emulatorView popCursor];
+}
+
+-(void)windowDidResignKey:(NSNotification *)notification {
+    [_emulatorView pushCursor: Screen::CursorTypeBlock];
+}
+
+-(void)popoverWillClose:(NSNotification *)notification {
+    [_fg deactivate];
+    [_bg deactivate];
+    [[NSColorPanel sharedColorPanel] orderOut: self];
+}
+@end
+
+@implementation TermWindowController (Config)
+
+-(NSColor *)recalcBackgroundColor {
+    
+    if (_effectsEnabled) {
+        return [_backgroundColor blendedColorWithFraction: _backlightValue ofColor: _foregroundColor];
+    }
+    return _backgroundColor;
+}
+
+-(IBAction)filterParameterChanged:(id)sender {
+    if (sender == _effectsButton) sender = nil;
+
+    if (sender == nil || sender == _fg) {
+        [self updateForegroundColor];
+    }
+    if (sender == nil || sender == _fg || sender == _bg || sender == _lightenSlider) {
+        [self updateBackgroundColor];
+    }
+
+    if (sender == nil || sender == _vignetteSlider || sender == _darkenSlider || sender == _bloomSlider) {
+
+        [_colorView setContentFilters: [self effectsFilter]];
+    }
+
+#if 0
+        CIFilter *filter = [_contentFilters objectAtIndex: 0];
+        [filter setValue: @(_vignetteValue) forKey: @"inputIntensity"];
+    }
+
+    if (sender == _darkenSlider) {
+        CIFilter *filter = [_contentFilters objectAtIndex: 1];
+        [filter setValue: @(_scanlineValue) forKey: @"inputDarken"];
+    }
+    
+    if (sender == _bloomSlider) {
+        CIFilter *filter = [_contentFilters objectAtIndex: 2];
+        [filter setValue: @(_bloomValue) forKey: @"inputIntensity"];
+    }
+#endif
+
+
+}
+
+-(NSArray *)effectsFilter {
+
+    if (!_effectsEnabled) return @[];
+ 
+    CIFilter *filter;
+    NSMutableArray *filters = [NSMutableArray arrayWithCapacity: 5];
+    
+    // 1. vignette effect
+    filter = [CIFilter filterWithName: @"CIVignette"];
+    [filter setDefaults];
+    [filter setValue: @(_vignetteValue) forKey: @"inputIntensity"];
+    [filter setValue: @(2.0) forKey: @"inputRadius"];
+    
+    [filters addObject: filter];
+    
+
+    // 2. add the scanlines
+    filter = [[ScanLineFilter new] autorelease];
+    [filter setValue: @(_scanlineValue) forKey: @"inputDarken"];
+    [filter setValue: @(0.0) forKey: @"inputLighten"];
+    [filters addObject: filter];
+    
+    
+    // 3. bloom it...
+    filter = [CIFilter filterWithName: @"CIBloom"];
+    [filter setDefaults];
+    [filter setValue: @2.0 forKey: @"inputRadius"];
+    [filter setValue: @(_bloomValue) forKey: @"inputIntensity"];
+    
+    [filters addObject: filter];
+    
+#if 0
+    //4. blur it a bit...
+    filter = [CIFilter filterWithName: @"CIGaussianBlur"];
+    [filter setDefaults];
+    [filter setValue: @(_blurValue) forKey: @"inputRadius"];
+    
+    [filters addObject: filter];
+#endif
+    
+    return filters;
+}
+
+
+
+#pragma mark - IBActions
+
+-(IBAction)configure: (id)sender {
+    
+    if (!_popover) {
+        NSNib *nib = [[NSNib alloc] initWithNibNamed: @"TermConfig" bundle: nil];
+        // n.b. - instantiateWithOwner (10.8+) does not +1 refcount top level objects.
+        [nib instantiateWithOwner: self topLevelObjects: nil];
+        [nib release];
+    }
+    if ([_popover isShown]) {
+        [_popover close];
+    } else {
+        [_popover showRelativeToRect: NSZeroRect ofView: _emulatorView preferredEdge: NSRectEdgeMaxX];
+    }
+}
+
+- (IBAction)foregroundColor:(id)sender {
+    [self updateForegroundColor];
+}
+
+- (IBAction)backgroundColor:(id)sender {
+    
+    [self updateBackgroundColor];
+}
+
+- (IBAction)swapColors:(id)sender {
+    
+
+    [self willChangeValueForKey: @"foregroundColor"];
+    [self willChangeValueForKey: @"backgroundColor"];
+
+    std::swap(_foregroundColor, _backgroundColor);
+
+    [self didChangeValueForKey: @"foregroundColor"];
+    [self didChangeValueForKey: @"backgroundColor"];
+
+    [self updateBackgroundColor];
+    [self updateForegroundColor];
+    
+    if ([_fg isActive]) {
+        [_bg activate: YES];
+    } else if ([_bg isActive]) {
+        [_fg activate: YES];
+    }
+}
+
+
+-(void)updateForegroundColor {
+    NSColor *color = _foregroundColor;
+    
+    NSWindow *window = [self window];
+    
+    [(EmulatorWindow *)window setTitleTextColor: color];
+    
+    [_emulatorView setForegroundColor: color];
+}
+
+-(void)updateBackgroundColor {
+    NSColor *color = [self recalcBackgroundColor];
+    NSWindow *window = [self window];
+    
+    [window setBackgroundColor: color];
+    [_colorView setColor: color];
+    [_emulatorView setBackgroundColor: color];
+}
+
 
 @end
 

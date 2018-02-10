@@ -18,16 +18,9 @@
 @synthesize terminalTypeButton = _terminalTypeButton;
 @synthesize colorSchemeButton = _colorSchemeButton;
 
-@synthesize effectsButton = _effectsButton;
 @synthesize foregroundColorControl = _foregroundColorControl;
 @synthesize backgroundColorControl = _backgroundColorControl;
 
-@synthesize blurSlider = _blurSlider;
-@synthesize lightenSlider = _lightenSlider;
-@synthesize darkenSlider = _darkenSlider;
-
-
-@synthesize effectsEnabled = _effectsEnabled;
 // colors
 enum {
     kCustom = 0,
@@ -59,11 +52,10 @@ enum {
     [super windowDidLoad];
     
     window = [self window];
+    //[[window contentView] setWantsLayer: YES];
     
     //[window setAutorecalculatesContentBorderThickness: NO forEdge: NSMinYEdge];
     //[window setAutorecalculatesContentBorderThickness: NO forEdge: NSMaxYEdge];
-    
-    [self setEffectsEnabled: YES];
     
     
     [_terminalTypeButton setMenu: [EmulatorManager emulatorMenu]];
@@ -143,16 +135,11 @@ enum {
         
         [userInfo setObject: klass forKey: kClass];
         [userInfo setObject: [_foregroundColorControl color] forKey: kForegroundColor];
-        [userInfo setObject: [self recalcBackground] forKey: kBackgroundColor];
+        [userInfo setObject: [_backgroundColorControl color] forKey: kBackgroundColor];
         
-        if (_effectsEnabled)
-        {
-            [userInfo setObject: [_exampleView contentFilters] forKey: kContentFilters];
-        }
-        
+
         [nc postNotificationName: kNotificationNewTerminal object: self userInfo: userInfo];
         
-        // post notificiation...
     }
     
     
@@ -205,43 +192,9 @@ enum {
             
             
     }
-    [self filterParameterChanged: nil];
 }
 
 
--(IBAction)filterParameterChanged: (id)sender
-{
-    
-    [_exampleView setForegroundColor: [_foregroundColorControl color]];
-    [_exampleView setColor: [self recalcBackground]];
-    
-    if (_effectsEnabled)
-    {
-        [_exampleView setBlur: [_blurSlider floatValue]];
-        //[_exampleView setLighten: [_lightenSlider floatValue]];
-        [_exampleView setDarken: [_darkenSlider floatValue]];
-        [_exampleView setBloom: [_bloomSlider floatValue]];
-        [_exampleView setVignette: [_vignetteSlider floatValue]];
-
-    }
-    else
-    {
-        [_exampleView setBlur: 0.0];
-        //[_exampleView setLighten: 0.0];
-        [_exampleView setDarken: 0.0];
-        [_exampleView setBloom: 0.0];
-        [_exampleView setVignette: 0.0];
-    }
-    
-    [_exampleView updateEffects];
-    [_exampleView setNeedsDisplay: YES];
-}
-
--(void)setEffectsEnabled:(BOOL)effectsEnabled
-{
-    _effectsEnabled = effectsEnabled;
-    [self filterParameterChanged: nil];
-}
 
 #pragma mark -
 #pragma mark NSWindowDelegate
@@ -254,17 +207,6 @@ enum {
     [self autorelease];
 }
 
--(NSColor *)recalcBackground {
-    
-    NSColor *bg = [_backgroundColorControl color];
-    NSColor *fg = [_foregroundColorControl color];
-    CGFloat value = [_lightenSlider doubleValue];
-    
-    if (_effectsEnabled) {
-        bg = [bg blendedColorWithFraction: value ofColor: fg];
-    }
-    return bg;
-}
 
 
 @end

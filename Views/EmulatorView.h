@@ -73,13 +73,14 @@ private:
     
     unsigned _cursorType;
     
-    NSImage *_cursors[4];
+    NSImage *_cursors[5];
 #ifdef __cplusplus
     
     ring_buffer<1024> _debug_buffer;
     ViewScreen _screen;
     
 #endif
+    std::vector<unsigned> _cursorStack;
 }
 
 @property (nonatomic, assign) BOOL scanLines;
@@ -121,5 +122,7 @@ private:
 -(void)cursorTimer: (NSTimer *)timer;
 -(void)startCursorTimer;
 
+-(void)pushCursor: (unsigned)type;
+-(void)popCursor;
 
 @end

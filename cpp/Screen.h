@@ -69,7 +69,8 @@ public:
         CursorTypeNone,
         CursorTypeUnderscore,
         CursorTypePipe,
-        CursorTypeBlock
+        CursorTypeBlock,
+        CursorTypeCrossHatch,
     };
     
     Screen(unsigned height = 24, unsigned width = 80);

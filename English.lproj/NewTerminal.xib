@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16D32" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="13771" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="13771"/>
         <capability name="box content view" minToolsVersion="7.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -9,16 +10,9 @@
         <customObject id="-2" userLabel="File's Owner" customClass="NewTerminalWindowController">
             <connections>
                 <outlet property="backgroundColorControl" destination="53" id="65"/>
-                <outlet property="bloomSlider" destination="MVc-mQ-qGn" id="TzC-h7-eSd"/>
-                <outlet property="blurSlider" destination="78" id="100"/>
                 <outlet property="colorSchemeButton" destination="68" id="92"/>
-                <outlet property="darkenSlider" destination="84" id="99"/>
-                <outlet property="effectsButton" destination="62" id="93"/>
-                <outlet property="exampleView" destination="123" id="129"/>
                 <outlet property="foregroundColorControl" destination="49" id="64"/>
-                <outlet property="lightenSlider" destination="82" id="101"/>
                 <outlet property="terminalTypeButton" destination="55" id="67"/>
-                <outlet property="vignetteSlider" destination="vAv-z0-AKd" id="tmI-Tz-29w"/>
                 <outlet property="window" destination="1" id="38"/>
             </connections>
         </customObject>
@@ -27,14 +21,14 @@
         <window title="New Terminal" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="1">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" texturedBackground="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="196" y="232" width="400" height="613"/>
+            <rect key="contentRect" x="196" y="232" width="400" height="218"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1920" height="1178"/>
             <view key="contentView" wantsLayer="YES" misplaced="YES" id="2">
-                <rect key="frame" x="0.0" y="0.0" width="400" height="613"/>
+                <rect key="frame" x="0.0" y="0.0" width="400" height="218"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <textField verticalHuggingPriority="750" id="9">
-                        <rect key="frame" x="17" y="573" width="99" height="17"/>
+                    <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" id="9">
+                        <rect key="frame" x="17" y="178" width="99" height="17"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Terminal Type:" id="10">
                             <font key="font" metaFont="system"/>
@@ -42,9 +36,9 @@
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <button verticalHuggingPriority="750" id="17">
+                    <button verticalHuggingPriority="750" misplaced="YES" id="17">
                         <rect key="frame" x="262" y="18" width="118" height="25"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="roundTextured" title="Connect" bezelStyle="texturedRounded" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="18">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -56,22 +50,8 @@ DQ
                             <action selector="connectButton:" target="-2" id="41"/>
                         </connections>
                     </button>
-                    <button verticalHuggingPriority="750" id="19">
-                        <rect key="frame" x="20" y="18" width="118" height="25"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <buttonCell key="cell" type="roundTextured" title="Cancel" bezelStyle="texturedRounded" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="20">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="system"/>
-                            <string key="keyEquivalent" base64-UTF8="YES">
-Gw
-</string>
-                        </buttonCell>
-                        <connections>
-                            <action selector="cancelButton:" target="-2" id="40"/>
-                        </connections>
-                    </button>
                     <popUpButton verticalHuggingPriority="750" id="55">
-                        <rect key="frame" x="121" y="568" width="259" height="25"/>
+                        <rect key="frame" x="121" y="173" width="259" height="25"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <popUpButtonCell key="cell" type="roundTextured" title="Item 1" bezelStyle="texturedRounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="58" id="56">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -86,13 +66,13 @@ Gw
                         </popUpButtonCell>
                     </popUpButton>
                     <box autoresizesSubviews="NO" borderType="line" title="Colors" id="76">
-                        <rect key="frame" x="17" y="441" width="366" height="124"/>
+                        <rect key="frame" x="17" y="46" width="366" height="124"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <view key="contentView" id="xsD-uS-uc3">
                             <rect key="frame" x="1" y="1" width="364" height="108"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
-                                <textField verticalHuggingPriority="750" id="50">
+                                <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" id="50">
                                     <rect key="frame" x="15" y="48" width="83" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Foreground:" id="51">
@@ -101,7 +81,7 @@ Gw
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField verticalHuggingPriority="750" id="90">
+                                <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" id="90">
                                     <rect key="frame" x="15" y="79" width="83" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Scheme:" id="91">
@@ -110,7 +90,7 @@ Gw
                                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                     </textFieldCell>
                                 </textField>
-                                <textField verticalHuggingPriority="750" id="52">
+                                <textField verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="YES" id="52">
                                     <rect key="frame" x="15" y="17" width="83" height="17"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Background:" id="54">
@@ -124,7 +104,7 @@ Gw
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <color key="color" red="0.0" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                     <connections>
-                                        <action selector="filterParameterChanged:" target="-2" id="128"/>
+                                        <action selector="colorChanged:" target="-2" id="3vl-pH-esq"/>
                                     </connections>
                                 </colorWell>
                                 <colorWell id="53">
@@ -132,7 +112,7 @@ Gw
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                     <color key="color" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                     <connections>
-                                        <action selector="filterParameterChanged:" target="-2" id="127"/>
+                                        <action selector="colorChanged:" target="-2" id="ljb-zv-K8U"/>
                                     </connections>
                                 </colorWell>
                                 <popUpButton verticalHuggingPriority="750" id="68">
@@ -156,128 +136,27 @@ Gw
                             </subviews>
                         </view>
                     </box>
-                    <box autoresizesSubviews="NO" misplaced="YES" borderType="line" title="Effects" id="77">
-                        <rect key="frame" x="17" y="238" width="366" height="199"/>
+                    <button verticalHuggingPriority="750" misplaced="YES" id="19">
+                        <rect key="frame" x="20" y="18" width="118" height="25"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <view key="contentView" id="Pmg-yY-Yvg">
-                            <rect key="frame" x="1" y="1" width="364" height="183"/>
-                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                            <subviews>
-                                <slider verticalHuggingPriority="750" misplaced="YES" id="78">
-                                    <rect key="frame" x="85" y="131" width="263" height="21"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                    <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" tickMarkPosition="above" sliderType="linear" id="79"/>
-                                    <connections>
-                                        <action selector="filterParameterChanged:" target="-2" id="124"/>
-                                        <binding destination="-2" name="enabled" keyPath="effectsEnabled" id="115"/>
-                                    </connections>
-                                </slider>
-                                <slider verticalHuggingPriority="750" misplaced="YES" id="82">
-                                    <rect key="frame" x="85" y="79" width="263" height="21"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                    <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" doubleValue="0.25" tickMarkPosition="above" sliderType="linear" id="83"/>
-                                    <connections>
-                                        <action selector="filterParameterChanged:" target="-2" id="125"/>
-                                        <binding destination="-2" name="enabled" keyPath="effectsEnabled" id="117"/>
-                                    </connections>
-                                </slider>
-                                <textField verticalHuggingPriority="750" misplaced="YES" id="80">
-                                    <rect key="frame" x="25" y="134" width="56" height="17"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Blur:" id="81">
-                                        <font key="font" metaFont="system"/>
-                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                </textField>
-                                <textField verticalHuggingPriority="750" misplaced="YES" id="86">
-                                    <rect key="frame" x="17" y="84" width="64" height="17"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Backlight:" id="87">
-                                        <font key="font" metaFont="system"/>
-                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                </textField>
-                                <textField verticalHuggingPriority="750" misplaced="YES" id="88">
-                                    <rect key="frame" x="15" y="59" width="66" height="17"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Scanlines:" id="89">
-                                        <font key="font" metaFont="system"/>
-                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                </textField>
-                                <slider verticalHuggingPriority="750" misplaced="YES" id="84">
-                                    <rect key="frame" x="85" y="56" width="263" height="21"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                    <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" doubleValue="0.5" tickMarkPosition="above" sliderType="linear" id="85"/>
-                                    <connections>
-                                        <action selector="filterParameterChanged:" target="-2" id="126"/>
-                                        <binding destination="-2" name="enabled" keyPath="effectsEnabled" id="119"/>
-                                    </connections>
-                                </slider>
-                                <slider verticalHuggingPriority="750" misplaced="YES" id="vAv-z0-AKd">
-                                    <rect key="frame" x="85" y="31" width="263" height="21"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                    <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" doubleValue="1" tickMarkPosition="above" sliderType="linear" id="6ek-4n-F91"/>
-                                    <connections>
-                                        <action selector="filterParameterChanged:" target="-2" id="xT7-DI-d9v"/>
-                                        <binding destination="-2" name="enabled" keyPath="effectsEnabled" id="Zom-p6-sns"/>
-                                    </connections>
-                                </slider>
-                                <button misplaced="YES" id="62">
-                                    <rect key="frame" x="83" y="157" width="118" height="18"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <buttonCell key="cell" type="check" title="Effects Enabled" bezelStyle="regularSquare" imagePosition="left" alignment="left" state="on" inset="2" id="63">
-                                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                                        <font key="font" metaFont="system"/>
-                                    </buttonCell>
-                                    <connections>
-                                        <binding destination="-2" name="value" keyPath="effectsEnabled" id="107"/>
-                                    </connections>
-                                </button>
-                                <textField verticalHuggingPriority="750" misplaced="YES" id="p8Y-GX-qsU">
-                                    <rect key="frame" x="33" y="109" width="46" height="17"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Bloom:" id="JPr-iB-JMl">
-                                        <font key="font" metaFont="system"/>
-                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                </textField>
-                                <slider verticalHuggingPriority="750" misplaced="YES" id="MVc-mQ-qGn">
-                                    <rect key="frame" x="83" y="106" width="263" height="21"/>
-                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                                    <sliderCell key="cell" continuous="YES" state="on" alignment="left" maxValue="1" doubleValue="0.75" tickMarkPosition="above" sliderType="linear" id="rry-su-ojc"/>
-                                    <connections>
-                                        <action selector="filterParameterChanged:" target="-2" id="QKT-s7-pAK"/>
-                                        <binding destination="-2" name="enabled" keyPath="effectsEnabled" id="DfY-jU-vle"/>
-                                    </connections>
-                                </slider>
-                                <textField verticalHuggingPriority="750" misplaced="YES" id="7Qa-e5-7OW">
-                                    <rect key="frame" x="20" y="33" width="59" height="17"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" alignment="right" title="Vignette:" id="x41-sA-EDR">
-                                        <font key="font" metaFont="system"/>
-                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
-                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
-                                    </textFieldCell>
-                                </textField>
-                            </subviews>
-                        </view>
-                    </box>
-                    <customView id="123" customClass="ExampleView">
-                        <rect key="frame" x="20" y="50" width="360" height="145"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                    </customView>
+                        <buttonCell key="cell" type="roundTextured" title="Cancel" bezelStyle="texturedRounded" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="20">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
+                        </buttonCell>
+                        <connections>
+                            <action selector="cancelButton:" target="-2" id="40"/>
+                        </connections>
+                    </button>
                 </subviews>
             </view>
             <contentBorderThickness minY="0.0" maxY="0.0"/>
             <connections>
                 <outlet property="delegate" destination="-2" id="39"/>
             </connections>
-            <point key="canvasLocation" x="116" y="220.5"/>
+            <point key="canvasLocation" x="116" y="23"/>
         </window>
         <userDefaultsController representsSharedInstance="YES" id="102"/>
     </objects>

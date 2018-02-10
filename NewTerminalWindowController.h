@@ -19,18 +19,6 @@
     
     NSColorWell *_foregroundColorControl;
     NSColorWell *_backgroundColorControl;
-    
-    
-    NSButton *_effectsButton;
-    NSSlider *_blurSlider;
-    NSSlider *_lightenSlider;
-    NSSlider *_darkenSlider;
-
-    
-    ExampleView *_exampleView;
-    
-    BOOL _effectsEnabled;
-    
 }
 
 @property (nonatomic, assign) IBOutlet ExampleView *exampleView;
@@ -42,15 +30,6 @@
 @property (nonatomic, assign) IBOutlet NSColorWell *foregroundColorControl;
 @property (nonatomic, assign) IBOutlet NSColorWell *backgroundColorControl;
 
-@property (nonatomic, assign) IBOutlet NSButton *effectsButton;
-@property (nonatomic, assign) IBOutlet NSSlider *blurSlider;
-@property (nonatomic, assign) IBOutlet NSSlider *lightenSlider;
-@property (nonatomic, assign) IBOutlet NSSlider *darkenSlider;
-@property (nonatomic, assign) IBOutlet NSSlider *bloomSlider;
-@property (nonatomic, assign) IBOutlet NSSlider *vignetteSlider;
-
-@property (nonatomic, assign) BOOL effectsEnabled;
-
 
 
 -(IBAction)cancelButton: (id)sender;
@@ -59,10 +38,7 @@
 -(IBAction)colorChanged: (id)sender;
 -(IBAction)setColorScheme: (id)sender;
 
--(IBAction)filterParameterChanged: (id)sender;
 
 -(NSMenu *)colorMenu;
-
--(NSColor *)recalcBackground;
 
 @end

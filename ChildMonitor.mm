@@ -107,6 +107,22 @@ namespace  {
     [super dealloc];
 }
 
+
+-(void)removeAll {
+    Locker l(_lock);
+    
+    for (auto &e : _table) {
+        if (e.controller) {
+            [e.controller release];
+            e.controller = nil;
+        }
+        if (e.pid > 0) {
+            kill(e.pid, SIGHUP);
+            e.pid = -1;
+        }
+    }
+}
+
 -(void)removeController: (TermWindowController *)controller {
 
     if (!controller) return;

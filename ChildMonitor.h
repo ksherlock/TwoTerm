@@ -17,4 +17,5 @@
 -(void)removeController: (TermWindowController *)controller;
 -(void)addController: (TermWindowController *)controller pid: (pid_t)pid fd: (int)fd;
 
+-(void)removeAll;
 @end

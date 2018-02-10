@@ -44,6 +44,7 @@
 		B67B3CE612B6FA040033AE07 /* a2-charset-80.png in Resources */ = {isa = PBXBuildFile; fileRef = B67B3CE412B6FA040033AE07 /* a2-charset-80.png */; };
 		B6801BD912EB549300B22E9E /* vt100-charset.png in Resources */ = {isa = PBXBuildFile; fileRef = B6801BD812EB549300B22E9E /* vt100-charset.png */; };
 		B68E632A12FF909D00EAFF5F /* ExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = B68E632912FF909C00EAFF5F /* ExampleView.m */; };
+		B69D0FBA202799B10073CCB7 /* TermConfig.xib in Resources */ = {isa = PBXBuildFile; fileRef = B69D0FB8202799B10073CCB7 /* TermConfig.xib */; };
 		B69E32A920221C9E0086D7B1 /* ChildMonitor.mm in Sources */ = {isa = PBXBuildFile; fileRef = B69E32A820221C9E0086D7B1 /* ChildMonitor.mm */; };
 		B6ACA2AD1E614E38000E774B /* VT52.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F46312DD5DF1005D1B77 /* VT52.mm */; };
 		B6ACA2AF1E635CEC000E774B /* vt52-charset.png in Resources */ = {isa = PBXBuildFile; fileRef = B6ACA2AE1E635CEC000E774B /* vt52-charset.png */; };
@@ -164,6 +165,7 @@
 		B6801BD812EB549300B22E9E /* vt100-charset.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vt100-charset.png"; sourceTree = "<group>"; };
 		B68E632812FF909C00EAFF5F /* ExampleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExampleView.h; sourceTree = "<group>"; };
 		B68E632912FF909C00EAFF5F /* ExampleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExampleView.m; sourceTree = "<group>"; };
+		B69D0FB9202799B10073CCB7 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/TermConfig.xib; sourceTree = "<group>"; };
 		B69E32A820221C9E0086D7B1 /* ChildMonitor.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ChildMonitor.mm; sourceTree = "<group>"; };
 		B69E32AA20221CCA0086D7B1 /* ChildMonitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ChildMonitor.h; sourceTree = "<group>"; };
 		B6ACA2AB1E5C8BEC000E774B /* GNOConsole.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GNOConsole.mm; sourceTree = "<group>"; };
@@ -277,6 +279,7 @@
 				1DDD58140DA1D0A300B32029 /* MainMenu.xib */,
 				B676065011DEBAE900D6B66C /* TermWindow.xib */,
 				B61EF7C714815AF8008C1891 /* NewTerminal.xib */,
+				B69D0FB8202799B10073CCB7 /* TermConfig.xib */,
 				B61EF7CD148163E7008C1891 /* TitleBarView.xib */,
 			);
 			name = Resources;
@@ -442,6 +445,7 @@
 			files = (
 				B60EBE2B11E918D500C1974F /* ScanLineFilter.cikernel in Resources */,
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
+				B69D0FBA202799B10073CCB7 /* TermConfig.xib in Resources */,
 				1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */,
 				B676065111DEBAE900D6B66C /* TermWindow.xib in Resources */,
 				B67B3CE512B6FA040033AE07 /* a2-charset-40.png in Resources */,
@@ -554,6 +558,14 @@
 				B676064D11DEBAE300D6B66C /* English */,
 			);
 			name = TermWindow.xib;
+			sourceTree = "<group>";
+		};
+		B69D0FB8202799B10073CCB7 /* TermConfig.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B69D0FB9202799B10073CCB7 /* English */,
+			);
+			name = TermConfig.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
