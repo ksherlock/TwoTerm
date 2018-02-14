@@ -236,9 +236,24 @@
                         </subviews>
                     </view>
                 </box>
+                <button misplaced="YES" id="b5f-6s-ZI2">
+                    <rect key="frame" x="451" y="357" width="24" height="24"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="TabClose" imagePosition="only" alignment="center" alternateImage="TabClose_Pressed" inset="2" id="Fi8-z7-gn2">
+                        <behavior key="behavior" lightByContents="YES"/>
+                        <font key="font" metaFont="system"/>
+                    </buttonCell>
+                    <connections>
+                        <action selector="performClose:" target="Ezq-gE-d2Y" id="CcO-2x-8Vw"/>
+                    </connections>
+                </button>
             </subviews>
             <point key="canvasLocation" x="-521" y="413"/>
         </view>
         <userDefaultsController representsSharedInstance="YES" id="mq9-aV-tAe"/>
     </objects>
+    <resources>
+        <image name="TabClose" width="12" height="13"/>
+        <image name="TabClose_Pressed" width="12" height="13"/>
+    </resources>
 </document>

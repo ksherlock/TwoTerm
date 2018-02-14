@@ -48,6 +48,13 @@
 		B69E32A920221C9E0086D7B1 /* ChildMonitor.mm in Sources */ = {isa = PBXBuildFile; fileRef = B69E32A820221C9E0086D7B1 /* ChildMonitor.mm */; };
 		B6ACA2AD1E614E38000E774B /* VT52.mm in Sources */ = {isa = PBXBuildFile; fileRef = B612F46312DD5DF1005D1B77 /* VT52.mm */; };
 		B6ACA2AF1E635CEC000E774B /* vt52-charset.png in Resources */ = {isa = PBXBuildFile; fileRef = B6ACA2AE1E635CEC000E774B /* vt52-charset.png */; };
+		B6C21CCE2033382B00671774 /* TabClose_Busy.tiff in Resources */ = {isa = PBXBuildFile; fileRef = B6C21CC82033382A00671774 /* TabClose_Busy.tiff */; };
+		B6C21CCF2033382B00671774 /* TabClose_Busy_Pressed.tiff in Resources */ = {isa = PBXBuildFile; fileRef = B6C21CC92033382A00671774 /* TabClose_Busy_Pressed.tiff */; };
+		B6C21CD02033382B00671774 /* TabClose.tiff in Resources */ = {isa = PBXBuildFile; fileRef = B6C21CCA2033382A00671774 /* TabClose.tiff */; };
+		B6C21CD12033382B00671774 /* TabClose_Pressed.tiff in Resources */ = {isa = PBXBuildFile; fileRef = B6C21CCB2033382B00671774 /* TabClose_Pressed.tiff */; };
+		B6C21CD22033382B00671774 /* TabClose_Rollover.tiff in Resources */ = {isa = PBXBuildFile; fileRef = B6C21CCC2033382B00671774 /* TabClose_Rollover.tiff */; };
+		B6C21CD32033382B00671774 /* TabClose_Busy_Rollover.tiff in Resources */ = {isa = PBXBuildFile; fileRef = B6C21CCD2033382B00671774 /* TabClose_Busy_Rollover.tiff */; };
+		B6C21CD62033580200671774 /* RolloverButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C21CD52033580200671774 /* RolloverButton.m */; };
 		B6C704EF15CCC64100CC0401 /* titlebar-center@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C704EC15CCC64100CC0401 /* titlebar-center@2x.png */; };
 		B6C704F015CCC64100CC0401 /* titlebar-left@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C704ED15CCC64100CC0401 /* titlebar-left@2x.png */; };
 		B6C704F115CCC64100CC0401 /* titlebar-right@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C704EE15CCC64100CC0401 /* titlebar-right@2x.png */; };
@@ -173,6 +180,14 @@
 		B6C173901D31D2B80024E360 /* GSOSConsole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GSOSConsole.h; sourceTree = "<group>"; };
 		B6C173911D31D2B80024E360 /* GSOSConsole.mm.ragel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = GSOSConsole.mm.ragel; sourceTree = "<group>"; };
 		B6C173941D35546A0024E360 /* algorithm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = algorithm.h; sourceTree = "<group>"; };
+		B6C21CC82033382A00671774 /* TabClose_Busy.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = TabClose_Busy.tiff; sourceTree = "<group>"; };
+		B6C21CC92033382A00671774 /* TabClose_Busy_Pressed.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = TabClose_Busy_Pressed.tiff; sourceTree = "<group>"; };
+		B6C21CCA2033382A00671774 /* TabClose.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = TabClose.tiff; sourceTree = "<group>"; };
+		B6C21CCB2033382B00671774 /* TabClose_Pressed.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = TabClose_Pressed.tiff; sourceTree = "<group>"; };
+		B6C21CCC2033382B00671774 /* TabClose_Rollover.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = TabClose_Rollover.tiff; sourceTree = "<group>"; };
+		B6C21CCD2033382B00671774 /* TabClose_Busy_Rollover.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = TabClose_Busy_Rollover.tiff; sourceTree = "<group>"; };
+		B6C21CD42033580200671774 /* RolloverButton.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RolloverButton.h; sourceTree = "<group>"; };
+		B6C21CD52033580200671774 /* RolloverButton.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RolloverButton.m; sourceTree = "<group>"; };
 		B6C704EC15CCC64100CC0401 /* titlebar-center@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titlebar-center@2x.png"; sourceTree = "<group>"; };
 		B6C704ED15CCC64100CC0401 /* titlebar-left@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titlebar-left@2x.png"; sourceTree = "<group>"; };
 		B6C704EE15CCC64100CC0401 /* titlebar-right@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titlebar-right@2x.png"; sourceTree = "<group>"; };
@@ -365,6 +380,8 @@
 				B6ECFF261D2EEA2B00871A81 /* TextLabel.m */,
 				B638188014A179D60027D007 /* ColorView.h */,
 				B638188114A179D60027D007 /* ColorView.m */,
+				B6C21CD42033580200671774 /* RolloverButton.h */,
+				B6C21CD52033580200671774 /* RolloverButton.m */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -372,6 +389,12 @@
 		B66979CE11E6BCAE002ED475 /* images */ = {
 			isa = PBXGroup;
 			children = (
+				B6C21CC92033382A00671774 /* TabClose_Busy_Pressed.tiff */,
+				B6C21CCD2033382B00671774 /* TabClose_Busy_Rollover.tiff */,
+				B6C21CC82033382A00671774 /* TabClose_Busy.tiff */,
+				B6C21CCB2033382B00671774 /* TabClose_Pressed.tiff */,
+				B6C21CCC2033382B00671774 /* TabClose_Rollover.tiff */,
+				B6C21CCA2033382A00671774 /* TabClose.tiff */,
 				B61EF7D41482FB6D008C1891 /* titlebar-center.png */,
 				B61EF7D51482FB6D008C1891 /* titlebar-left.png */,
 				B61EF7D61482FB6D008C1891 /* titlebar-right.png */,
@@ -444,13 +467,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				B60EBE2B11E918D500C1974F /* ScanLineFilter.cikernel in Resources */,
+				B6C21CD12033382B00671774 /* TabClose_Pressed.tiff in Resources */,
+				B6C21CCF2033382B00671774 /* TabClose_Busy_Pressed.tiff in Resources */,
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				B69D0FBA202799B10073CCB7 /* TermConfig.xib in Resources */,
 				1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */,
 				B676065111DEBAE900D6B66C /* TermWindow.xib in Resources */,
 				B67B3CE512B6FA040033AE07 /* a2-charset-40.png in Resources */,
+				B6C21CD02033382B00671774 /* TabClose.tiff in Resources */,
 				B67B3CE612B6FA040033AE07 /* a2-charset-80.png in Resources */,
 				B6801BD912EB549300B22E9E /* vt100-charset.png in Resources */,
+				B6C21CCE2033382B00671774 /* TabClose_Busy.tiff in Resources */,
+				B6C21CD32033382B00671774 /* TabClose_Busy_Rollover.tiff in Resources */,
 				B61EF7C51481561E008C1891 /* titlebar-corner.png in Resources */,
 				B61EF7C61481561E008C1891 /* titlebar-middle.png in Resources */,
 				B61EF7C914815AF8008C1891 /* NewTerminal.xib in Resources */,
@@ -461,6 +489,7 @@
 				B6C704EF15CCC64100CC0401 /* titlebar-center@2x.png in Resources */,
 				B6C704F015CCC64100CC0401 /* titlebar-left@2x.png in Resources */,
 				B6C704F115CCC64100CC0401 /* titlebar-right@2x.png in Resources */,
+				B6C21CD22033382B00671774 /* TabClose_Rollover.tiff in Resources */,
 				B6ACA2AF1E635CEC000E774B /* vt52-charset.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -491,6 +520,7 @@
 				B675F4A91E561D20004B0D9C /* Apple80.mm.ragel in Sources */,
 				B675F4AC1E56A7F2004B0D9C /* GSOSConsole.mm.ragel in Sources */,
 				B6D1CD071E577E7D00C4A6BC /* PTSE.mm.ragel in Sources */,
+				B6C21CD62033580200671774 /* RolloverButton.m in Sources */,
 				B69E32A920221C9E0086D7B1 /* ChildMonitor.mm in Sources */,
 				B6407805201CE93500D3F2D1 /* GNOConsole.mm.ragel in Sources */,
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
