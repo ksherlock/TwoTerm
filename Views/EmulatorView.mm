@@ -155,7 +155,7 @@
     _paddingLeft = 8;
     _paddingTop = 8;
     _paddingBottom = 8;
-    _fd = 1;
+    _fd = -1;
     
     //_foregroundColor = [[NSColor greenColor] retain];
     //_backgroundColor = [[NSColor blackColor] retain];
@@ -231,6 +231,10 @@
 -(void)viewDidMoveToSuperview
 {
     [self becomeFirstResponder];
+}
+
+-(BOOL)canBecomeKeyView {
+    return YES;
 }
 
 -(BOOL)acceptsFirstResponder
