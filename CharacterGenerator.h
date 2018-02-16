@@ -11,8 +11,8 @@
 
 @interface CharacterGenerator : NSObject
 {
-    CGImageRef _image;
-    NSMutableArray *_characters;
+    NSImage *_image;
+    NSImage *_characters[256];
     NSSize _size;
 }
 

@@ -10,10 +10,15 @@
 
 #import "CharacterGenerator.h"
 
+@interface CharacterGenerator ()
+-(void)loadImageNamed: (NSString *)imageName;
+@end
+
 @implementation CharacterGenerator
 
 @synthesize characterSize = _size;
 
+#if 0
 static CGImageRef PNGImage(NSString *path)
 {
     CGImageRef image = NULL;
@@ -31,89 +36,99 @@ static CGImageRef PNGImage(NSString *path)
     
     return image;
 }
-
+#endif
 
 +(id)generator
 {
-    return [[self new] autorelease];
+    static CharacterGenerator *singleton = nil;
+    
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        singleton = [[CharacterGenerator alloc] init];
+    });
+    return singleton;
 }
 
 -(id)init
 {
     if ((self = [super init]))
     {   
-        NSBundle *mainBundle;
-        NSString *imagePath;
-        
-        CGImageRef mask;
-        CGImageRef src;
-        NSSize size;
-        
-        
-        mainBundle = [NSBundle mainBundle];
-        
-        imagePath = [mainBundle pathForResource: @"a2-charset-80" ofType: @"png"];
-        //imagePath = [mainBundle pathForResource: @"vt100-charset" ofType: @"png"];
-        //imagePath = [mainBundle pathForResource: @"vt52-charset" ofType: @"png"];
-
-        
-        
-        _characters = [[NSMutableArray alloc] initWithCapacity: 256];
-        _size = NSMakeSize(7, 16);
-        
-        
-        src = PNGImage(imagePath);
-        
-        size.width = CGImageGetWidth(src);
-        size.height = CGImageGetHeight(src);
-        
-        size.width /= 16;
-        size.height /= 16; 
-        
-        _size = size;
-        
-        if (src)
-        {
-            mask = CGImageMaskCreate(CGImageGetWidth(src),
-                                     CGImageGetHeight(src),
-                                     CGImageGetBitsPerComponent(src),
-                                     CGImageGetBitsPerPixel(src),
-                                     CGImageGetBytesPerRow(src),
-                                     CGImageGetDataProvider(src),
-                                     NULL, NO);
-            
-            
-            for (unsigned i = 0; i < 16; ++i)
-            {
-                for (unsigned j = 0; j < 16; ++j)
-                {
-                    CGImageRef cgimg = CGImageCreateWithImageInRect(mask, CGRectMake(j * _size.width, i * _size.height, _size.width, _size.height));
-                    NSImage *nsimg = [[NSImage alloc] initWithCGImage: cgimg size: _size];
-                    [_characters addObject: nsimg];
-                    
-                    CGImageRelease(cgimg);
-                    [nsimg release];
-                }
-                
-            }
-            
-            CGImageRelease(src);
-            CGImageRelease(mask);
-        }
-    
-
-        
-    
-
+        [self loadImageNamed: @"a2-charset-80"];
     }
     
     return self;
 }
 
+/*
+ * This loads the image then split it up into 256 images.
+ *
+ * All representations are handled so it retins any @2x artwork.
+ *
+ */
+-(void)loadImageNamed:(NSString *)imageName {
+
+
+    _image = [[NSImage imageNamed: imageName] retain];
+    
+    _size = [_image size];
+    
+    _size.width /= 16;
+    _size.height /= 16;
+
+    for (unsigned i = 0; i < sizeof(_characters) / sizeof(_characters[0]); ++i)
+        _characters[i] = [[NSImage alloc] initWithSize: _size];
+    
+    for (NSImageRep *rep in [_image representations]) {
+
+        CGImageRef mask;
+        CGImageRef src;
+        NSSize size;
+
+        /* src will auto release */
+        src = [rep CGImageForProposedRect: NULL context: nil hints: nil];
+
+    
+        size.width = CGImageGetWidth(src) / 16;
+        size.height = CGImageGetHeight(src) / 16;
+    
+        mask = CGImageMaskCreate(CGImageGetWidth(src),
+                                 CGImageGetHeight(src),
+                                 CGImageGetBitsPerComponent(src),
+                                 CGImageGetBitsPerPixel(src),
+                                 CGImageGetBytesPerRow(src),
+                                 CGImageGetDataProvider(src),
+                                 NULL, NO);
+        
+
+        
+        for (unsigned i = 0; i < 16; ++i)
+        {
+            for (unsigned j = 0; j < 16; ++j)
+            {
+                CGImageRef cgimg = CGImageCreateWithImageInRect(mask, CGRectMake(j * size.width, i * size.height, size.width, size.height));
+                
+                NSBitmapImageRep *rep = [[NSBitmapImageRep alloc] initWithCGImage: cgimg];
+                
+                NSImage *nsimg = _characters[i * 16 + j];
+                [nsimg addRepresentation: rep];
+                [rep release];
+                CGImageRelease(cgimg);
+            }
+            
+        }
+        
+        CGImageRelease(mask);
+    }
+    
+    
+    
+    
+}
+
 -(void)dealloc
 {
-    if (_image) CGImageRelease(_image);
-    [_characters release];
+    [_image release];
+    for (auto &o : _characters) [o release];
     
     [super dealloc];
 }
@@ -121,14 +136,17 @@ static CGImageRef PNGImage(NSString *path)
 
 -(NSImage *)imageForCharacter: (unsigned)character
 {
-    if (character > [_characters count]) return nil;
+    if (character >= sizeof(_characters) / sizeof(_characters[0])) return nil;
     
-    return (NSImage *)[_characters objectAtIndex: character];
+    return _characters[character];
 }
 
 -(void)drawCharacter: (unsigned)character atPoint: (NSPoint)point
 {
-    NSImage *img = [self imageForCharacter: character];
+
+    if (character >= sizeof(_characters) / sizeof(_characters[0])) return;
+
+    NSImage *img = _characters[character];
     
     if (!img) return;
     
