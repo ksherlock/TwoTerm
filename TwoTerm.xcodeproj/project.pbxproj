@@ -60,6 +60,7 @@
 		B6C21CDE20349C8E00671774 /* a2-charset-40@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C21CDA20349C8E00671774 /* a2-charset-40@2x.png */; };
 		B6C21CDF2034A37B00671774 /* a2-charset-80@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C21CD720349C8C00671774 /* a2-charset-80@2x.png */; };
 		B6C21CE1203510CC00671774 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6C21CE0203510CC00671774 /* Images.xcassets */; };
+		B6C21CE52035262200671774 /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = B6C21CE42035262200671774 /* Defaults.plist */; };
 		B6C704EF15CCC64100CC0401 /* titlebar-center@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C704EC15CCC64100CC0401 /* titlebar-center@2x.png */; };
 		B6C704F015CCC64100CC0401 /* titlebar-left@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C704ED15CCC64100CC0401 /* titlebar-left@2x.png */; };
 		B6C704F115CCC64100CC0401 /* titlebar-right@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C704EE15CCC64100CC0401 /* titlebar-right@2x.png */; };
@@ -198,6 +199,7 @@
 		B6C21CD920349C8D00671774 /* vt52-charset@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vt52-charset@2x.png"; sourceTree = "<group>"; };
 		B6C21CDA20349C8E00671774 /* a2-charset-40@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "a2-charset-40@2x.png"; sourceTree = "<group>"; };
 		B6C21CE0203510CC00671774 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = TwoTerm/Images.xcassets; sourceTree = "<group>"; };
+		B6C21CE42035262200671774 /* Defaults.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Defaults.plist; sourceTree = "<group>"; };
 		B6C704EC15CCC64100CC0401 /* titlebar-center@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titlebar-center@2x.png"; sourceTree = "<group>"; };
 		B6C704ED15CCC64100CC0401 /* titlebar-left@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titlebar-left@2x.png"; sourceTree = "<group>"; };
 		B6C704EE15CCC64100CC0401 /* titlebar-right@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titlebar-right@2x.png"; sourceTree = "<group>"; };
@@ -301,6 +303,7 @@
 				B60EBDE711E9143F00C1974F /* ScanLineFilter.cikernel */,
 				B66979CE11E6BCAE002ED475 /* images */,
 				8D1107310486CEB800E47090 /* Info.plist */,
+				B6C21CE42035262200671774 /* Defaults.plist */,
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
 				1DDD58140DA1D0A300B32029 /* MainMenu.xib */,
 				B676065011DEBAE900D6B66C /* TermWindow.xib */,
@@ -481,6 +484,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6C21CE52035262200671774 /* Defaults.plist in Resources */,
 				B6C21CDD20349C8E00671774 /* vt52-charset@2x.png in Resources */,
 				B60EBE2B11E918D500C1974F /* ScanLineFilter.cikernel in Resources */,
 				B6C21CD12033382B00671774 /* TabClose_Pressed.tiff in Resources */,

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>Name</key>
+		<string>Green Black</string>
+		<key>Foreground</key>
+		<integer>65280</integer>
+		<key>Background</key>
+		<integer>0</integer>
+		<key>Effects</key>
+		<false/>
+		<key>Bloom</key>
+		<integer>0</integer>
+		<key>Backlight</key>
+		<integer>0</integer>
+		<key>Scanlines</key>
+		<integer>0</integer>
+		<key>Vignette</key>
+		<integer>0</integer>
+	</dict>
+</array>
+</plist>
