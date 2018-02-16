@@ -59,6 +59,7 @@
 		B6C21CDD20349C8E00671774 /* vt52-charset@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C21CD920349C8D00671774 /* vt52-charset@2x.png */; };
 		B6C21CDE20349C8E00671774 /* a2-charset-40@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C21CDA20349C8E00671774 /* a2-charset-40@2x.png */; };
 		B6C21CDF2034A37B00671774 /* a2-charset-80@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C21CD720349C8C00671774 /* a2-charset-80@2x.png */; };
+		B6C21CE1203510CC00671774 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6C21CE0203510CC00671774 /* Images.xcassets */; };
 		B6C704EF15CCC64100CC0401 /* titlebar-center@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C704EC15CCC64100CC0401 /* titlebar-center@2x.png */; };
 		B6C704F015CCC64100CC0401 /* titlebar-left@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C704ED15CCC64100CC0401 /* titlebar-left@2x.png */; };
 		B6C704F115CCC64100CC0401 /* titlebar-right@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C704EE15CCC64100CC0401 /* titlebar-right@2x.png */; };
@@ -196,6 +197,7 @@
 		B6C21CD820349C8D00671774 /* vt100-charset@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vt100-charset@2x.png"; sourceTree = "<group>"; };
 		B6C21CD920349C8D00671774 /* vt52-charset@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vt52-charset@2x.png"; sourceTree = "<group>"; };
 		B6C21CDA20349C8E00671774 /* a2-charset-40@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "a2-charset-40@2x.png"; sourceTree = "<group>"; };
+		B6C21CE0203510CC00671774 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = TwoTerm/Images.xcassets; sourceTree = "<group>"; };
 		B6C704EC15CCC64100CC0401 /* titlebar-center@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titlebar-center@2x.png"; sourceTree = "<group>"; };
 		B6C704ED15CCC64100CC0401 /* titlebar-left@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titlebar-left@2x.png"; sourceTree = "<group>"; };
 		B6C704EE15CCC64100CC0401 /* titlebar-right@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "titlebar-right@2x.png"; sourceTree = "<group>"; };
@@ -294,6 +296,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				B6C21CE0203510CC00671774 /* Images.xcassets */,
 				B60B98702022BAF100E688E3 /* a2-terminfo */,
 				B60EBDE711E9143F00C1974F /* ScanLineFilter.cikernel */,
 				B66979CE11E6BCAE002ED475 /* images */,
@@ -499,6 +502,7 @@
 				B61EF7C914815AF8008C1891 /* NewTerminal.xib in Resources */,
 				B61EF7CF148163E7008C1891 /* TitleBarView.xib in Resources */,
 				B61EF7D71482FB6D008C1891 /* titlebar-center.png in Resources */,
+				B6C21CE1203510CC00671774 /* Images.xcassets in Resources */,
 				B61EF7D81482FB6D008C1891 /* titlebar-left.png in Resources */,
 				B61EF7D91482FB6D008C1891 /* titlebar-right.png in Resources */,
 				B6C704EF15CCC64100CC0401 /* titlebar-center@2x.png in Resources */,
@@ -621,6 +625,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -639,6 +644,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
