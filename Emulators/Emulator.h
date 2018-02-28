@@ -28,6 +28,7 @@ extern "C" unsigned EventCharacters(NSEvent *event, std::u32string &rv);
 
 #import "iGeometry.h"
 
+@class CharacterGenerator;
 
 @interface EmulatorManager : NSObject
 
@@ -63,5 +64,6 @@ extern "C" unsigned EventCharacters(NSEvent *event, std::u32string &rv);
 @optional
 
 -(void)initTerm: (struct termios *)term;
+-(CharacterGenerator *)characterGenerator;
 
 @end

@@ -276,6 +276,13 @@
     [_colorView setWantsLayer: YES];
     [_colorView setContentFilters: [self effectsFilter]];
 
+    if ([_emulator respondsToSelector: @selector(characterGenerator)]) {
+        id tmp = [_emulator characterGenerator];
+
+        [(EmulatorWindow *)window setTitleCharacterGenerator:tmp];
+
+    }
+    
     [self initPTY];
 }
 
