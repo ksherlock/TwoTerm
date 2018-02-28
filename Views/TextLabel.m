@@ -14,6 +14,7 @@
 
 @synthesize text = _text;
 @synthesize color = _color;
+@synthesize characterGenerator = _characterGenerator;
 
 -(void) setText:(NSString *)text {
     if (_text == text) return;
@@ -28,6 +29,14 @@
     _color = [color retain];
     [self setNeedsDisplay: YES];
 }
+
+-(void) setCharacterGenerator:(CharacterGenerator *)characterGenerator {
+    if (_characterGenerator == characterGenerator) return;
+    [_characterGenerator release];
+    _characterGenerator = [characterGenerator retain];
+    [self setNeedsDisplay: YES];
+}
+
 
 /*
 -(BOOL)isFlipped {
@@ -55,9 +64,7 @@
     if (!length) return;
     if (!_color) return;
 
-    CharacterGenerator *gen = [CharacterGenerator generator];
-    
-    NSSize sz = [gen characterSize];
+    NSSize sz = [_characterGenerator characterSize];
     
     NSRect frame = [self frame];
 
@@ -75,7 +82,7 @@
     for (unsigned i = 0; i < length; ++i) {
         unichar c = [_text characterAtIndex: i];
 
-        [gen drawCharacter: c atPoint: point];
+        [_characterGenerator drawCharacter: c atPoint: point];
         point.x += sz.width;
         if (point.x > NSWidth(frame)) break;
     }
@@ -89,6 +96,7 @@
 
     if (!_text) _text = [@"Testing!" retain];
     if (!_color) _color = [[NSColor greenColor] retain];
+    if (!_characterGenerator) _characterGenerator = [[CharacterGenerator generatorForCharacterSet: CGApple80] retain];
     
 }
 

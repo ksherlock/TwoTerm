@@ -8,12 +8,15 @@
 
 #import <Cocoa/Cocoa.h>
 
+@class CharacterGenerator;
+
 @interface TextLabel : NSView
 {
     NSString *_text;
     NSColor *_color;
+    CharacterGenerator *_generator;
 }
 @property (nonatomic, retain) NSString *text;
 @property (nonatomic, retain) NSColor *color;
-
+@property (nonatomic, retain) CharacterGenerator *characterGenerator;
 @end

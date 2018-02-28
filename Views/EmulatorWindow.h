@@ -8,6 +8,7 @@
 
 #import <AppKit/AppKit.h>
 @class TextLabel;
+@class CharacterGenerator;
 
 @interface EmulatorWindow : NSWindow
 {
@@ -16,5 +17,5 @@
 @property (assign) IBOutlet TextLabel *textLabel;
 
 -(void)setTitleTextColor: (NSColor *)color;
-
+-(void)setTitleCharacterGenerator: (CharacterGenerator *)characterGenerator;
 @end

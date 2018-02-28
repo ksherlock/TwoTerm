@@ -85,6 +85,11 @@
     [super setBackgroundColor: color];
 }
 
+-(void)setTitleCharacterGenerator: (CharacterGenerator *)characterGenerator {
+    [_textLabel setCharacterGenerator: characterGenerator];
+}
+
+
 -(void)awakeFromNib
 {
     

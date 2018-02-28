@@ -143,12 +143,32 @@
     _screen.setFD(fd);
 }
 
+-(void)setCharacterGenerator: (CharacterGenerator *)generator {
+    if (generator != _charGen) {
+        [_charGen release];
+        _charGen = [generator retain];
+        NSSize size = [_charGen characterSize];
+        _charWidth = size.width;
+        _charHeight = size.height;
+        
+    }
+}
+
+-(void)setEmulator:(NSObject<Emulator> *)emulator {
+    if (_emulator == emulator) return;
+    [_emulator release];
+    _emulator = [emulator retain];
+    if ([emulator respondsToSelector: @selector(characterGenerator)]) {
+        id cg = [emulator characterGenerator];
+        if (cg) [self setCharacterGenerator: cg];
+    }
+        
+}
+
 #pragma mark -
 
 -(void)awakeFromNib
 {
-    NSSize size;
-    
     _charWidth = 7;
     _charHeight = 16;
     
@@ -168,7 +188,7 @@
     _screen.setFD(_fd);
     _screen.setView(self);
     
-    _charGen = [[CharacterGenerator generator] retain];
+    [self setCharacterGenerator: [CharacterGenerator generatorForCharacterSet: CGApple80]];
     
     _cursorType = Screen::CursorTypeUnderscore;
 
@@ -178,10 +198,6 @@
     _cursors[Screen::CursorTypeBlock] = [[_charGen imageForCharacter: 0x80] retain];
     _cursors[Screen::CursorTypeCrossHatch] = [[_charGen imageForCharacter: 0x7f] retain];
     
-    
-    size  = [_charGen characterSize];
-    _charWidth = size.width;
-    _charHeight = size.height;
     
     // enable drag+drop for files/urls.
     
