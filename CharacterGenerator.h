@@ -8,6 +8,12 @@
 
 #import <Cocoa/Cocoa.h>
 
+enum {
+    CGApple80,
+    CGApple40,
+    CGVT52,
+    CGVT100
+};
 
 @interface CharacterGenerator : NSObject
 {
@@ -17,6 +23,9 @@
 }
 
 +(CharacterGenerator *)generator;
++(CharacterGenerator *)generatorForCharacterSet: (unsigned)characterSet;
+
+
 
 @property (nonatomic, readonly) NSSize characterSize;
 

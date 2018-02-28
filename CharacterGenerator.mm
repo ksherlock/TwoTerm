@@ -12,6 +12,7 @@
 
 @interface CharacterGenerator ()
 -(void)loadImageNamed: (NSString *)imageName;
+-(id)initWithImageNamed: (NSString *)imageName;
 @end
 
 @implementation CharacterGenerator
@@ -38,26 +39,44 @@ static CGImageRef PNGImage(NSString *path)
 }
 #endif
 
-+(id)generator
-{
-    static CharacterGenerator *singleton = nil;
+
++(CharacterGenerator *)generatorForCharacterSet: (unsigned)characterSet {
     
+    static CharacterGenerator *singletons[4] = {};
+    static NSString *names[] = {
+        @"a2-charset-80",
+        @"a2-charset-40",
+        @"vt52-charset",
+        @"vt100-charset",
+    };
+
+    constexpr unsigned MaxCharSet = sizeof(names) / sizeof(names[0]);
+
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        singleton = [[CharacterGenerator alloc] init];
+        for (unsigned i = 0; i < MaxCharSet; ++i)
+            singletons[i] = [[CharacterGenerator alloc] initWithImageNamed: names[i]];
     });
-    return singleton;
+    if (characterSet >= MaxCharSet) return nil;
+    return singletons[characterSet];
 }
 
--(id)init
+
++(id)generator
 {
+    return [self generatorForCharacterSet: CGApple80];
+}
+
+
+-(id)initWithImageNamed: (NSString *)imageName {
     if ((self = [super init]))
-    {   
-        [self loadImageNamed: @"a2-charset-80"];
+    {
+        [self loadImageNamed: imageName];
     }
     
     return self;
 }
+
 
 /*
  * This loads the image then split it up into 256 images.
