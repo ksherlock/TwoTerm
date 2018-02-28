@@ -21,6 +21,7 @@
 #include "Screen.h"
 #include "algorithm.h"
 
+#import "CharacterGenerator.h"
 
 %%{
     machine console;
@@ -30,7 +31,7 @@
     
     action advance {
         // advance cursor
-        if (++cursor.x == 80) {
+        if (++cursor.x == _columns) {
             cursor.x = 0;
             if (cursor.y >= 24-1) {
                 screen->scrollUp();
@@ -74,7 +75,7 @@
 
                  if (cursor.x) cursor.x--;
                  else {
-                     cursor.x = 80-1;
+                     cursor.x = _columns-1;
                      // go up, possibly scrolling.
                      if (cursor.y) cursor.y--;
                  }
@@ -101,11 +102,11 @@
 
                  iRect tmp;
                  tmp.origin = cursor;
-                 tmp.size = iSize(80 - cursor.x, 1);
+                 tmp.size = iSize(_columns - cursor.x, 1);
                  
                  screen->eraseRect(tmp);
                  
-                 tmp = iRect(0, 0, 80, 24);
+                 tmp = iRect(0, 0, _columns, 24);
                  tmp.origin.y = cursor.y+1;
                  tmp.size.height -= cursor.y+1;
                  screen->eraseRect(tmp);
@@ -172,7 +173,7 @@
                  /* clear line */
                  iRect tmp;
                  tmp.origin = iPoint(0, cursor.y);
-                 tmp.size = iSize(80, 1);
+                 tmp.size = iSize(_columns, 1);
                  screen->eraseRect(tmp);
              }
              
@@ -187,7 +188,7 @@
                  /* Moves cursor right one column; if at end of line, does Control-M */
                  // n.b. - BASIC ^M also moves to next line.
                  cursor.x++;
-                 if (cursor.x == 80) cursor.x = 0;
+                 if (cursor.x == _columns) cursor.x = 0;
              }
              
              | 0x1d ${
@@ -195,7 +196,7 @@
                  /* clear to end of line */
                  iRect tmp;
                  tmp.origin = cursor;
-                 tmp.size = iSize(80 - cursor.x, 1);
+                 tmp.size = iSize(_columns - cursor.x, 1);
                  
                  screen->eraseRect(tmp);
              }
@@ -204,7 +205,7 @@
                  // CTRL('^'):
                  /* goto x y */
                  // todo - verify behavior for illegal values.
-                 cursor.x = clamp(_scratch[0], 0, 80 - 1);
+                 cursor.x = clamp(_scratch[0], 0, (int)_columns - 1);
                  cursor.y = clamp(_scratch[1], 0, 24 - 1);
              }
              
@@ -248,26 +249,21 @@
     write data;
 }%%
 
-@implementation Apple80
+@implementation AppleX
 
 
-+(void)load
-{
-    [EmulatorManager registerClass: self];
+- (NSString *)name {
+    return @"Apple X";
 }
 
-+(NSString *)name
-{
-    return @"Apple 80";
+
++ (NSString *)name {
+    return @"Apple X";
+    
 }
 
--(NSString *)name
-{
-    return @"Apple 80";
-}
 
--(const char *)termName
-{
+- (const char *)termName {
     return "appleIIe";
 }
 
@@ -276,7 +272,7 @@
 {
 
     %%write init;
-    _context.window = iRect(0, 0, 80, 24);
+    _context.window = iRect(0, 0, _columns, 24);
     _context.cursor = iPoint(0,0);
     _context.flags = 0;
 }
@@ -288,7 +284,7 @@
 
 -(struct winsize)defaultSize
 {
-    struct winsize ws = { 24, 80, 0, 0 };
+    struct winsize ws = { 24, (unsigned short)_columns, 0, 0 };
     
     return ws;
 }
@@ -393,4 +389,70 @@
     }
 }
 
+
 @end
+
+@implementation Apple40
+
++(void)load
+{
+    [EmulatorManager registerClass: self];
+}
+
++(NSString *)name
+{
+    return @"Apple 40";
+}
+
+-(NSString *)name
+{
+    return @"Apple 40";
+}
+
+-(const char *)termName
+{
+    return "appleIIe";
+}
+
+-(void) reset {
+    _columns = 40;
+    [super reset];
+}
+
+-(CharacterGenerator *)characterGenerator {
+    return [CharacterGenerator generatorForCharacterSet: CGApple40];
+}
+
+@end
+
+
+@implementation Apple80
+
++(void)load
+{
+    [EmulatorManager registerClass: self];
+}
+
++(NSString *)name
+{
+    return @"Apple 80";
+}
+
+-(NSString *)name
+{
+    return @"Apple 80";
+}
+
+-(const char *)termName
+{
+    return "appleIIe";
+}
+
+-(void) reset {
+    _columns = 80;
+    [super reset];
+}
+
+@end
+
+

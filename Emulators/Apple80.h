@@ -12,12 +12,19 @@
 #include "iGeometry.h"
 #include "Screen.h"
 
-@interface Apple80 : NSObject <Emulator> {
+@interface AppleX : NSObject <Emulator> {
 
     unsigned cs;
+    unsigned _columns;
     int _scratch[4];
 
     context _context;
 }
-
 @end
+
+@interface Apple40 : AppleX
+@end
+
+@interface Apple80 : AppleX
+@end
+
