@@ -50,7 +50,7 @@ extern "C" unsigned EventCharacters(NSEvent *event, std::u32string &rv);
 
 -(void)keyDown: (NSEvent *)event screen: (Screen *)screen output: (OutputChannel *)output;
 
--(void)reset;
+-(void)reset: (BOOL)hard;
 
 +(NSString *)name;
 -(NSString *)name;

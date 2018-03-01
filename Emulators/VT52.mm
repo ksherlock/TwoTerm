@@ -72,7 +72,7 @@ enum {
 -(id)init {
     if ((self = [super init])) {
         _model = ModelVT50;
-        [self reset];
+        [self reset: YES];
 
     }
     return self;
@@ -104,7 +104,7 @@ enum {
 -(id)init {
     if ((self = [super init])) {
         _model = ModelVT50H;
-        [self reset];
+        [self reset: YES];
 
     }
     return self;
@@ -141,7 +141,7 @@ enum {
 -(id)init {
     if ((self = [super init])) {
         _model = ModelVT52;
-        [self reset];
+        [self reset: YES];
     }
     return self;
 }
@@ -168,7 +168,7 @@ enum {
 -(id)init {
     if ((self = [super init])) {
         _model = ModelVT55;
-        [self reset];
+        [self reset: YES];
 
     }
     return self;
@@ -319,15 +319,18 @@ enum {
     }
 }
 
--(void)reset
+-(void)reset: (BOOL)hard
 {
     cs = StateText;
     _escape = false;
     _altKeyPad = false;
     _graphics = false;
-    _context.cursor = iPoint(0,0);
-    _context.window = iRect(0, 0, 80, 24);
-    if (_model <= ModelVT50H) _context.window = iRect(0, 0, 80, 12);
+    
+    if (hard) {
+        _context.cursor = iPoint(0,0);
+        _context.window = iRect(0, 0, 80, 24);
+        if (_model <= ModelVT50H) _context.window = iRect(0, 0, 80, 12);
+    }
     _context.flags = 0;
 }
 

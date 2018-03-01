@@ -268,13 +268,16 @@
 }
 
 
--(void)reset
+-(void)reset: (BOOL)hard
 {
 
     %%write init;
-    _context.window = iRect(0, 0, _columns, 24);
-    _context.cursor = iPoint(0,0);
     _context.flags = 0;
+
+    if (hard) {
+        _context.window = iRect(0, 0, _columns, 24);
+        _context.cursor = iPoint(0,0);
+    }
 }
 
 -(BOOL)resizable
@@ -299,7 +302,7 @@
 {
     if ((self = [super init]))
     {
-        [self reset];
+        [self reset: YES];
     }
     
     return self;
@@ -414,9 +417,9 @@
     return "appleIIe";
 }
 
--(void) reset {
+-(void) reset: (BOOL)hard {
     _columns = 40;
-    [super reset];
+    [super reset: hard];
 }
 
 -(CharacterGenerator *)characterGenerator {
@@ -448,9 +451,9 @@
     return "appleIIe";
 }
 
--(void) reset {
+-(void) reset: (BOOL)hard {
     _columns = 80;
-    [super reset];
+    [super reset: hard];
 }
 
 @end

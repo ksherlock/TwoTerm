@@ -248,8 +248,14 @@
     [_emulatorView processData: (uint8_t *)buffer size: size];
 }
 
+-(IBAction)resetTerminal: (id)sender {
+    [_emulator reset: NO];
+}
 
-
+-(IBAction)hardResetTerminal: (id)sender {
+    [_emulator reset: YES];
+    [_emulatorView reset];
+}
 #pragma mark -
 #pragma mark NSWindowDelegate
 
@@ -413,6 +419,7 @@
     }
 }
 
+
 - (IBAction)foregroundColor:(id)sender {
     [self updateForegroundColor];
 }
@@ -462,7 +469,6 @@
     [_colorView setColor: color];
     [_emulatorView setBackgroundColor: color];
 }
-
 
 @end
 

@@ -411,19 +411,19 @@
 }
 
 
--(void)reset
+-(void)reset: (BOOL)hard
 {
 
     %%write init;
 
     _context.flags = 0;
-    _context.window = iRect(0, 0, 80, 24);
-    _context.cursor = iPoint(0,0);
-    
-    
     _cursorType = Screen::CursorTypeUnderscore;
 
-    // set flags to plain text.
+    if (hard) {
+        _context.window = iRect(0, 0, 80, 24);
+        _context.cursor = iPoint(0,0);
+    }
+
 }
 
 -(BOOL)resizable
@@ -448,7 +448,7 @@
 {
     if ((self = [super init]))
     {
-        [self reset];
+        [self reset: YES];
     }
     
     return self;

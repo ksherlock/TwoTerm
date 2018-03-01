@@ -111,6 +111,8 @@ private:
 -(void)processData: (uint8_t *)data size: (size_t)size;
 -(void)childFinished: (int)status;
 -(void)childBegan;
+
+-(void)reset;
 @end
 
 

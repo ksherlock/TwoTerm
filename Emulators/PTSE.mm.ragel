@@ -306,20 +306,15 @@
     return "proterm-special";
 }
 
--(void)reset: (Screen *)screen
-{
-    [self reset];
-
-    if (screen) screen->eraseScreen();
-}
-
--(void)reset
+-(void)reset: (BOOL)hard
 {
     %%write init;
-    
-    _context.cursor = iPoint(0,0);
-    _context.window = iRect(0,0,80,24);
     _context.flags = 0;
+
+    if (hard) {
+        _context.cursor = iPoint(0,0);
+        _context.window = iRect(0,0,80,24);
+    }
 }
 
 -(BOOL)resizable
@@ -336,7 +331,7 @@
 
 -(id)init
 {
-    [self reset];
+    [self reset: YES];
     return self;
 }
 

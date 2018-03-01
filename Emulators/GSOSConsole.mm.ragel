@@ -496,20 +496,23 @@ static void advance(Screen *screen, gsos_context &ctx) {
 {
     if ((self = [super init]))
     {
-        [self reset];
+        [self reset: YES];
     }
     
     return self;
 }
 
--(void)reset
+-(void)reset: (BOOL)hard
 {
     
     %%write init;
-    
-    _context.window = iRect(0, 0, 80, 24);
-    _context.cursor = iPoint(0,0);
-    
+
+    if (hard) {
+        _context_stack.clear();
+
+        _context.window = iRect(0, 0, 80, 24);
+        _context.cursor = iPoint(0,0);
+    }
 
     _context.consWrap = true;
     _context.consAdvance = true;

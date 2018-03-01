@@ -63,8 +63,8 @@
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="File" id="83">
-                    <menu key="submenu" title="File" id="81">
+                <menuItem title="Shell" id="83">
+                    <menu key="submenu" title="Shell" id="81">
                         <items>
                             <menuItem title="New" keyEquivalent="n" id="82">
                                 <connections>
@@ -110,6 +110,19 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="revertDocumentToSaved:" target="-1" id="364"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="1Bf-fE-VAI"/>
+                            <menuItem title="Reset" keyEquivalent="r" id="h3z-Y4-dyj">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="resetTerminal:" target="-1" id="Afh-EL-aOa"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Hard Reset" keyEquivalent="r" id="CX0-e3-Dg4">
+                                <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="hardResetTerminal:" target="-1" id="bVS-nP-oag"/>
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="74">

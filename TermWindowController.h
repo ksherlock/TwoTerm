@@ -57,6 +57,9 @@
 
 -(void)setParameters: (NSDictionary *)parameters;
 
+-(IBAction)resetTerminal: (id)sender;
+-(IBAction)hardResetTerminal: (id)sender;
+
 @end
 
 

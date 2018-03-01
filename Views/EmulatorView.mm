@@ -888,7 +888,12 @@
 }
 
 
-
+-(void)reset {
+    _screen.eraseScreen();
+    _screen.setCursor(iPoint(0,0));
+    _cursorOn = YES;
+    [self setNeedsDisplay: YES];
+}
 @end
 
 
