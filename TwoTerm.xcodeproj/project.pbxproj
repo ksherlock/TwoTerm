@@ -43,6 +43,7 @@
 		B67B3CE512B6FA040033AE07 /* a2-charset-40.png in Resources */ = {isa = PBXBuildFile; fileRef = B67B3CE312B6FA040033AE07 /* a2-charset-40.png */; };
 		B67B3CE612B6FA040033AE07 /* a2-charset-80.png in Resources */ = {isa = PBXBuildFile; fileRef = B67B3CE412B6FA040033AE07 /* a2-charset-80.png */; };
 		B6801BD912EB549300B22E9E /* vt100-charset.png in Resources */ = {isa = PBXBuildFile; fileRef = B6801BD812EB549300B22E9E /* vt100-charset.png */; };
+		B683F7102049E7B000470B99 /* VT50.mm.ragel in Sources */ = {isa = PBXBuildFile; fileRef = B683F70F2049E7B000470B99 /* VT50.mm.ragel */; };
 		B68E632A12FF909D00EAFF5F /* ExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = B68E632912FF909C00EAFF5F /* ExampleView.m */; };
 		B69D0FBA202799B10073CCB7 /* TermConfig.xib in Resources */ = {isa = PBXBuildFile; fileRef = B69D0FB8202799B10073CCB7 /* TermConfig.xib */; };
 		B69E32A920221C9E0086D7B1 /* ChildMonitor.mm in Sources */ = {isa = PBXBuildFile; fileRef = B69E32A820221C9E0086D7B1 /* ChildMonitor.mm */; };
@@ -176,6 +177,9 @@
 		B67B3CE312B6FA040033AE07 /* a2-charset-40.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "a2-charset-40.png"; sourceTree = "<group>"; };
 		B67B3CE412B6FA040033AE07 /* a2-charset-80.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "a2-charset-80.png"; sourceTree = "<group>"; };
 		B6801BD812EB549300B22E9E /* vt100-charset.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "vt100-charset.png"; sourceTree = "<group>"; };
+		B683F70E2049E7B000470B99 /* VT50.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VT50.h; sourceTree = "<group>"; };
+		B683F70F2049E7B000470B99 /* VT50.mm.ragel */ = {isa = PBXFileReference; lastKnownFileType = text; path = VT50.mm.ragel; sourceTree = "<group>"; };
+		B683F711204AE32900470B99 /* VT05.mm.ragel */ = {isa = PBXFileReference; lastKnownFileType = text; path = VT05.mm.ragel; sourceTree = "<group>"; };
 		B68E632812FF909C00EAFF5F /* ExampleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExampleView.h; sourceTree = "<group>"; };
 		B68E632912FF909C00EAFF5F /* ExampleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExampleView.m; sourceTree = "<group>"; };
 		B69D0FB9202799B10073CCB7 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/TermConfig.xib; sourceTree = "<group>"; };
@@ -367,10 +371,13 @@
 				B612F45D12DD5DF1005D1B77 /* PTSE.mm.ragel */,
 				B612F45E12DD5DF1005D1B77 /* VT05.h */,
 				B612F45F12DD5DF1005D1B77 /* VT05.mm */,
+				B683F711204AE32900470B99 /* VT05.mm.ragel */,
 				B612F46012DD5DF1005D1B77 /* VT100.h */,
 				B612F46112DD5DF1005D1B77 /* VT100.mm */,
 				B612F46212DD5DF1005D1B77 /* VT52.h */,
 				B612F46312DD5DF1005D1B77 /* VT52.mm */,
+				B683F70E2049E7B000470B99 /* VT50.h */,
+				B683F70F2049E7B000470B99 /* VT50.mm.ragel */,
 			);
 			path = Emulators;
 			sourceTree = "<group>";
@@ -545,6 +552,7 @@
 				B675F4AC1E56A7F2004B0D9C /* GSOSConsole.mm.ragel in Sources */,
 				B6D1CD071E577E7D00C4A6BC /* PTSE.mm.ragel in Sources */,
 				B6C21CD62033580200671774 /* RolloverButton.m in Sources */,
+				B683F7102049E7B000470B99 /* VT50.mm.ragel in Sources */,
 				B69E32A920221C9E0086D7B1 /* ChildMonitor.mm in Sources */,
 				B6407805201CE93500D3F2D1 /* GNOConsole.mm.ragel in Sources */,
 				8D11072D0486CEB800E47090 /* main.m in Sources */,

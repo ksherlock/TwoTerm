@@ -1,0 +1,447 @@
+//
+//  VT50.m
+//  TwoTerm
+//
+//  Created by Kelvin Sherlock on 3/2/2018.
+//
+
+#include <sys/ttydefaults.h>
+#include <cctype>
+#include <cstdio>
+#include <numeric>
+#include <algorithm>
+
+#import "VT50.h"
+#include "OutputChannel.h"
+#include "Screen.h"
+
+#define ESC "\x1b"
+
+enum {
+    ModelVT50,
+    ModelVT50H,
+    ModelVT52,
+    ModelVT55
+};
+namespace {
+    void normalize(iRect &r){
+        r.origin.y <<= 1;
+        r.size.height <<= 1;
+    }
+
+    void normalize(iPoint &p) {
+        p.y <<= 1;
+    }
+}
+%%{
+    machine vt50;
+    alphtype unsigned int;
+
+
+    esc = 0x1b;
+
+
+     action vt50h { _model == ModelVT50H }
+     action vt50 { _model == ModelVT50 }
+ 
+ 
+     action tab {
+         if (cursor.x < 72) cursor.x = (cursor.x + 8) & ~7;
+         else if (cursor.x < window.maxX() -1) cursor.x++;
+     }
+     
+     action linefeed {
+         if (cursor.y < window.maxY() - 1) cursor.y++;
+         else {
+             screen->scrollUp();
+             screen->scrollUp();
+         }
+     }
+     action rlinefeed {
+         // this is documented as being vt52++
+         // however the 2BSD termcap entry (dating to 1980)
+         // and every termcap since claims 50h supports it...
+         if (cursor.y) cursor.y--;
+         else {
+             screen->scrollDown();
+             screen->scrollDown();
+         }
+     }
+ 
+     action erase_eos {
+         
+         iRect tmp;
+         
+         tmp.origin = cursor;
+         tmp.size = iSize( window.maxX() - cursor.x, 1);
+         normalize(tmp);
+         screen->eraseRect(tmp);
+         
+         tmp.origin = iPoint(0, cursor.y+1);
+         tmp.size = iSize(window.maxX(), window.maxY() - cursor.y - 1);
+         normalize(tmp);
+         screen->eraseRect(tmp);
+         
+     }
+     
+     
+     action erase_eol {
+         
+         iRect tmp;
+         
+         tmp.origin = cursor;
+         tmp.size = iSize( window.maxX() - cursor.x, 1);
+         normalize(tmp);
+         screen->eraseRect(tmp);
+
+     }
+ 
+     action identify {
+         // NB -- these indicate no copier.
+         switch(_model) {
+             case ModelVT50:
+             output->write(ESC "/A");
+             break;
+             case ModelVT50H:
+             output->write(ESC "/H");
+             break;
+         }
+     }
+ 
+     action dca {
+         
+         unsigned y = _scratch[0];
+         if (y >= window.maxY()) y = window.maxY() -1;
+         cursor.y = y;
+         
+         unsigned x = _scratch[1];
+         if (x >= window.maxX()) x = window.maxX() -1;
+         cursor.x = x;
+     }
+ 
+ 
+    action forward {
+        if (cursor.x > window.maxX()-1) {
+            cursor.x = window.minX();
+            if (cursor.y >= window.maxY()-1) {
+                screen->scrollUp();
+                screen->scrollUp();
+            } else {
+                cursor.y++;
+            }
+        }
+        
+    }
+ 
+     arg1 = any ${ _scratch[0] = ((fc & 0x7f) - 32); };
+     arg2 = any ${ _scratch[1] = ((fc & 0x7f) - 32); };
+
+ 
+     control_codes = (
+           0x07 ${ NSBeep(); }
+         | 0x08 ${ if (cursor.x) cursor.x--; }
+         | 0x09 $tab
+         | 0x0a $linefeed
+         | 0x0d ${ cursor.x = 0; }
+         | 0x0e when vt50 arg1 arg2 $dca
+     );
+ 
+     escape_codes = (
+           control_codes
+         | esc
+         | 'A' ${ if (cursor.y) cursor.y--; }
+         | 'B' when vt50h ${ if (cursor.y < window.maxY() -1) cursor.y++; }
+         | 'C' ${ if (cursor.x < window.maxX() -1) cursor.x++; }
+         | 'D' when vt50h ${ if (cursor.x) cursor.x--; }
+         #| 'F' when vt52_or_better ${ _graphics = true; }
+         #| 'G' when vt52_or_better ${ _graphics = false; }
+         | 'H' ${ cursor = iPoint(0, 0); }
+         | 'I' when vt50h $rlinefeed
+         | 'J' $erase_eos
+         | 'K' $erase_eol
+         | 'Y' when vt50h arg1 arg2 $dca
+         | 'Z' $identify
+         #| '=' when vt52_or_better ${ _altKeyPad = true; }
+         #| '>' when vt52_or_better ${ _altKeyPad = false; }
+         | any
+     );
+ 
+    main := (
+          control_codes
+        | esc escape_codes
+        | 0x20 .. 0x7e $forward ${
+            uint8_t c = fc;
+            if (c & 0x40) c &= ~0x20;
+            screen->putc(c, iPoint(cursor.x, cursor.y << 1), 0);
+            cursor.x++;
+        }
+        | any
+    )** $err { fgoto main; };
+ 
+    write data;
+}%%
+
+@implementation VT50x
+
+
+-(BOOL)resizable
+{
+    return NO;
+}
+
+-(struct winsize)defaultSize
+{
+    struct winsize ws = { 0, 0, 0, 0};
+    
+    // VT50x have 12 rows. They are double spaced.
+    
+    ws.ws_row = 12;
+    ws.ws_col = 80;
+
+    return ws;
+    
+}
+
+-(struct winsize)displaySize
+{
+    struct winsize ws = { 0, 0, 0, 0};
+    
+    // VT50x have 12 rows. They are double spaced.
+    
+    ws.ws_row = 24;
+    ws.ws_col = 80;
+    
+    return ws;
+    
+}
+
+
++(NSString *)name {
+    return @"";
+}
+
+-(NSString *)name {
+    return @"";
+}
+
+-(const char *)termName {
+    return "";
+}
+
+
+-(void)reset: (BOOL)hard
+{
+    %% write init;
+
+    _altKeyPad = false;
+    _graphics = false;
+    
+    if (hard) {
+        _context.cursor = iPoint(0,0);
+        _context.window = iRect(0, 0, 80, 12);
+    }
+    _context.flags = 0;
+}
+
+-(void)keyDown: (NSEvent *)event screen: (Screen *)screen output: (OutputChannel *)output
+{
+    NSEventModifierFlags flags = [event modifierFlags];
+    NSString *chars = [event charactersIgnoringModifiers];
+    NSUInteger length = [chars length];
+    
+    for (unsigned i = 0; i < length; ++i)
+    {
+        unichar uc = [chars characterAtIndex: i];
+        uint8_t c;
+        
+        
+        if (flags & NSNumericPadKeyMask)
+        {
+            if (_altKeyPad)
+            {
+                const char *str = NULL;
+                switch (uc)
+                {
+                    case '0':
+                    str = ESC "?p";
+                    break;
+                    case '1':
+                    str = ESC "?q";
+                    break;
+                    case '2':
+                    str = ESC "?r";
+                    break;
+                    case '3':
+                    str = ESC "?s";
+                    break;
+                    case '4':
+                    str = ESC "?t";
+                    break;
+                    case '5':
+                    str = ESC "?u";
+                    break;
+                    case '6':
+                    str = ESC "?v";
+                    break;
+                    case '7':
+                    str = ESC "?w";
+                    break;
+                    case '8':
+                    str = ESC "?x";
+                    break;
+                    case '9':
+                    str = ESC "?y";
+                    break;
+                    case '.':
+                    str = ESC "?n";
+                    break;
+                    case NSNewlineCharacter: //?
+                    case NSEnterCharacter:
+                    str = ESC "?M";
+                    break;
+                    
+                }
+                if (str)
+                {
+                    output->write(str);
+                    break;
+                }
+            }
+        }
+        
+        
+        switch (uc)
+        {
+            case NSEnterCharacter:
+            output->write('\r');
+            break;
+            case NSDeleteCharacter:
+            output->write(0x7f);
+            break;
+            case NSUpArrowFunctionKey:
+            output->write(ESC "A");
+            break;
+            case NSDownArrowFunctionKey:
+            output->write(ESC "B");
+            break;
+            case NSRightArrowFunctionKey:
+            output->write(ESC "C");
+            break;
+            case NSLeftArrowFunctionKey:
+            output->write(ESC "D");
+            break;
+            
+            // 3 function keys. (VT50H / VT52)
+            case NSF1FunctionKey:
+            output->write(ESC "P");
+            break;
+            
+            case NSF2FunctionKey:
+            output->write(ESC "Q");
+            break;
+            
+            case NSF3FunctionKey:
+            output->write(ESC "R");
+            break;
+            
+            
+            default:
+            if (uc > 0x7f) break;
+            c = uc;
+            
+            if (flags & (NSShiftKeyMask | NSAlphaShiftKeyMask))
+            {
+                c = toupper(c);
+            }
+            
+            if (flags & NSControlKeyMask)
+            {
+                c = CTRL(c);
+            }
+            output->write(c);
+            break;
+        }
+    }
+}
+
+-(void)processData: (uint8_t *)data length: (size_t)length screen:(Screen *)screen output:(OutputChannel *)output
+{
+    std::transform(data, data + length, data, [](uint8_t c){ return c & 0x7f; });
+    
+    const uint8_t *eof = nullptr;
+    const uint8_t *p = data;
+    const uint8_t *pe = std::copy_if(data, data + length, data, [](uint8_t c){
+        if (c == 0 || c == 0x7f) return false;
+        return true;
+    });
+    
+    iPoint &cursor = _context.cursor;
+    const iRect &window = _context.window;
+    
+    %%write exec;
+
+    auto cc = cursor;
+    cc.y <<= 1;
+    if (cc.x == 80) cc.x = 79;
+    screen->setCursor(cc);
+}
+
+
+@end
+
+@implementation VT50
+
++(void)load {
+    [EmulatorManager registerClass: self];
+}
+
++(NSString *)name {
+    return @"VT50";
+}
+-(NSString *)name {
+    return @"VT50";
+}
+
+-(const char *)termName {
+    return "vt50";
+}
+
+-(id)init {
+    if ((self = [super init])) {
+        _model = ModelVT50;
+        [self reset: YES];
+        
+    }
+    return self;
+}
+
+@end
+
+
+@implementation VT50H
+
++(void)load {
+    [EmulatorManager registerClass: self];
+}
+
++(NSString *)name {
+    return @"VT50H";
+}
+-(NSString *)name {
+    return @"VT50H";
+}
+
+-(const char *)termName {
+    return "vt50h";
+}
+
+-(id)init {
+    if ((self = [super init])) {
+        _model = ModelVT50H;
+        [self reset: YES];
+        
+    }
+    return self;
+}
+
+@end

@@ -1,0 +1,236 @@
+//
+//  VT05.mm.m
+//  TwoTerm
+//
+//  Created by Kelvin Sherlock on 3/3/2018.
+//
+// Disabled because linefeed only scrolls when on the last line... not very useful!
+//
+//
+
+/*
+ * http://vt100.net/docs/vt05-rm/contents.html
+ */
+
+#include <sys/ttydefaults.h>
+#include <cctype>
+
+#import "VT05.h"
+
+#include "OutputChannel.h"
+#include "Screen.h"
+
+enum {
+    VTBell = 07,
+    VTCursorLeft = 010,
+    VTTab = 011,
+    VTLineFeed = 012,
+    VTCursorDown = 013,
+    VTCarriageReturn = 015,
+    VTCAD = 016,
+    
+    VTCursorRight = 030,
+    VTCursorUp = 032,
+    VTHome = 035,
+    VTEOL = 036,
+    VTEOS = 037
+    
+};
+
+
+%%{
+    machine console;
+    alphtype unsigned int;
+    
+    action nop {}
+    
+    
+    action tab {
+        if (cursor.x < 64) cursor.x = (cursor.x + 8) & ~7;
+        else if (cursor.x < window.maxX() -1) cursor.x++;
+    }
+
+    action linefeed {
+        if (cursor.y == window.maxY() -1)
+            screen->scrollUp();
+    }
+
+    action dca {
+        
+        unsigned y = _scratch[0];
+        if (y < window.maxY()) cursor.y = y;
+        
+        unsigned x = _scratch[1];
+        if (x < window.maxX()) cursor.x = x;
+    }
+    
+    action erase_eos {
+        
+        iRect tmp;
+        
+        tmp.origin = cursor;
+        tmp.size = iSize( window.maxX() - cursor.x, 1);
+        screen->eraseRect(tmp);
+        
+        tmp.origin = iPoint(0, cursor.y+1);
+        tmp.size = iSize(window.maxX(), window.maxY() - cursor.y - 1);
+        screen->eraseRect(tmp);
+        
+    }
+
+    action erase_eol {
+        
+        iRect tmp;
+        
+        tmp.origin = cursor;
+        tmp.size = iSize( window.maxX() - cursor.x, 1);
+        screen->eraseRect(tmp);
+        
+    }
+    
+    arg1 = 0x00* (any-0x00) ${ _scratch[0] = ((fc & 0x7f) - 32); };
+    arg2 = 0x00* (any-0x00) ${ _scratch[1] = ((fc & 0x7f) - 32); };
+
+    control_codes = (
+          0x07 ${ NSBeep(); }
+        | 0x08 ${ if (cursor.x) cursor.x--; }
+        | 0x09 $tab
+        | 0x0a $linefeed
+        | 0x0b ${ if (cursor.y < window.maxY() -1) cursor.y++; }
+        | 0x0d ${ cursor.x = 0; }
+        | 0x0e arg1 arg2 $dca
+        | 0x18 ${ if (cursor.x < window.maxX() -1) cursor.x++; }
+        | 0x1a ${ if (cursor.y) cursor.y--; }
+        | 0x1d ${ cursor = iPoint(0,0); }
+        | 0x1e $erase_eol
+        | 0x1f $erase_eos
+    
+    );
+
+    main := (
+          control_codes
+        | 0x20 .. 0x7e ${
+             uint8_t c = fc;
+             if (c & 0x40) c &= ~0x20;
+             screen->putc(c, _context);
+             if (cursor.x < window.maxX() - 1) cursor.x++;
+         }
+        | any
+
+    )** $err{ fgoto main; };
+    
+    write data;
+}%%
+
+
+@implementation VT05
+
++(void)load {
+    [EmulatorManager registerClass: self];
+}
+
++(NSString *)name {
+    return @"VT05";
+}
+
+-(NSString *)name {
+    return @"VT05";
+}
+
+-(const char *)termName {
+    return "vt05";
+}
+
+-(void)reset: (BOOL)hard {
+
+    %% write init;
+    if (hard) {
+        _context.cursor = iPoint(0,0);
+        _context.window = iRect(0, 0, 72, 20);
+    }
+}
+
+-(BOOL)resizable {
+    return NO;
+}
+
+-(struct winsize)defaultSize {
+    struct winsize ws = { 20, 72, 0, 0 };
+    return ws;
+}
+
+
+-(id)init {
+    if ((self = [super init])) {
+        [self reset: YES];
+    }
+    return self;
+}
+
+-(void)processData: (uint8_t *)data length: (size_t)length screen:(Screen *)screen output:(OutputChannel *)output
+{
+    std::transform(data, data + length, data, [](uint8_t c){ return c & 0x7f; });
+    
+    const uint8_t *eof = nullptr;
+    const uint8_t *p = data;
+    const uint8_t *pe = data + length;
+    
+    iPoint &cursor = _context.cursor;
+    const iRect &window = _context.window;
+    
+    %%write exec;
+    
+    if (cursor.x == window.maxX()) screen->setCursor(iPoint(window.maxX() - 1, cursor.y));
+    else screen->setCursor(cursor);
+}
+
+
+-(void)keyDown: (NSEvent *)event screen: (Screen *)screen output: (OutputChannel *)output
+{
+    NSEventModifierFlags flags = [event modifierFlags];
+    NSString *chars = [event charactersIgnoringModifiers];
+    NSUInteger length = [chars length];
+    
+    
+    for (unsigned i = 0; i < length; ++i)
+    {
+        unichar uc = [chars characterAtIndex: i];
+        uint8_t c;
+        
+        switch (uc)
+        {
+            case NSLeftArrowFunctionKey:
+                output->write(VTCursorLeft);
+                break;
+            case NSRightArrowFunctionKey:
+                output->write(VTCursorRight);
+                break;
+            case NSUpArrowFunctionKey:
+                output->write(VTCursorUp);
+                break;
+            case NSDownArrowFunctionKey:
+                output->write(VTCursorDown);
+                break;
+            case NSHomeFunctionKey:
+                output->write(VTHome);
+                break;
+            case NSDeleteCharacter:
+                output->write(0x7f);
+                break;
+                
+            default:
+                if (uc > 0x7f) break;
+                c = uc;
+                
+                if (flags & NSControlKeyMask)
+                {
+                    c = CTRL(c);
+                }
+                output->write(c);
+                break;
+        }
+    }
+}
+
+
+@end

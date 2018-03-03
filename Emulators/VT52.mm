@@ -43,7 +43,7 @@ enum {
 
 
 
-
+#if 0
 @implementation VT50
 
 +(void)load {
@@ -118,6 +118,8 @@ enum {
 }
 
 @end
+
+#endif
 
 @implementation VT52
 

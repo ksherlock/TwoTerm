@@ -15,11 +15,10 @@
 
 
 @interface VT05 : NSObject <Emulator> {
-    unsigned _state;
+    unsigned cs;
+    unsigned _scratch[2];
     context _context;
-    BOOL _upperCase;
 }
 
--(void)tab: (Screen *)screen;
 
 @end

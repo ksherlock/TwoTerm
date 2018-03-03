@@ -28,11 +28,14 @@
 @interface VT52 : VT5x
 @end
 
+/*
 @interface  VT50H : VT5x
 @end
 
+
 @interface VT50 : VT5x
 @end
+*/
 
 @interface VT55 : VT5x
 @end
