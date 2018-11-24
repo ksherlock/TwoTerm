@@ -51,6 +51,7 @@
     
     [_text release];
     [_color release];
+    [_characterGenerator release];
     [super dealloc];
 }
 
