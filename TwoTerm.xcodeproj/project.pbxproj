@@ -12,6 +12,8 @@
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		B609404C205ACD730077A69C /* VT05.mm.ragel in Sources */ = {isa = PBXBuildFile; fileRef = B683F711204AE32900470B99 /* VT05.mm.ragel */; };
+		B60942042082BCA200141159 /* VT100.mm.ragel in Sources */ = {isa = PBXBuildFile; fileRef = B60942022077F24300141159 /* VT100.mm.ragel */; };
 		B60EBD1211E8DEEF00C1974F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B60EBD1111E8DEEF00C1974F /* QuartzCore.framework */; };
 		B60EBDE311E90FC300C1974F /* ScanLineFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = B60EBDE211E90FC300C1974F /* ScanLineFilter.m */; };
 		B60EBE2B11E918D500C1974F /* ScanLineFilter.cikernel in Resources */ = {isa = PBXBuildFile; fileRef = B60EBDE711E9143F00C1974F /* ScanLineFilter.cikernel */; };
@@ -44,6 +46,10 @@
 		B67B3CE612B6FA040033AE07 /* a2-charset-80.png in Resources */ = {isa = PBXBuildFile; fileRef = B67B3CE412B6FA040033AE07 /* a2-charset-80.png */; };
 		B6801BD912EB549300B22E9E /* vt100-charset.png in Resources */ = {isa = PBXBuildFile; fileRef = B6801BD812EB549300B22E9E /* vt100-charset.png */; };
 		B683F7102049E7B000470B99 /* VT50.mm.ragel in Sources */ = {isa = PBXBuildFile; fileRef = B683F70F2049E7B000470B99 /* VT50.mm.ragel */; };
+		B68A37D221A9B9D9004CBDE4 /* a2-charset-80@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C21CD720349C8C00671774 /* a2-charset-80@2x.png */; };
+		B68A37D321A9C15C004CBDE4 /* a2-charset-40@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C21CDA20349C8E00671774 /* a2-charset-40@2x.png */; };
+		B68A37D421A9C161004CBDE4 /* vt52-charset@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C21CD920349C8D00671774 /* vt52-charset@2x.png */; };
+		B68A37D521A9C164004CBDE4 /* vt100-charset@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C21CD820349C8D00671774 /* vt100-charset@2x.png */; };
 		B68E632A12FF909D00EAFF5F /* ExampleView.m in Sources */ = {isa = PBXBuildFile; fileRef = B68E632912FF909C00EAFF5F /* ExampleView.m */; };
 		B69D0FBA202799B10073CCB7 /* TermConfig.xib in Resources */ = {isa = PBXBuildFile; fileRef = B69D0FB8202799B10073CCB7 /* TermConfig.xib */; };
 		B69E32A920221C9E0086D7B1 /* ChildMonitor.mm in Sources */ = {isa = PBXBuildFile; fileRef = B69E32A820221C9E0086D7B1 /* ChildMonitor.mm */; };
@@ -56,10 +62,6 @@
 		B6C21CD22033382B00671774 /* TabClose_Rollover.tiff in Resources */ = {isa = PBXBuildFile; fileRef = B6C21CCC2033382B00671774 /* TabClose_Rollover.tiff */; };
 		B6C21CD32033382B00671774 /* TabClose_Busy_Rollover.tiff in Resources */ = {isa = PBXBuildFile; fileRef = B6C21CCD2033382B00671774 /* TabClose_Busy_Rollover.tiff */; };
 		B6C21CD62033580200671774 /* RolloverButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B6C21CD52033580200671774 /* RolloverButton.m */; };
-		B6C21CDC20349C8E00671774 /* vt100-charset@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C21CD820349C8D00671774 /* vt100-charset@2x.png */; };
-		B6C21CDD20349C8E00671774 /* vt52-charset@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C21CD920349C8D00671774 /* vt52-charset@2x.png */; };
-		B6C21CDE20349C8E00671774 /* a2-charset-40@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C21CDA20349C8E00671774 /* a2-charset-40@2x.png */; };
-		B6C21CDF2034A37B00671774 /* a2-charset-80@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C21CD720349C8C00671774 /* a2-charset-80@2x.png */; };
 		B6C21CE1203510CC00671774 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6C21CE0203510CC00671774 /* Images.xcassets */; };
 		B6C21CE52035262200671774 /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = B6C21CE42035262200671774 /* Defaults.plist */; };
 		B6C704EF15CCC64100CC0401 /* titlebar-center@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B6C704EC15CCC64100CC0401 /* titlebar-center@2x.png */; };
@@ -118,6 +120,7 @@
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* TwoTerm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TwoTerm.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B60942022077F24300141159 /* VT100.mm.ragel */ = {isa = PBXFileReference; lastKnownFileType = text; path = VT100.mm.ragel; sourceTree = "<group>"; };
 		B60B98712022BAF100E688E3 /* appleIIgs.ti */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = appleIIgs.ti; sourceTree = "<group>"; };
 		B60B98732022BAF100E688E3 /* gno-console.ti */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "gno-console.ti"; sourceTree = "<group>"; };
 		B60B98742022BAF100E688E3 /* gsos-console.ti */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "gsos-console.ti"; sourceTree = "<group>"; };
@@ -341,10 +344,10 @@
 		B612F44612DD5DAD005D1B77 /* cpp */ = {
 			isa = PBXGroup;
 			children = (
+				B612F44812DD5DAD005D1B77 /* iGeometry.h */,
 				B612F44712DD5DAD005D1B77 /* iGeometry.cpp */,
 				B6D5A0831E3996BD004FC1AC /* ring_buffer.h */,
 				B6C173941D35546A0024E360 /* algorithm.h */,
-				B612F44812DD5DAD005D1B77 /* iGeometry.h */,
 				B612F44912DD5DAD005D1B77 /* Lock.cpp */,
 				B612F44A12DD5DAD005D1B77 /* Lock.h */,
 				B612F44B12DD5DAD005D1B77 /* OutputChannel.cpp */,
@@ -378,6 +381,7 @@
 				B612F46312DD5DF1005D1B77 /* VT52.mm */,
 				B683F70E2049E7B000470B99 /* VT50.h */,
 				B683F70F2049E7B000470B99 /* VT50.mm.ragel */,
+				B60942022077F24300141159 /* VT100.mm.ragel */,
 			);
 			path = Emulators;
 			sourceTree = "<group>";
@@ -467,7 +471,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0910;
+				LastUpgradeCheck = 0930;
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "TwoTerm" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -492,24 +496,25 @@
 			buildActionMask = 2147483647;
 			files = (
 				B6C21CE52035262200671774 /* Defaults.plist in Resources */,
-				B6C21CDD20349C8E00671774 /* vt52-charset@2x.png in Resources */,
 				B60EBE2B11E918D500C1974F /* ScanLineFilter.cikernel in Resources */,
 				B6C21CD12033382B00671774 /* TabClose_Pressed.tiff in Resources */,
 				B6C21CCF2033382B00671774 /* TabClose_Busy_Pressed.tiff in Resources */,
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				B69D0FBA202799B10073CCB7 /* TermConfig.xib in Resources */,
+				B68A37D421A9C161004CBDE4 /* vt52-charset@2x.png in Resources */,
 				1DDD58160DA1D0A300B32029 /* MainMenu.xib in Resources */,
 				B676065111DEBAE900D6B66C /* TermWindow.xib in Resources */,
-				B6C21CDC20349C8E00671774 /* vt100-charset@2x.png in Resources */,
 				B67B3CE512B6FA040033AE07 /* a2-charset-40.png in Resources */,
 				B6C21CD02033382B00671774 /* TabClose.tiff in Resources */,
 				B67B3CE612B6FA040033AE07 /* a2-charset-80.png in Resources */,
-				B6C21CDE20349C8E00671774 /* a2-charset-40@2x.png in Resources */,
 				B6801BD912EB549300B22E9E /* vt100-charset.png in Resources */,
+				B68A37D321A9C15C004CBDE4 /* a2-charset-40@2x.png in Resources */,
 				B6C21CCE2033382B00671774 /* TabClose_Busy.tiff in Resources */,
 				B6C21CD32033382B00671774 /* TabClose_Busy_Rollover.tiff in Resources */,
 				B61EF7C51481561E008C1891 /* titlebar-corner.png in Resources */,
 				B61EF7C61481561E008C1891 /* titlebar-middle.png in Resources */,
+				B68A37D521A9C164004CBDE4 /* vt100-charset@2x.png in Resources */,
+				B68A37D221A9B9D9004CBDE4 /* a2-charset-80@2x.png in Resources */,
 				B61EF7C914815AF8008C1891 /* NewTerminal.xib in Resources */,
 				B61EF7CF148163E7008C1891 /* TitleBarView.xib in Resources */,
 				B61EF7D71482FB6D008C1891 /* titlebar-center.png in Resources */,
@@ -519,7 +524,6 @@
 				B6C704EF15CCC64100CC0401 /* titlebar-center@2x.png in Resources */,
 				B6C704F015CCC64100CC0401 /* titlebar-left@2x.png in Resources */,
 				B6C704F115CCC64100CC0401 /* titlebar-right@2x.png in Resources */,
-				B6C21CDF2034A37B00671774 /* a2-charset-80@2x.png in Resources */,
 				B6C21CD22033382B00671774 /* TabClose_Rollover.tiff in Resources */,
 				B6ACA2AF1E635CEC000E774B /* vt52-charset.png in Resources */,
 			);
@@ -551,10 +555,12 @@
 				B675F4A91E561D20004B0D9C /* Apple80.mm.ragel in Sources */,
 				B675F4AC1E56A7F2004B0D9C /* GSOSConsole.mm.ragel in Sources */,
 				B6D1CD071E577E7D00C4A6BC /* PTSE.mm.ragel in Sources */,
-				B6C21CD62033580200671774 /* RolloverButton.m in Sources */,
 				B683F7102049E7B000470B99 /* VT50.mm.ragel in Sources */,
-				B69E32A920221C9E0086D7B1 /* ChildMonitor.mm in Sources */,
 				B6407805201CE93500D3F2D1 /* GNOConsole.mm.ragel in Sources */,
+				B609404C205ACD730077A69C /* VT05.mm.ragel in Sources */,
+				B60942042082BCA200141159 /* VT100.mm.ragel in Sources */,
+				B6C21CD62033580200671774 /* RolloverButton.m in Sources */,
+				B69E32A920221C9E0086D7B1 /* ChildMonitor.mm in Sources */,
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
 				256AC3DA0F4B6AC300CF3369 /* TwoTermAppDelegate.mm in Sources */,
 				B676063B11DEAD3500D6B66C /* TermWindowController.mm in Sources */,
@@ -638,6 +644,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -657,6 +664,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_OBJC_WEAK = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_MODEL_TUNING = G5;
@@ -679,11 +687,13 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
@@ -718,11 +728,13 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
