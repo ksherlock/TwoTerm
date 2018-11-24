@@ -89,8 +89,6 @@ enum {
     _flags.DECOM = 0;
     _flags.DECINLM = 0;
     _flags.LNM = 0;
-    
-    
 }
 
 

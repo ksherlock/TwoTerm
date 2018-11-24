@@ -143,12 +143,12 @@ namespace {
          | 0x09 $tab
          | 0x0a $linefeed
          | 0x0d ${ cursor.x = 0; }
-         | 0x0e when vt50 arg1 arg2 $dca
+         | 0x0e when vt50h arg1 arg2 $dca
+         | cntrl - esc
      );
  
-     escape_codes = (
-           control_codes
-         | esc
+     escape_codes = control_codes* <: (
+           esc
          | 'A' ${ if (cursor.y) cursor.y--; }
          | 'B' when vt50h ${ if (cursor.y < window.maxY() -1) cursor.y++; }
          | 'C' ${ if (cursor.x < window.maxX() -1) cursor.x++; }

@@ -129,7 +129,6 @@
                 screen->scrollUp(window);
             } else cursor.y++;
         }
-        
     }
     
     arg1 = any ${ _scratch[0] = ((fc & 0x7f) - 32); };

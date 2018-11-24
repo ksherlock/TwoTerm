@@ -1,0 +1,771 @@
+//
+//  VT100.mm.ragel
+//  TwoTerm
+//
+//  Created by Kelvin Sherlock on 4/6/2018.
+//
+
+#include <sys/ttydefaults.h>
+#include <cctype>
+#include <cstdio>
+#include <numeric>
+#include <algorithm>
+#include <utility>
+
+#import "VT100.h"
+#include "OutputChannel.h"
+#include "Screen.h"
+#include "algorithm.h"
+
+#define ESC "\x1b"
+
+
+%%{
+    machine vt100;
+    alphtype unsigned int;
+    
+    
+    esc = 0x1b;
+    cancel = 0x30 | 0x32;
+    
+    action clear_args {
+        _args.clear();
+        _args.push_back(0);
+    }
+    
+    action answerback {
+        output->write(ESC "[?1;0c");
+    }
+
+
+    # DECOM - locked to scrolling region
+    # DECAWM - autowrap
+    action forward {
+        if (cursor.x > window_x.second) {
+            cursor.x = window_x.first;
+            if (_flags.DECAWM) {
+                if (cursor_in_region()) {
+                    if (cursor.y == region_y.second)
+                        screen->scrollUp(window);
+                    else {
+                        if (cursor.y < window_y.second) cursor.y++;
+                    }
+                }
+            }
+        }
+    }
+
+    #
+    # ROM test - scrolling only happens if at bottom of scrolling region.
+    #
+    action linefeed {
+        
+        /*
+         * ROM test - scrolling ONLY happens if at bottom line of scrolling region.
+         *
+         */
+        if (cursor.y == region_y.second) {
+            screen->scrollUp(window);
+        } else {
+            cursor.y = std::min(cursor.y + 1u, window_y.second);
+        }
+    }
+    
+    action reverse_linefeed {
+        if (cursor.y == region_y.first) {
+            screen->scrollDown(window);
+        } else {
+            cursor.y = std::min(cursor.y - 1u, window_y.first);
+        }
+    }
+    
+    #
+    # ROM TEST - up/down can't escape the scrolling region.
+    #
+    action cursor_up {
+        /* cursor up */
+        unsigned count = _flags.DECANM ? std::min(1u, _args.front()) : 1;
+
+        if (cursor_in_region()) {
+            cursor.y = clamp(cursor.y - count, region_y.first, region_y.second);
+        } else {
+            cursor.y = clamp(cursor.y - count, window_y.first, window_y.second);
+        }
+    }
+    action cursor_down {
+        /* cursor down */
+        unsigned count = _flags.DECANM ? std::min(1u, _args.front()) : 1;
+
+        if (cursor_in_region()) {
+            cursor.y = clamp(cursor.y + count, region_y.first, region_y.second);
+        } else {
+            cursor.y = clamp(cursor.y + count, window_y.first, window_y.second);
+        }
+    }
+    
+    action cursor_left {
+        /* cursor left */
+        unsigned count = _flags.DECANM ? std::min(1u, _args.front()) : 1;
+        cursor.x = clamp(cursor.x - count, window_x.first, window_x.second);
+    }
+
+    action cursor_right {
+        /* cursor right */
+        unsigned count = _flags.DECANM ? std::min(1u, _args.front()) : 1;
+        cursor.x = clamp(cursor.x + count, window_x.first, window_x.second);
+    }
+    
+    action cup {
+        /* Cursor Position aka DCA */
+        /* todo - numbering of lines depends on DECOM */
+        unsigned y = _args.size() > 0 ? _args[0] : 0;
+        unsigned x = _args.size() > 1 ? _args[1] : 0;
+
+        if (x == 0) x = 1;
+        if (y == 0) y = 1;
+
+        if (_flags.DECOM) {
+            cursor.y = clamp(y - 1 + region_y.first, region_y.first, region_y.second);
+            cursor.x = clamp(x - 1, window_x.first, window_x.second);
+        } else {
+            cursor.y = clamp(y - 1, window_y.first, window_y.second);
+            cursor.x = clamp(x - 1, window_x.first, window_x.second);
+        }
+
+    }
+    action vt52_dca {
+        /* todo - how are invalid values handled? */
+        /* todo - DECOM supported? */
+        if (_flags.DECOM) {
+            cursor.y = clamp(_args[0] + region_y.first, region_y.first, region_y.second);
+            cursor.x = clamp(_args[1], window_x.first, window_x.second);
+        } else {
+            cursor.y = clamp(_args[0], window_y.first, window_y.second);
+            cursor.x = clamp(_args[1], window_x.first, window_x.second);
+        }
+    }
+
+    action stbm {
+        /* Set Top and Bottom Margins */
+        /* aka scrolling region */
+        unsigned top = _args.size() > 0 ? _args[0] : 0;
+        unsigned bottom = _args.size() > 1 ? _args[1] : 0;
+
+
+        if (top == 0) top = 1;
+        if (bottom == 0) bottom = 24;
+
+        if (top < bottom && bottom <= 24) {
+
+            --top;
+
+            window = iRect(0, top, 80, bottom - top);
+            // also home the cursor ... depeds on DECOM.
+            if (_flags.DECOM) cursor = window.origin;
+            else cursor = iPoint(0, 0);
+            
+            region_y.first = top;
+            region_y.second = bottom - 1;
+        }
+    }
+
+
+
+    action reset_mode {
+        for (auto m : _args) {
+            switch (m) {
+                case 1: if (_private) _flags.DECCKM = 0; break;
+                case 2: if (_private) _flags.DECANM = 0; break;
+                case 3: if (_private) _flags.DECCOLM = 0; break;
+                case 4: if (_private) _flags.DECSCLM = 0; break;
+                case 5: if (_private) _flags.DECSCNM = 0; break;
+                case 6: if (_private) {
+                   _flags.DECOM = 0;
+                    /* also move to new origin */
+                    cursor = iPoint(0, 0);
+                }
+                break;
+                case 7: if (_private) _flags.DECAWM = 0; break;
+                case 8: if (_private) _flags.DECARM = 0; break;
+                case 9: if (_private) _flags.DECINLM = 0; break;
+                case 20: if (!_private) _flags.LNM = 0; break;
+
+            }
+        }
+    }
+
+    action set_mode {
+        for (auto m : _args) {
+            switch (m) {
+                case 1: if (_private) _flags.DECCKM = 1; break;
+                case 2: if (_private) _flags.DECANM = 1; break;
+                case 3: if (_private) _flags.DECCOLM = 1; break;
+                case 4: if (_private) _flags.DECSCLM = 1; break;
+                case 5: if (_private) _flags.DECSCNM = 1; break;
+                case 6: if (_private) {
+                    _flags.DECOM = 1;
+                    /* also move to new origin */
+                    cursor = window.origin;
+                }
+                case 7: if (_private) _flags.DECAWM = 1; break;
+                case 8: if (_private) _flags.DECARM = 1; break;
+                case 9: if (_private) _flags.DECINLM = 1; break;
+                case 20: if (!_private) _flags.LNM = 1; break;
+            }
+        }
+    }
+    
+
+    action tbc {
+        /* TBC – Tabulation Clear */
+        for (auto arg : _args) {
+            switch (arg) {
+                case 0: if (cursor.x <= 79) _tabs[cursor.x] = 0; break;
+                case 3: _tabs.reset(); break;
+            }
+        }
+    }
+    
+    action dsr {
+        /* Device Status Report */
+        for (auto arg : _args) {
+            switch(arg) {
+                default: break;
+                case 5: /* report status */
+                    output->write(ESC "[0n");
+                    break;
+                case 6: { /* cursor position report */
+                    char buffer[16];
+                    iPoint pt = cursor;
+                    pt.x++;
+                    pt.y++;
+                    if (_flags.DECOM) pt.y -= region_y.first;
+                    snprintf(buffer, sizeof(buffer)-1, ESC "[%u;%uR", pt.y, pt.x);
+                    output->write(buffer);
+                    break;
+                }
+            }
+        }
+    }
+    
+    
+    action erase_line {
+        // mode 0 and 1 erase cursor.x
+        iRect r(0, cursor.y, 80, 1);
+
+        for (auto arg : _args) {
+
+            switch (arg) {
+                case 0: {
+                    // x ... eos
+                    r.origin.x = cursor.x;
+                    r.size.width = 80 - cursor.x;
+                    screen->eraseRect(r);
+                    break;
+                }
+                case 1: {
+                    // 0 ... x
+                    r.origin.x = 0;
+                    r.size.width = cursor.x + 1;
+                    screen->eraseRect(r);
+                    break;
+                }
+                case 2: {
+                    // 0 .. eos
+                    r.origin.x = 0;
+                    r.size.width = 80;
+                    screen->eraseRect(r);
+                    break;
+                }
+            }
+        }
+    }
+    
+
+    action erase_screen {
+ 
+        iRect r(0, cursor.y, 80, 1);
+
+         for (auto arg : _args) {
+
+             switch (arg) {
+                 case 0: {
+                     // x .. eos
+                     r.origin.x = cursor.x;
+                     r.size.width = 80 - cursor.x;
+                     screen->eraseRect(r);
+                     
+                     iRect tmp(0, cursor.y + 1, 80, 24 - cursor.y - 1);
+                     screen->eraseRect(tmp);
+                 }
+                 case 1: {
+                     // 0 ... x
+                     // 0 ... x
+                     r.origin.x = 0;
+                     r.size.width = cursor.x + 1;
+                     screen->eraseRect(r);
+                     
+                     iRect tmp(0, 0, 80, cursor.y - 1);
+                     screen->eraseRect(tmp);
+                     break;
+                 }
+                 case 2: {
+                     iRect tmp(0, 0, 80, 24);
+                     screen->eraseRect(tmp);
+                     break;
+                 }
+             }
+         }
+    }
+   
+   action vt52_erase_line {
+       iRect r(cursor.x, cursor.y, 80 - cursor.x, 1);
+       screen->eraseRect(r);
+   }
+   
+   action vt52_erase_screen {
+       iRect r(cursor.x, cursor.y, 80 - cursor.x, 1);
+       screen->eraseRect(r);
+       r = iRect(0, cursor.y + 1, 80, 24 - cursor.y - 1);
+       screen->eraseRect(r);
+   }
+
+    
+    action sgr {
+        /* Select Graphical Rendition */
+        
+        for (auto arg : _args) {
+            switch(arg) {
+                case 0: _context.flags = Screen::FlagNormal; break;
+                case 1: _context.flags |= Screen::FlagBold; break;
+                case 4: _context.flags |= Screen::FlagUnderscore; break;
+                case 5: _context.flags |= Screen::FlagBlink; break;
+                case 7: _context.flags |= Screen::FlagInverse; break;
+            }
+        }
+    }
+    
+    action sc {
+        /* Save Cursor */
+        _saved_context = _context;
+    }
+    # todo -- what if DECOM changes?
+    action rc {
+        _context.cursor = _saved_context.cursor;
+        _context.charset = _saved_context.charset;
+        _context.G0_charset = _saved_context.G0_charset;
+        _context.G1_charset = _saved_context.G1_charset;
+
+    }
+
+    control_codes = (
+      0x05 $answerback
+    | 0x07 ${ NSBeep(); }
+    | 0x08 ${ if (cursor.x) cursor.x--; }
+    | 0x09 ${ cursor.x = tab(cursor.x); }
+    | (0x0a | 0x0b | 0x0c) ${ if (_flags.LNM) cursor.x = 0; } $linefeed
+    | 0x0d ${ cursor.x = 0; }
+    | 0x0e ${ _context.charset = vt100_context::G1; }
+    | 0x0f ${ _context.charset = vt100_context::G0; }
+    | 0x11 ${ /* xon */ }
+    | 0x13 ${ /* xoff */ }
+    | cntrl - esc
+    );
+
+    args = (
+          ';' ${ _args.push_back(0); }
+        | [0-9] ${ _args.back() *= 10; _args.back() += fc - '0'; }
+    )**
+    # >to(clear_args)
+    ;
+
+    lbrace = (
+      'A' $cursor_up
+    | 'B' $cursor_down
+    | 'C' $cursor_right
+    | 'D' $cursor_left
+    | ('H' | 'f') $cup
+    | 'K' $erase_line
+    | 'J' $erase_screen
+    | 'm' $sgr
+    | 'r' $stbm
+    | 'g' $tbc
+    | 'h' $set_mode
+    | 'l' $reset_mode
+    | 'n' $dsr
+    | 'c' ${ if (_args.front() == 0) output->write(ESC "[?1;0c");  }
+    | 'y' ${ /* tests */ }
+    | 'q' ${ /* led lights */ }
+    | 'x' # DECREQTPARM
+    )
+    ;
+
+    lparen = [AB012] ${
+        switch (fc) {
+            case 'A': _context.G0_charset = vt100_context::CharSet_A; break;
+            case 'B': _context.G0_charset = vt100_context::CharSet_B; break;
+            case '0': _context.G0_charset = vt100_context::CharSet_0; break;
+            case '1': _context.G0_charset = vt100_context::CharSet_1; break;
+            case '2': _context.G0_charset = vt100_context::CharSet_2; break;
+
+        }
+    };
+
+    rparen = [AB012] ${
+        switch (fc) {
+            case 'A': _context.G1_charset = vt100_context::CharSet_A; break;
+            case 'B': _context.G1_charset = vt100_context::CharSet_B; break;
+            case '0': _context.G1_charset = vt100_context::CharSet_0; break;
+            case '1': _context.G1_charset = vt100_context::CharSet_1; break;
+            case '2': _context.G1_charset = vt100_context::CharSet_2; break;
+        }
+    };
+
+    # #3 = DECDHL - Double-Height Line (top half)
+    # #4 = DECDHL - Double-Height Line (bottom half)
+    # #5 = DECSWL – Single-width Line 
+    # #6 = DECDWL – Double-Width Line
+
+    pound = (
+      '3'
+    | '4'
+    | '5'
+    | '6'
+    | '7' # DECHCP - Hard Copy
+    | '8' ${
+        /* DECALN */
+        screen->fillScreen(char_info('E', 0));
+    }
+    );
+
+dca_arg = any ${ _args.push_back((fc & 0x7f) - 32); } ;
+
+escape_vt52 := (
+      'A' $cursor_up
+    | 'B' $cursor_down
+    | 'C' $cursor_right
+    | 'D' $cursor_left
+    | 'F' ${ _flags.VT52GM = 1; }
+    | 'G' ${ _flags.VT52GM = 0; }
+    | 'H' ${ cursor = window.origin; } # todo - DECOM?
+    | 'I' $reverse_linefeed
+    | 'J' $vt52_erase_screen
+    | 'K' $vt52_erase_line
+    | 'Y' ${ _args.clear(); } dca_arg dca_arg $vt52_dca
+    | 'Z' ${ output->write(ESC "/Z"); }
+    | '=' ${ _flags.DECKPAM = 1;}
+    | '>' ${ _flags.DECKPAM = 0; }
+    | '<' ${ _flags.DECANM = 1; }
+    )
+    @{ fgoto main; }
+    $err{ fgoto main; }
+    ;
+
+csi = '[' ${ _args.clear(); _args.push_back(0); _private = NO; };
+private_flag = ('?' ${ _private = YES; })?;
+
+escape := (
+          ( control_codes | esc )**
+        | cancel ${ /* cancel */ fgoto main; }
+        | csi  private_flag args lbrace
+        | '(' lparen
+        | ')' rparen
+        | '#' pound
+        | 'D' $linefeed
+        | 'E' ${cursor.x = 0; } $linefeed
+        | 'H' ${ if (cursor.x <= 79) _tabs[cursor.x] = 1; }
+        | 'M' $reverse_linefeed
+        | 'Z' ${ output->write(ESC "[?1;0c"); }
+        | '7' $sc
+        | '8' $rc
+        | '=' ${ _flags.DECKPAM = 1;}
+        | '>' ${ _flags.DECKPAM = 0; }
+#       | 'N'
+#       | 'O'
+        | 'c' ${ [self reset: YES]; /* should also clear the screen */ }
+        | '1' # DECG - graphic processor on (vt105?)
+        | '2' # DECG - graphic processor off (vt105?)
+        )
+        @{ fnext main; }
+        $err{ fgoto main; }
+        ;
+
+    main := (
+          control_codes
+        | esc ${
+            if (_flags.DECANM) fgoto escape; else fgoto escape_vt52;
+            
+        }
+        | 0x20 .. 0x7f $forward ${
+            screen->putc(fc, _context);
+            cursor.x++;
+         }
+    )**
+    $err{ fgoto main; }
+    ;
+
+    write data;
+}%%
+
+
+@implementation VT100
+
+
++(void)load
+{
+    [EmulatorManager registerClass: self];
+}
+
+-(id)init
+{
+    self = [super init];
+    [self reset: YES];
+    
+    return self;
+}
+
+
++(NSString *)name
+{
+    return @"VT100";
+}
+
+-(NSString *)name
+{
+    return @"VT100";
+}
+
+-(const char *)termName
+{
+    return "vt100";
+}
+
+-(BOOL)resizable
+{
+    return NO;
+}
+
+-(struct winsize)defaultSize
+{
+    struct  winsize ws = { 24, 80, 0, 0};
+    
+    return ws;
+}
+
+-(void)reset: (BOOL)hard
+{
+    %% write init;
+
+    _args.clear();
+    
+    _flags.DECANM = 1; // ansi/vt100 mode
+    _flags.DECARM = 0;
+    _flags.DECAWM = 1;
+    _flags.DECCKM = 0;
+    _flags.DECKPAM = 0;
+    //_flags.DECKPNM = 1;
+    _flags.DECCOLM = 0;
+    
+    _flags.DECSCLM = 0;
+    _flags.DECSCNM = 0;
+    _flags.DECOM = 0;
+    _flags.DECINLM = 0;
+    _flags.LNM = 0;
+    _flags.VT52GM = 0;
+
+
+    if (hard) {
+        _context.cursor = iPoint(0,0);
+        _context.window = iRect(0, 0, 80, 24);
+        
+        _tabs.reset();
+        _tabs[8] = true;
+        _tabs[16] = true;
+        _tabs[24] = true;
+        _tabs[32] = true;
+        _tabs[40] = true;
+        _tabs[48] = true;
+        _tabs[56] = true;
+        _tabs[64] = true;
+        _tabs[72] = true;
+    }
+    _context.flags = 0;
+    _context.charset = vt100_context::G0;
+    _context.G0_charset = vt100_context::CharSet_B;
+    _context.G1_charset = vt100_context::CharSet_B;
+}
+
+-(void)processData: (uint8_t *)data length: (size_t)length screen:(Screen *)screen output:(OutputChannel *)output
+{
+    std::transform(data, data + length, data, [](uint8_t c){ return c & 0x7f; });
+    
+    const uint8_t *eof = nullptr;
+    const uint8_t *p = data;
+    const uint8_t *pe = std::copy_if(data, data + length, data, [](uint8_t c){
+        if (c == 0 || c == 0x7f) return false;
+        return true;
+    });
+    
+    if (p == pe) return;
+    
+    iPoint &cursor = _context.cursor;
+    iRect &window = _context.window;
+
+
+    std::pair<unsigned, unsigned> window_x(0u, 80-1);
+    std::pair<unsigned, unsigned> window_y(0u, 24-1);
+    std::pair<unsigned, unsigned> region_y(window.minY(), window.maxY()-1);
+
+    auto cursor_in_region = [&](){
+        return cursor.y >= region_y.first && cursor.y <= region_y.second;
+    };
+    
+    /* todo - vt100 rom sometimes tabs to 80, sometimes doesn't. */
+     /* difference being: tab, x < x wraps to next line? */
+    auto tab = [&](unsigned x) -> unsigned {
+        if (x >= 79) return x;
+        for (x = x + 1; x < 80; ++x) {
+            if (_tabs[x]) return x;
+        }
+        return 79; //?
+    };
+
+    %%write exec;
+    
+
+    if (cursor.x == 80) screen->setCursor(iPoint(79, cursor.y));
+    else screen->setCursor(cursor);
+}
+
+static const char *RemapKey(unichar uc, NSEventModifierFlags flags, struct __vt100flags vt100flags)
+{
+
+    auto DECKPAM = vt100flags.DECKPAM;
+/*
+DECKPAM – Keypad Application Mode (DEC Private)
+
+The auxiliary keypad keys will transmit control sequences as defined in Tables 3-7 and 3-8.
+*/
+
+    auto DECCKM = vt100flags.DECCKM;
+/*
+DECCKM – Cursor Keys Mode (DEC Private)
+
+This is a private parameter applicable to set mode (SM) and reset mode (RM) control sequences. This mode is only effective when the terminal is in keypad application mode (see DECKPAM) and the ANSI/VT52 mode (DECANM) is set (see DECANM). Under these conditions, if the cursor key mode is reset, the four cursor function keys will send ANSI cursor control commands. If cursor key mode is set, the four cursor function keys will send application functions.
+*/
+
+
+    auto LNM = vt100flags.LNM;
+    auto DECANM = vt100flags.DECANM;
+/*
+DECANM – ANSI/VT52 Mode (DEC Private)
+
+This is a private parameter applicable to set mode (SM) and reset mode (RM) control sequences. The reset state causes only VT52 compatible escape sequences to be interpreted and executed. The set state causes only ANSI "compatible" escape and control sequences to be interpreted and executed.
+*/
+
+#if 0
+ /* Device-independent bits found in event modifier flags */
+typedef NS_OPTIONS(NSUInteger, NSEventModifierFlags) {
+    NSEventModifierFlagCapsLock           = 1 << 16, // Set if Caps Lock key is pressed.
+    NSEventModifierFlagShift              = 1 << 17, // Set if Shift key is pressed.
+    NSEventModifierFlagControl            = 1 << 18, // Set if Control key is pressed.
+    NSEventModifierFlagOption             = 1 << 19, // Set if Option or Alternate key is pressed.
+    NSEventModifierFlagCommand            = 1 << 20, // Set if Command key is pressed.
+    NSEventModifierFlagNumericPad         = 1 << 21, // Set if any key in the numeric keypad is pressed.
+    NSEventModifierFlagHelp               = 1 << 22, // Set if the Help key is pressed.
+    NSEventModifierFlagFunction           = 1 << 23, // Set if any function key is pressed.
+    
+    // Used to retrieve only the device-independent modifier flags, allowing applications to mask off the device-dependent modifier flags, including event coalescing information.
+    NSEventModifierFlagDeviceIndependentFlagsMask    = 0xffff0000UL
+};
+#endif
+
+/*
+ NSEnterCharacter: keypad Enter Key
+ NSNewlineCharacter: \n
+ NSCarriageReturnCharacter: \r (main Enter/Return key)
+ */
+
+    //NSLog(@"%c %02x %08lx", isprint(uc) ? uc : '.', uc, (unsigned long)flags);
+
+    if (DECKPAM && (flags & NSNumericPadKeyMask)) {
+        switch (uc) {
+            case '0': return DECANM ? ESC "Op" : ESC "?p";
+            case '1': return DECANM ? ESC "Oq" : ESC "?q";
+            case '2': return DECANM ? ESC "Or" : ESC "?r";
+            case '3': return DECANM ? ESC "Os" : ESC "?s";
+            case '4': return DECANM ? ESC "Ot" : ESC "?t";
+            case '5': return DECANM ? ESC "Ou" : ESC "?u";
+            case '6': return DECANM ? ESC "Ov" : ESC "?v";
+            case '7': return DECANM ? ESC "Ow" : ESC "?w";
+            case '8': return DECANM ? ESC "Ox" : ESC "?x";
+            case '9': return DECANM ? ESC "Oy" : ESC "?y";
+            case ',': return DECANM ? ESC "Ol" : ESC "?l";
+            case '-': return DECANM ? ESC "Om" : ESC "?m";
+            case '.': return DECANM ? ESC "On" : ESC "?n";
+            
+            
+            case NSEnterCharacter: return DECANM ? ESC "OM" : ESC "?M";
+        }
+    }
+    
+    
+    switch(uc) {
+        case NSUpArrowFunctionKey:
+            if (DECANM) return DECKPAM ?  ESC "OA" : ESC "[A";
+            return ESC "A";
+
+        case NSDownArrowFunctionKey:
+            if (DECANM) return DECKPAM ?  ESC "OB" : ESC "[B";
+            return ESC "B";
+
+        case NSRightArrowFunctionKey:
+            if (DECANM) return DECKPAM ?  ESC "OC" : ESC "[C";
+            return ESC "C";
+
+        case NSLeftArrowFunctionKey:
+            if (DECANM) return DECKPAM ?  ESC "OD" : ESC "[D";
+            return ESC "D";
+        
+        case NSF1FunctionKey: return DECANM ? ESC "OP" : ESC "P";
+        case NSF2FunctionKey: return DECANM ? ESC "OQ" : ESC "Q";
+        case NSF3FunctionKey: return DECANM ? ESC "OR" : ESC "R";
+        case NSF4FunctionKey: return DECANM ? ESC "OS" : ESC "S";
+        
+        
+        /* return/enter key is CR */
+        case NSEnterCharacter: case NSNewlineCharacter: case NSCarriageReturnCharacter:
+            return LNM ? "\n\r" : "\r";
+        
+        // NSDeleteCharacter IS 0x7f.
+        //case NSDeleteCharacter: return "\x7f"; //
+    }
+    return nullptr;
+}
+
+
+
+-(void)keyDown:(NSEvent *)event screen:(Screen *)screen output:(OutputChannel *)output
+{
+    NSEventModifierFlags flags = [event modifierFlags];
+    NSString *chars = [event charactersIgnoringModifiers];
+    NSUInteger length = [chars length];
+    
+    for (unsigned i = 0; i < length; ++i) {
+        unichar uc = [chars characterAtIndex: i];
+        
+        const char *str = RemapKey(uc, flags, _flags);
+        if (str) {
+            output->write(str);
+        } else if (uc <= 0x7f) {
+            uint8_t c = uc;
+            if (flags & NSControlKeyMask) c = CTRL(c);
+            output->write(c);                
+        }
+    }
+    
+}
+
+
+@end
+
