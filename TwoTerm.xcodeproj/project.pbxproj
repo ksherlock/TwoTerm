@@ -183,6 +183,7 @@
 		B683F70E2049E7B000470B99 /* VT50.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VT50.h; sourceTree = "<group>"; };
 		B683F70F2049E7B000470B99 /* VT50.mm.ragel */ = {isa = PBXFileReference; lastKnownFileType = text; path = VT50.mm.ragel; sourceTree = "<group>"; };
 		B683F711204AE32900470B99 /* VT05.mm.ragel */ = {isa = PBXFileReference; lastKnownFileType = text; path = VT05.mm.ragel; sourceTree = "<group>"; };
+		B68A37D621A9D45A004CBDE4 /* TwoTerm.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = TwoTerm.entitlements; path = TwoTerm/TwoTerm.entitlements; sourceTree = "<group>"; };
 		B68E632812FF909C00EAFF5F /* ExampleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExampleView.h; sourceTree = "<group>"; };
 		B68E632912FF909C00EAFF5F /* ExampleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExampleView.m; sourceTree = "<group>"; };
 		B69D0FB9202799B10073CCB7 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/TermConfig.xib; sourceTree = "<group>"; };
@@ -279,6 +280,7 @@
 		29B97314FDCFA39411CA2CEA /* 2Term */ = {
 			isa = PBXGroup;
 			children = (
+				B68A37D621A9D45A004CBDE4 /* TwoTerm.entitlements */,
 				B612F46B12DD5E02005D1B77 /* Views */,
 				B612F45512DD5DF1005D1B77 /* Emulators */,
 				B612F44612DD5DAD005D1B77 /* cpp */,
@@ -472,6 +474,16 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0930;
+				TargetAttributes = {
+					8D1107260486CEB800E47090 = {
+						DevelopmentTeam = 583V9CR5RE;
+						SystemCapabilities = {
+							com.apple.HardenedRuntime = {
+								enabled = 1;
+							};
+						};
+					};
+				};
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "TwoTerm" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -647,6 +659,8 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = 583V9CR5RE;
+				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -665,8 +679,11 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "3rd Party Mac Developer Application";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 583V9CR5RE;
+				ENABLE_HARDENED_RUNTIME = YES;
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = TwoTerm_Prefix.pch;
