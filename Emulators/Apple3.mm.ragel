@@ -1,0 +1,466 @@
+//
+//  Apple3.mm
+//  2Term
+//
+//  Created by Kelvin Sherlock on 12/24/2018.
+//  Copyright 2010 __MyCompanyName__. All rights reserved.
+//
+
+/*
+ * See Apple III Standard Device Drivers Manual (ch 3, The Console Driver)
+ * Also implemented via AppleWorks (which started life as III EZ Pieces)
+ *
+ * Apple III console can be 24 x 40 (BW), 24 x 40 (16 color), or 24 x 80 (BW).
+ *
+ */
+
+#import "Apple3.h"
+
+#include <sys/ttydefaults.h>
+
+#include "OutputChannel.h"
+#include "Screen.h"
+#include "algorithm.h"
+
+#import "CharacterGenerator.h"
+
+enum {
+    kAdvance = 1 << 0,
+    kLineFeed = 1 << 1,
+    kWrap = 1 << 2,
+    kScroll = 1 << 3,
+};
+
+%%{
+    machine console;
+    alphtype unsigned int;
+    
+    action nop {}
+    
+    action advance {
+        // advance cursor
+        if (_context.cursor_control & kAdvance) {
+            
+            
+            switch (_context.cursor_control & (kWrap | kScroll)) {
+                default:
+                if (cursor.x < window.maxX() - 1) ++cursor.x;
+                break;
+                case kWrap:
+                if (cursor.x < window.maxX() - 1) ++cursor.x;
+                else {
+                    cursor.x = window.minX();
+                    if (cursor.y < window.maxY() - 1) ++cursor.y;
+                }
+                break;
+                case kWrap | kScroll:
+                if (cursor.x < window.maxX() - 1) ++cursor.x;
+                else {
+                    cursor.x = window.minX();
+                    if (cursor.y < window.maxY() - 1) ++cursor.y;
+                    else screen->scrollUp(window);
+                }
+                break;
+            }
+        }
+    }
+
+    
+    action setx {
+        /* horizontal position */
+        int x = (unsigned)fc;
+        x += window.minX();
+        cursor.x = std::min(x, window.maxX() - 1);
+    }
+    
+    action sety {
+        /* vertical position */
+        int y = (unsigned)fc;
+        y += window.minY();
+        cursor.y = std::min(y, window.maxY() - 1);
+    }
+    
+    #    arg1 = any ${ _scratch[0] = fc; };
+    #    arg2 = any ${ _scratch[1] = fc; };
+
+    
+    
+    
+    main := (
+               0x00 $nop
+             | 0x01 ${
+                 /* save viewport and reset */
+                 _saved_context = _context;
+                 window = iRect(0, 0, 80, 24);
+                 /* currently ignores mode */
+             }
+             | 0x02 ${
+                 /* set viewport top */
+                 iPoint tl = cursor;
+                 iPoint br = window.bottomRight();
+                 _context.window = iRect(tl, br);
+             }
+             | 0x03 ${
+                 /* set viewport bottom */
+                 iPoint tl = _context.window.topLeft();
+                 iPoint br = _context.cursor.offset(1,1);
+                 _context.window = iRect(tl, br);
+             }
+             | 0x04 ${
+                 /* restore viewport */
+                 _context = _saved_context;
+             }
+             
+             | 0x05 ${
+                 /* E - $05 - Turns cursor on (enables cursor display) */
+                 screen->setCursorType(Screen::CursorTypeUnderscore);
+             }
+             
+             | 0x06 ${
+                 /* F - $06 - Turns cursor off (disables cursor display) */
+                 screen->setCursorType(Screen::CursorTypeNone);
+             }
+             
+             | 0x07 ${
+                 /* Beep */
+                 NSBeep();
+             }
+             
+             | 0x08 ${
+                 /* Moves cursor left */
+                 
+                 if (cursor.x > window.minX()) --cursor.x;
+                 else if (_context.cursor_control & kWrap) {
+                     cursor.x = window.maxX() - 1;
+                         
+                     if (cursor.y > window.minY()) --cursor.y;
+                     else if (_context.cursor_control & kScroll) {
+                         screen->scrollDown(window);
+                     }
+                 }
+             }
+             
+             | 0x09 ${
+                 /* move cursor right */
+
+                 if (cursor.x < window.maxX()-1) ++cursor.x;
+                 else if (_context.cursor_control & kWrap) {
+                     cursor.x = window.minX();
+                     
+                     if (cursor.y < window.maxY()-1) ++cursor.y;
+                     else if (_context.cursor_control & kScroll) {
+                         screen->scrollUp(window);
+                     }
+                 }
+
+
+             }
+             
+             | 0x0a ${
+                 /* move cursor down */
+                 if (cursor.y < window.maxY() - 1) ++cursor.y;
+                 else if (_context.cursor_control & kScroll) {
+                     screen->scrollUp(window);
+                 }
+             
+             }
+             
+             | 0x0b ${
+                 /* move cursor up */
+                 if (cursor.y > window.minY()) --cursor.y;
+                 else if (_context.cursor_control & kScroll) {
+                     screen->scrollDown(window);
+                 }
+             }
+             
+             | 0x0c ${
+                 /* home */
+                 cursor = iPoint(window.topLeft());
+             }
+             
+             | 0x0d ${
+                 /* carriage return */
+                 /* also LF depending on cursor motion */
+                 cursor.x = window.minX();
+                 if (_context.cursor_control & kLineFeed) {
+  
+                      if (cursor.y < window.maxY() - 1) ++cursor.y;
+                      else if (_context.cursor_control & kScroll) {
+                          screen->scrollUp(window);
+                      }
+  
+                 }
+             }
+             
+             | 0x0e ${
+                 /* turn screen off ... */
+             }
+             
+             | 0x0f ${
+                 /* turn screen on ... */
+             }
+             
+             | 0x10 any ${
+                 /* set text mode (40 vs 80, color vs bw) */
+                 _context.mode = fc & 0x03;
+             }
+             
+             | 0x11 ${
+                /* normal text */
+                _context.clearFlagBit(Screen::FlagInverse);
+             }
+             | 0x12 ${
+                /* invert text */
+                _context.setFlagBit(Screen::FlagInverse);
+             }
+             
+             | 0x13 any ${
+                /* set foreground text color */
+                _context.fg_color = fc & 0x0f;
+             }
+             
+             | 0x14 any ${
+                /* set background text color */
+                _context.bg_color = fc & 0x0f;
+             }
+             
+             | 0x15 any ${
+                 /* set cursor motion control */
+                 _context.cursor_control = fc & 0x0f;
+             }
+             
+             # sync
+             | 0x16 $nop
+             
+             | 0x17 any ${
+                /* horizontal shift */
+                int count = (int8_t)fc;
+                /* if > 0, shift right */
+                if (count > 0) screen->scrollRight(window, count);
+                /* if < 0, shift left */
+                if (count < 0) screen->scrollLeft(window, -count);
+             }
+             
+             # horizontal position
+             | 0x18 any $setx
+             # vertical position
+             | 0x19 any $sety
+             # horizontal + vertical position
+             | 0x1a any $setx any $sety
+             
+             # esc - reserved
+             | 0x1b $nop
+             
+             | 0x1c ${
+                 /* HOME + clear viewport */
+                 cursor = window.topLeft();
+                 screen->eraseRect(window);
+             }
+             
+             | 0x1d ${
+                 /* clear to end of viewport */
+                 iRect r(cursor, window.bottomRight());
+                 r.size.height = 1;
+                 screen->eraseRect(r);
+                 
+                 r = iRect(window.minX(), cursor.y + 1, window.width(), window.maxY() - cursor.y - 1);
+                 screen->eraseRect(r);
+             }
+             
+             | 0x1e ${
+                 /* move to left edge of viewport, clear line */
+                 cursor.y = window.minY();
+                 iRect r(cursor, window.bottomRight());
+                 r.size.height = 1;
+                 screen->eraseRect(r);
+             }
+             
+             | 0x1f ${
+                 /* clear to end of line */
+                 iRect r(cursor, window.bottomRight());
+                 r.size.height = 1;
+                 screen->eraseRect(r);
+                 
+             }
+             
+             | 0x20 .. 0x7f ${
+                 screen->putc(fc, _context);
+             } $advance
+             
+             | 0x80 .. 0x9f ${
+                 /* display control char? */
+             }
+             | 0xa0 .. 0xff ${
+                 screen->putc(fc & 0x7f, _context);
+             } $advance
+
+             
+             )* $err{ fgoto main; };
+    
+    write data;
+}%%
+
+@implementation Apple3
+
++(void)load {
+    [EmulatorManager registerClass: self];
+}
+
+- (NSString *)name {
+    return @"Apple III";
+}
+
+
++ (NSString *)name {
+    return @"Apple III";
+    
+}
+
+
+- (const char *)termName {
+    return "appleIII";
+}
+
+
+-(void)reset: (BOOL)hard
+{
+
+    %%write init;
+    _context.flags = 0;
+    _cursorType = Screen::CursorTypeUnderscore;
+
+    _context.fg_color = 15; /* white */
+    _context.bg_color = 0; /* black */
+    _context.cursor_control = kScroll | kWrap | kAdvance;
+    
+    if (hard) {
+        _context.window = iRect(0, 0, 80, 24);
+        _context.cursor = iPoint(0,0);
+        _context.mode = 2;
+        
+        _saved_context = iii_context();
+    }
+}
+
+-(BOOL)resizable
+{
+    return NO;
+}
+
+-(struct winsize)defaultSize
+{
+    struct winsize ws = { 24, 80, 0, 0 };
+    
+    return ws;
+}
+
+-(void)initTerm: (struct termios *)term
+{
+    // Control-U is used by the up-arrow key.
+    term->c_cc[VKILL] = CTRL('X');
+    // tab is right arrow, so expand to spaces.
+    term->c_oflag |= OXTABS;
+}
+
+-(id)init
+{
+    if ((self = [super init]))
+    {
+        [self reset: YES];
+    }
+    
+    return self;
+}
+
+-(void)processData:(uint8_t *)data length: (size_t)length screen:(Screen *)screen output:(OutputChannel *)output
+{
+    
+    const uint8_t *eof = nullptr;
+    const uint8_t *p = data;
+    const uint8_t *pe = data + length;
+    
+    auto &cursor = _context.cursor;
+    auto &window = _context.window;
+    auto &cursor_control = _context.cursor_control;
+
+    %%write exec;
+
+    screen->setCursor(cursor);
+    
+}
+
+
+-(void)keyDown:(NSEvent *)event screen:(Screen *)screen output:(OutputChannel *)output
+{
+    NSEventModifierFlags flags = [event modifierFlags];
+    NSString *chars = [event charactersIgnoringModifiers];
+    
+    NSUInteger length = [chars length];
+    
+    for (unsigned i = 0; i < length; ++i)
+    {
+        unichar uc = [chars characterAtIndex: i];
+        
+        switch (uc)
+        {
+            case NSEnterCharacter:
+                output->write(CTRL('M'));
+                break;
+                /*    
+                 case NSDeleteCharacter:
+                 output->write(0x7f);
+                 break;
+                 */
+            
+                
+                // the Apple II keyboard had a delete where the backspace key was.
+                // it functions as a backspace key.
+            case NSBackspaceCharacter:
+                output->write(0x7f);
+                break;
+                
+            case NSLeftArrowFunctionKey:
+                output->write(CTRL('H'));
+                break;
+                
+            case NSRightArrowFunctionKey:
+                output->write(CTRL('U'));
+                break;
+                
+            case NSUpArrowFunctionKey:
+                output->write(CTRL('K'));
+                break;
+                
+            case NSDownArrowFunctionKey:
+                output->write(CTRL('J'));
+                break;
+                
+                
+            default:
+                if (uc <= 0x7f)
+                {
+                    char c = uc;
+                    
+                    //NSLog(@"%@", event);
+                    
+                    if (flags & NSAlphaShiftKeyMask)
+                    {
+                        c = flags & NSShiftKeyMask  ? tolower(c) : toupper(c);
+                    }
+     
+                    if (flags & NSControlKeyMask)
+                        c = CTRL(c);
+                    
+                    output->write(c);
+                }
+                break;
+        }
+        
+        
+        
+    }
+}
+
+
+@end
+
