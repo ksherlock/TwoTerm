@@ -84,7 +84,7 @@
     #
     action cursor_up {
         /* cursor up */
-        unsigned count = _flags.DECANM ? std::min(1u, _args.front()) : 1;
+        unsigned count = _flags.DECANM ? std::max(1u, _args.front()) : 1;
 
         if (cursor_in_region()) {
             cursor.y = clamp(cursor.y - count, region_y.first, region_y.second);
@@ -94,7 +94,7 @@
     }
     action cursor_down {
         /* cursor down */
-        unsigned count = _flags.DECANM ? std::min(1u, _args.front()) : 1;
+        unsigned count = _flags.DECANM ? std::max(1u, _args.front()) : 1;
 
         if (cursor_in_region()) {
             cursor.y = clamp(cursor.y + count, region_y.first, region_y.second);
@@ -105,13 +105,13 @@
     
     action cursor_left {
         /* cursor left */
-        unsigned count = _flags.DECANM ? std::min(1u, _args.front()) : 1;
+        unsigned count = _flags.DECANM ? std::max(1u, _args.front()) : 1;
         cursor.x = clamp(cursor.x - count, window_x.first, window_x.second);
     }
 
     action cursor_right {
         /* cursor right */
-        unsigned count = _flags.DECANM ? std::min(1u, _args.front()) : 1;
+        unsigned count = _flags.DECANM ? std::max(1u, _args.front()) : 1;
         cursor.x = clamp(cursor.x + count, window_x.first, window_x.second);
     }
     
