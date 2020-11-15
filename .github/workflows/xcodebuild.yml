@@ -18,4 +18,4 @@ jobs:
     - name: brew
       run: brew install ragel
     - name: xcodebuild
-      run: xcodebuild -target TwoTerm
+      run: xcodebuild -target TwoTerm | xcpretty
