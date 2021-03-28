@@ -343,9 +343,9 @@
             {
   
                 // mouse text actually requires mouse text and inverse to be on.
-                if (flag & Screen::FlagMouseText)
+                if ((flag & Screen::FlagMouseText) && c >= '@' && c <= '_')
                 {
-                    if (c >= '@' && c <= '_') c |= 0x80;
+                    c |= 0x80;
                 }
                 else
                 {
