@@ -34,7 +34,7 @@
     }
     
     action answerback {
-        output->write(ESC "[?1;0c");
+        /* no answerback string */
     }
 
 
