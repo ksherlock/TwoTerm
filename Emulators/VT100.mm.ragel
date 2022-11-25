@@ -297,6 +297,7 @@
                      
                      iRect tmp(0, cursor.y + 1, 80, 24 - cursor.y - 1);
                      screen->eraseRect(tmp);
+                     break;
                  }
                  case 1: {
                      // 0 ... x
